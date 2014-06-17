@@ -2,9 +2,9 @@ set nocompatible
 
 " begin Vundle requirements...
 filetype off 
-
-  set rtp+=~/.vim/bundle/vundle/
-  call vundle#rc()
+set rtp+=~/.vim/bundle/vundle/
+call vundle#begin() 
+  "call vundle#rc()
   " let Vundle manage Vundle
   " required! 
   Bundle 'gmarik/vundle'
@@ -15,7 +15,7 @@ filetype off
   " can't use this for vim-r-plugin because latest
   " version removed conque shell support
   "Bundle 'Vim-R-plugin'
-
+call vundle#end() 
 filetype plugin indent on
 " end Vundle
 
