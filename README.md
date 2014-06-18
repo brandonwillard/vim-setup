@@ -11,6 +11,9 @@ Clone the most recent [Vundle](https://github.com/gmarik/Vundle.vim) in ```./bun
 
 ```$ git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim```
 
+You'll have to open VIM and run ```BundleInstall``` to setup the plugins mentioned in
+```vimrc```.
+
 # tmux
 If you want VIM and tmux to work together (wrt. window movements) create a link
 to ```tmux.conf```.  Otherwise, the ```vimrc``` file should include the necessary
