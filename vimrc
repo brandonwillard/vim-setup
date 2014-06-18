@@ -7,6 +7,9 @@ call vundle#begin()
   " required! 
   Bundle 'gmarik/vundle'
   Bundle 'The-NERD-Commenter'
+  Bundle 'vimux'
+  Bundle 'christoomey/vim-tmux-navigator'
+  Bundle 'tpope/vim-eunuch'
   "Bundle 'LaTeX-Suite-aka-Vim-LaTeX'
   "Bundle 'Conque-Shell'
   "Bundle 'LaTeX-Box-Team/LaTeX-Box'
@@ -41,6 +44,13 @@ set nows
 set backspace=indent,eol,start
 "set spell spelllang=en_us
 
+let g:tmux_navigator_no_mappings = 1
+
+nnoremap <silent> <C-W>h :TmuxNavigateLeft<cr>
+nnoremap <silent> <C-W>j :TmuxNavigateDown<cr>
+nnoremap <silent> <C-W>k :TmuxNavigateUp<cr>
+nnoremap <silent> <C-W>l :TmuxNavigateRight<cr>
+nnoremap <silent> <C-W>\ :TmuxNavigatePrevious<cr>
 
 " Don't screw up folds when inserting text that might affect them, until
 " leaving insert mode. Foldmethod is local to the window. Protect against
