@@ -1,23 +1,23 @@
 set nocompatible
 
-" begin Vundle requirements...
 filetype off 
 set rtp+=~/.vim/bundle/vundle/
 call vundle#begin() 
-  "call vundle#rc()
   " let Vundle manage Vundle
   " required! 
   Bundle 'gmarik/vundle'
-  "Bundle 'LaTeX-Suite-aka-Vim-LaTeX'
   Bundle 'The-NERD-Commenter'
+  "Bundle 'LaTeX-Suite-aka-Vim-LaTeX'
   "Bundle 'Conque-Shell'
   "Bundle 'LaTeX-Box-Team/LaTeX-Box'
+  
   " can't use this for vim-r-plugin because latest
   " version removed conque shell support
   "Bundle 'Vim-R-plugin'
+  
 call vundle#end() 
+
 filetype plugin indent on
-" end Vundle
 
 let g:Tex_UseMakefile=1
 

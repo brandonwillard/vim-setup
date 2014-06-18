@@ -14,30 +14,33 @@ function! BjamCheck()
 endfunction
 
 augroup filetypedetect 
-        " jam detection and ability to compile from the jam file
-        au! BufRead,BufNewFile Jamroot,Jamfile,*.jam setfiletype jam |
-            \ setl makeprg=bjam |
-            \ :compiler gcc |
-            \ let g:compiler_gcc_ignore_unmatched_lines=1
+  " jam detection and ability to compile from the jam file
+  au! BufRead,BufNewFile Jamroot,Jamfile,*.jam setfiletype jam |
+        \ setl makeprg=bjam |
+        \ :compiler gcc |
+        \ let g:compiler_gcc_ignore_unmatched_lines=1
 
 
-        " setup for make bjam
-        au filetype cpp call BjamCheck()
+  " setup for make bjam
+  au filetype cpp call BjamCheck()
 
-        au! BufRead,BufNewFile *.ladot setfiletype dot |
-          \ setl autoindent |
-          \ setl makeprg=perl\ ~/pladot.pl\ %
+  au! BufRead,BufNewFile *.ladot setfiletype dot |
+        \ setl autoindent |
+        \ setl makeprg=perl\ ~/pladot.pl\ %
 
-        "au filetype tex set makeprg=pdflatex\ -shell-escape\ % | 
-        "    \ setl autoindent |
-        "    \ setl spell |
-        "    \ setl textwidth=80 |
-        "    \ setl formatoptions+=t |
-        "    "\ let b:tex_flavor |
-        "    \ :compiler tex
+  "au filetype tex set makeprg=pdflatex\ -shell-escape\ % | 
+  "    \ setl autoindent |
+  "    \ setl spell |
+  "    \ setl textwidth=80 |
+  "    \ setl formatoptions+=t |
+  "    "\ let b:tex_flavor |
+  "    \ :compiler tex
 
-        " scroll conque's buffer
-        au filetype r nmap <F5> :call RScrollTerm()<CR>
+  " scroll conque's buffer
+  au filetype r nmap <F5> :call RScrollTerm()<CR>
+
+  " add new comment leader after <enter>
+  au filetype r setlocal formatoptions-=t formatoptions+=croql
 
 augroup END
 
