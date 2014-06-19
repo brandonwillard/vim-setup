@@ -47,6 +47,7 @@ nnoremap <silent> <C-W>k :TmuxNavigateUp<cr>
 nnoremap <silent> <C-W>l :TmuxNavigateRight<cr>
 nnoremap <silent> <C-W>\ :TmuxNavigatePrevious<cr>
 
+
 " Use Ctrl+Space to do omnicompletion:
 if has("gui_running")
   "set term=$TERM
@@ -55,6 +56,31 @@ if has("gui_running")
 else
   inoremap <Nul> <C-x><C-o>
 endif
+
+" Omni/popup settings from here:
+" http://vim.wikia.com/wiki/Make_Vim_completion_popup_menu_work_just_like_in_an_IDE
+"set omnifunc=syntaxcomplete#Complete
+if has("autocmd") && exists("+omnifunc")
+  autocmd Filetype *
+        \	if &omnifunc == "" |
+        \		setlocal omnifunc=syntaxcomplete#Complete |
+        \	endif
+endif  
+" don't select the first option that pops up.
+set completeopt=longest,menuone
+" <Enter> selects a popup menu item
+inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" make <C-N/P> keep the highlighted selection when moving between menu items
+inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
+  \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
+  \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+" open omni completion menu closing previous if open and opening new menu without changing the text
+inoremap <expr> <C-Space> (pumvisible() ? (col('.') > 1 ? '<Esc>i<Right>' : '<Esc>i') : '') .
+            \ '<C-x><C-o><C-r>=pumvisible() ? "\<lt>C-n>\<lt>C-p>\<lt>Down>" : ""<CR>'
+" open user completion menu closing previous if open and opening new menu without changing the text
+inoremap <expr> <S-Space> (pumvisible() ? (col('.') > 1 ? '<Esc>i<Right>' : '<Esc>i') : '') .
+            \ '<C-x><C-u><C-r>=pumvisible() ? "\<lt>C-n>\<lt>C-p>\<lt>Down>" : ""<CR>'
 
 set showcmd
 set showmode
