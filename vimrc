@@ -47,6 +47,15 @@ nnoremap <silent> <C-W>k :TmuxNavigateUp<cr>
 nnoremap <silent> <C-W>l :TmuxNavigateRight<cr>
 nnoremap <silent> <C-W>\ :TmuxNavigatePrevious<cr>
 
+" Use Ctrl+Space to do omnicompletion:
+if has("gui_running")
+  "set term=$TERM
+  "set noguipty
+  inoremap <C-Space> <C-x><C-o>
+else
+  inoremap <Nul> <C-x><C-o>
+endif
+
 set showcmd
 set showmode
 set timeoutlen=400
@@ -163,11 +172,6 @@ let g:EclimDefaultFileOpenAction='tab'
 " TODO put this somewhere more appropriate
 command! JettyDebug call JettyDebugFn()
 command! JDB call JDBFn()
-
-if has("gui_running")
-  "set term=$TERM
-  "set noguipty
-endif
 
 " Default to tree mode
 let g:netrw_liststyle=3
