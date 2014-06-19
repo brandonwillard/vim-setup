@@ -3,6 +3,7 @@
 These are my personal hacked-up VIM settings/plugins.
 
 # Setup
+
 Create a symbolic link to the ```vimrc``` file in your home directory (or wherever VIM expects it):
 
 ```$ ln -s .vim/vimrc .vimrc ```
@@ -15,6 +16,7 @@ You'll have to open VIM and run ```BundleInstall``` to setup the plugins mention
 ```vimrc```.
 
 # tmux
+
 If you want VIM and tmux to work together (wrt. window movements) create a link
 to ```tmux.conf```.  Otherwise, the ```vimrc``` file should include the necessary
 VIM plugin(s).
