@@ -36,9 +36,6 @@ augroup filetypedetect
   "    "\ let b:tex_flavor |
   "    \ :compiler tex
 
-  " scroll conque's buffer
-  au filetype r nmap <F5> :call RScrollTerm()<CR>
-
   " add new comment leader after <enter>
   au filetype r setlocal formatoptions-=t formatoptions+=croql
 

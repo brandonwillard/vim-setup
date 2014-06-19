@@ -13,16 +13,11 @@ call vundle#begin()
   "Bundle 'LaTeX-Suite-aka-Vim-LaTeX'
   "Bundle 'Conque-Shell'
   "Bundle 'LaTeX-Box-Team/LaTeX-Box'
-  
-  " can't use this for vim-r-plugin because latest
-  " version removed conque shell support
-  "Bundle 'Vim-R-plugin'
+  Bundle 'Vim-R-plugin'
   
 call vundle#end() 
 
 filetype plugin indent on
-
-let g:Tex_UseMakefile=1
 
 set autoindent
 set nostartofline
@@ -52,13 +47,6 @@ nnoremap <silent> <C-W>k :TmuxNavigateUp<cr>
 nnoremap <silent> <C-W>l :TmuxNavigateRight<cr>
 nnoremap <silent> <C-W>\ :TmuxNavigatePrevious<cr>
 
-" Don't screw up folds when inserting text that might affect them, until
-" leaving insert mode. Foldmethod is local to the window. Protect against
-" screwing up folding when switching between windows.
-autocmd InsertEnter * if !exists('w:last_fdm') | let w:last_fdm=&foldmethod | setlocal foldmethod=manual | endif
-autocmd InsertLeave,WinLeave * if exists('w:last_fdm') | let &l:foldmethod=w:last_fdm | unlet w:last_fdm | endif
-
-
 set showcmd
 set showmode
 set timeoutlen=400
@@ -75,7 +63,17 @@ set mousefocus
 set mousehide
 set mousemodel=extend
 
+"
+" Fold-related stuff
+"
 set foldopen=block,insert,jump,mark,percent,quickfix,search,tag,undo
+" Don't screw up folds when inserting text that might affect them, until
+" leaving insert mode. Foldmethod is local to the window. Protect against
+" screwing up folding when switching between windows.
+autocmd InsertEnter * if !exists('w:last_fdm') | let w:last_fdm=&foldmethod | setlocal foldmethod=manual | endif
+autocmd InsertLeave,WinLeave * if exists('w:last_fdm') | let &l:foldmethod=w:last_fdm | unlet w:last_fdm | endif
+
+
 set scrolloff=8
 set virtualedit=all
 "set smarttab
@@ -95,9 +93,6 @@ noremap gj j
 noremap gk k
 let &showbreak="\u21aa "
 
-set path+=~/orderbook-simulator/**
-"set path+=~/workspace-oba-camsys/**
-set path+=~/workspace-oba-camsys/oba-test/**
 set tags=tags;/
 
 let marksCloseWhenSelected = 0
@@ -107,30 +102,42 @@ let g:clang_complete_auto=0
 "let g:clang_use_library=1
 "let g:clang_library_path=
 
+"
+" TeX and R-plugin settings
+"
+let g:tex_flavor='latex'
+let g:Tex_UseMakefile=1
+
 let vimrplugin_by_vim_instance=1
 let vimrplugin_vimpager='vertical'
-
 let vimrplugin_underscore=0
 let vimrplugin_term='xterm'
 let r_syntax_folding=0
 
 let vimrplugin_applescript=0
-let vimrplugin_screenplugin=0
-let vimrplugin_conqueplugin=1
-
-let vimrplugin_conquevsplit=1
-let vimrplugin_conquevsleep=10
+"let vimrplugin_screenplugin=0
 
 let g:vimrplugin_indent_commented=1
 let g:r_indent_align_args=1
 
 
-let ConqueTerm_TERM = 'xterm'
-let g:ConqueTerm_ReadUnfocused = 1
-let ConqueTerm_CWInsert = 1
-let ConqueTerm_Color = 0
-let ConqueTerm_CloseOnEnd = 0
+"let vimrplugin_conqueplugin=1
+"let vimrplugin_conquevsplit=1
+"let vimrplugin_conquevsleep=10
+"let ConqueTerm_TERM = 'xterm'
+"let g:ConqueTerm_ReadUnfocused = 1
+"let ConqueTerm_CWInsert = 1
+"let ConqueTerm_Color = 0
+"let ConqueTerm_CloseOnEnd = 0
 "let g:ConqueTerm_InsertOnEnter = 1
+"let g:TreeExternalShell='ConqueTermSplit'
+"function! JettyDebugFn()
+"  let g:jetty_term = conque_term#open('mvnDebug jetty:run', ['belowright split'], 1)
+"endfunction
+"function! JDBFn()
+"  let g:jetty_term = conque_term#open('jdb -attach 8000', ['belowright split'])
+"endfunction
+
 
 
 "
@@ -152,21 +159,10 @@ let g:EclimLocateFileScope='workspace'
 let g:EclimLocateFileFuzzy=1
 let g:EclimBuffersDefaultAction='tab'
 let g:EclimDefaultFileOpenAction='tab'
-let g:TreeExternalShell='ConqueTermSplit'
 
 " TODO put this somewhere more appropriate
 command! JettyDebug call JettyDebugFn()
 command! JDB call JDBFn()
-
-function! JettyDebugFn()
-  let g:jetty_term = conque_term#open('mvnDebug jetty:run', ['belowright split'], 1)
-endfunction
-
-function! JDBFn()
-  let g:jetty_term = conque_term#open('jdb -attach 8000', ['belowright split'])
-endfunction
-
-let g:tex_flavor='latex'
 
 if has("gui_running")
   "set term=$TERM
