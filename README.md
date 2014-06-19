@@ -1,6 +1,6 @@
 # Introduction
 
-These are my personal hacked-up VIM settings/plugins.
+These are my personal, hacked-up VIM settings/plugins.
 
 # Setup
 
