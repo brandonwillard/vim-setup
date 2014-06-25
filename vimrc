@@ -5,16 +5,18 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin() 
   " let Vundle manage Vundle
   " required! 
-  Bundle 'gmarik/vundle'
-  Bundle 'The-NERD-Commenter'
-  Bundle 'vimux'
-  Bundle 'christoomey/vim-tmux-navigator'
-  Bundle 'tpope/vim-eunuch'
-  "Bundle 'LaTeX-Suite-aka-Vim-LaTeX'
-  "Bundle 'Conque-Shell'
-  "Bundle 'LaTeX-Box-Team/LaTeX-Box'
-  Bundle 'Vim-R-plugin'
-  
+  Plugin 'gmarik/Vundle.vim'
+  Plugin 'The-NERD-Commenter'
+  Plugin 'vimux'
+  Plugin 'christoomey/vim-tmux-navigator'
+  Plugin 'tpope/vim-eunuch'
+  Plugin 'syntastic'
+  Plugin 'SirVer/ultisnips'
+  Plugin 'honza/vim-snippets'
+  Plugin 'Valloric/YouCompleteMe'
+  Plugin 'Vim-R-plugin'
+  Plugin 'bling/vim-airline'
+  Plugin 'tpope/vim-fugitive'
 call vundle#end() 
 
 filetype plugin indent on
@@ -24,13 +26,13 @@ set nostartofline
 set wildmode=longest:full
 set wildmenu
 set hid
-set modeline
 set ls=2
 syntax enable
 highlight comment ctermfg=blue
 set hls
 set bg=dark
-color desert 
+set t_Co=256 
+"color desert256 
 set showmatch
 set number
 set foldmethod=syntax
@@ -47,43 +49,65 @@ nnoremap <silent> <C-W>k :TmuxNavigateUp<cr>
 nnoremap <silent> <C-W>l :TmuxNavigateRight<cr>
 nnoremap <silent> <C-W>\ :TmuxNavigatePrevious<cr>
 
+"
+" Status bar options
+"
+"set modeline
+"set showcmd
+"set noshowmode
+"set showmode
+let g:airline#extensions#branch#enabled = 1
+"let g:airline_powerline_fonts = 1
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tmuxline#enabled = 1
+let g:airline#extensions#syntastic#enabled = 1
+
 
 " Use Ctrl+Space to do omnicompletion:
-if has("gui_running")
-  "set term=$TERM
-  "set noguipty
-  inoremap <C-Space> <C-x><C-o>
-else
-  inoremap <Nul> <C-x><C-o>
-endif
+"if has("gui_running")
+"  "set term=$TERM
+"  "set noguipty
+"  inoremap <C-Space> <C-x><C-o>
+"else
+"  inoremap <Nul> <C-x><C-o>
+"endif
 
 " Omni/popup settings from here:
 " http://vim.wikia.com/wiki/Make_Vim_completion_popup_menu_work_just_like_in_an_IDE
-"set omnifunc=syntaxcomplete#Complete
 if has("autocmd") && exists("+omnifunc")
   autocmd Filetype *
         \	if &omnifunc == "" |
         \		setlocal omnifunc=syntaxcomplete#Complete |
         \	endif
 endif  
+
 " don't select the first option that pops up.
 set completeopt=longest,menuone
-" <Enter> selects a popup menu item
-inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-" make <C-N/P> keep the highlighted selection when moving between menu items
-inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
-  \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
-inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
-  \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
-" open omni completion menu closing previous if open and opening new menu without changing the text
-inoremap <expr> <C-Space> (pumvisible() ? (col('.') > 1 ? '<Esc>i<Right>' : '<Esc>i') : '') .
-            \ '<C-x><C-o><C-r>=pumvisible() ? "\<lt>C-n>\<lt>C-p>\<lt>Down>" : ""<CR>'
-" open user completion menu closing previous if open and opening new menu without changing the text
-inoremap <expr> <S-Space> (pumvisible() ? (col('.') > 1 ? '<Esc>i<Right>' : '<Esc>i') : '') .
-            \ '<C-x><C-u><C-r>=pumvisible() ? "\<lt>C-n>\<lt>C-p>\<lt>Down>" : ""<CR>'
 
-set showcmd
-set showmode
+"" <Enter> selects a popup menu item
+"inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+"" make <C-N/P> keep the highlighted selection when moving between menu items
+"inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
+"  \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+"inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
+"  \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
+"" open omni completion menu closing previous if open and opening new menu without changing the text
+"inoremap <expr> <C-Space> (pumvisible() ? (col('.') > 1 ? '<Esc>i<Right>' : '<Esc>i') : '') .
+"            \ '<C-x><C-o><C-r>=pumvisible() ? "\<lt>C-n>\<lt>C-p>\<lt>Down>" : ""<CR>'
+"" open user completion menu closing previous if open and opening new menu without changing the text
+"inoremap <expr> <S-Space> (pumvisible() ? (col('.') > 1 ? '<Esc>i<Right>' : '<Esc>i') : '') .
+"            \ '<C-x><C-u><C-r>=pumvisible() ? "\<lt>C-n>\<lt>C-p>\<lt>Down>" : ""<CR>'
+
+"
+" YouCompleteMe settings
+" 
+let g:ycm_auto_trigger=0
+"XXX <C-TAB> conflicts with UltiSnips
+let g:ycm_key_list_select_completion = ['<C-TAB>', '<Down>']
+let g:ycm_key_list_select_previous_completion = ['<C-S-TAB>', '<Up>']
+let g:ycm_key_invoke_completion = '<C-Space>'
+let g:UltiSnipsExpandTrigger='<Tab>'
+
 set timeoutlen=400
 "set smartindent
 "set cindent
@@ -126,9 +150,9 @@ noremap j gj
 noremap k gk
 noremap gj j
 noremap gk k
-let &showbreak="\u21aa "
+"let &showbreak="\u21aa "
 
-set tags=tags;/
+"set tags=tags;/
 
 let marksCloseWhenSelected = 0
 let showmarks_include = "abcdefghijklmnopqrstuvwxyz"
@@ -154,24 +178,6 @@ let vimrplugin_applescript=0
 
 let g:vimrplugin_indent_commented=1
 let g:r_indent_align_args=1
-
-
-"let vimrplugin_conqueplugin=1
-"let vimrplugin_conquevsplit=1
-"let vimrplugin_conquevsleep=10
-"let ConqueTerm_TERM = 'xterm'
-"let g:ConqueTerm_ReadUnfocused = 1
-"let ConqueTerm_CWInsert = 1
-"let ConqueTerm_Color = 0
-"let ConqueTerm_CloseOnEnd = 0
-"let g:ConqueTerm_InsertOnEnter = 1
-"let g:TreeExternalShell='ConqueTermSplit'
-"function! JettyDebugFn()
-"  let g:jetty_term = conque_term#open('mvnDebug jetty:run', ['belowright split'], 1)
-"endfunction
-"function! JDBFn()
-"  let g:jetty_term = conque_term#open('jdb -attach 8000', ['belowright split'])
-"endfunction
 
 
 
@@ -212,49 +218,9 @@ let g:netrw_list_hide= '.*\.swp$,.*\.swp\s,.*/$,.*/\s'
 let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 
-if exists("+showtabline")
-  function MyTabLine()
-    let s = ''
-    let t = tabpagenr()
-    let i = 1
-    while i <= tabpagenr('$')
-      let buflist = tabpagebuflist(i)
-      let winnr = tabpagewinnr(i)
-      let s .= '%' . i . 'T'
-      let s .= (i == t ? '%1*' : '%2*')
-      let s .= ' '
-      let s .= i . ':'
-      let s .= winnr . '/' . tabpagewinnr(i,'$')
-      let s .= ' %*'
-      let s .= (i == t ? '%#TabLineSel#' : '%#TabLine#')
-      let bufnr = buflist[winnr - 1]
-      let file = bufname(bufnr)
-      let buftype = getbufvar(bufnr, 'buftype')
-      if buftype == 'nofile'
-        if file =~ '\/.'
-          let file = substitute(file, '.*\/\ze.', '', '')
-        endif
-      else
-        let file = fnamemodify(file, ':p:t')
-      endif
-      if file == ''
-        let file = '[No Name]'
-      endif
-      let s .= file
-      let i = i + 1
-    endwhile
-    let s .= '%T%#TabLineFill#%='
-    let s .= (tabpagenr('$') > 1 ? '%999XX' : 'X')
-    return s
-  endfunction
-  set stal=2
-  set tabline=%!MyTabLine()
-  map    <leader>tn :tabnext<CR>
-  imap   <leader>tn <C-O>:tabnext<CR>
-  map    <leader>tp :tabprev<CR>
-  imap   <leader>tp <C-O>:tabprev<CR>
-endif
 
 if filereadable(expand("./.vimrc.local"))
   source ./.vimrc.local
 endif
+
+
