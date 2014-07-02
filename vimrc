@@ -17,10 +17,12 @@ call vundle#begin()
   Plugin 'Vim-R-plugin'
   Plugin 'bling/vim-airline'
   Plugin 'tpope/vim-fugitive'
+  Plugin 'LaTeX-Box'
 call vundle#end() 
 
 filetype plugin indent on
 
+set copyindent
 set autoindent
 set nostartofline
 set wildmode=longest:full
@@ -29,6 +31,7 @@ set hid
 set ls=2
 syntax enable
 highlight comment ctermfg=blue
+set ttyfast
 set hls
 set bg=dark
 set t_Co=256 
@@ -40,6 +43,11 @@ set foldmethod=syntax
 set nows
 set backspace=indent,eol,start
 "set spell spelllang=en_us
+
+set pastetoggle=<F2>
+if has ('X11') && has ('gui')
+    set clipboard=unnamedplus
+endif
 
 let g:tmux_navigator_no_mappings = 1
 
@@ -61,7 +69,7 @@ let g:airline#extensions#branch#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tmuxline#enabled = 1
 let g:airline#extensions#syntastic#enabled = 1
-
+          
 
 " Use Ctrl+Space to do omnicompletion:
 "if has("gui_running")
@@ -99,14 +107,16 @@ set completeopt=longest,menuone
 "            \ '<C-x><C-u><C-r>=pumvisible() ? "\<lt>C-n>\<lt>C-p>\<lt>Down>" : ""<CR>'
 
 "
-" YouCompleteMe settings
+" Completion settings
 " 
 let g:ycm_auto_trigger=0
-"XXX <C-TAB> conflicts with UltiSnips
-let g:ycm_key_list_select_completion = ['<C-TAB>', '<Down>']
-let g:ycm_key_list_select_previous_completion = ['<C-S-TAB>', '<Up>']
-let g:ycm_key_invoke_completion = '<C-Space>'
-let g:UltiSnipsExpandTrigger='<Tab>'
+let g:ycm_key_invoke_completion = '<c-space>'
+let g:ycm_key_list_select_completion = ['<c-tab>', '<down>']
+let g:ycm_key_list_select_previous_completion = ['<c-s-tab>', '<up>']
+let g:UltiSnipsExpandTrigger="<c-j>"
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+
 
 set timeoutlen=400
 "set smartindent
@@ -217,6 +227,18 @@ let g:netrw_list_hide= '.*\.swp$,.*\.swp\s,.*/$,.*/\s'
 " file with :vsplit to the right of the browser.
 let g:netrw_browse_split = 4
 let g:netrw_altv = 1
+
+"
+" Vimux settings
+"
+function! VimuxSlime()
+  call VimuxSendText(@z)
+  call VimuxSendKeys("Enter")
+endfunction
+
+vnoremap <LocalLeader>ts "zy :call VimuxSlime()<CR>  
+nnoremap <LocalLeader>tl "zY :call VimuxSlime()<CR>  
+nnoremap <LocalLeader>tp "zyiw :call VimuxSlime()<CR>  
 
 
 if filereadable(expand("./.vimrc.local"))
