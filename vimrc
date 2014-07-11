@@ -35,7 +35,7 @@ set ttyfast
 set hls
 set bg=dark
 set t_Co=256 
-"color desert256 
+color elflord 
 set showmatch
 set number
 set foldmethod=syntax
@@ -118,9 +118,9 @@ let g:UltiSnipsJumpForwardTrigger="<c-j>"
 let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 
 
-set timeoutlen=400
 "set smartindent
 "set cindent
+set timeoutlen=200
 set tabstop=2
 set shiftwidth=2
 set expandtab
@@ -230,19 +230,37 @@ let g:netrw_altv = 1
 
 "
 " Vimux settings
+" TODO get this to remove any trailing newlines
+" could use this to get keywords: expand("<cword>")
+" or this to get visual selection: getline("'<","'>")
+" current line: getline(".")
 "
 function! VimuxSlime()
   call VimuxSendText(@z)
   call VimuxSendKeys("Enter")
 endfunction
 
+" send visual selection
 vnoremap <LocalLeader>ts "zy :call VimuxSlime()<CR>  
+" send line
 nnoremap <LocalLeader>tl "zY :call VimuxSlime()<CR>  
+" send word
 nnoremap <LocalLeader>tp "zyiw :call VimuxSlime()<CR>  
+" general run/open and quit/close
+nnoremap <LocalLeader>tr :call VimuxOpenPane()<CR>  
+nnoremap <LocalLeader>tq :VimuxCloseRunner<CR>
 
 
 if filereadable(expand("./.vimrc.local"))
   source ./.vimrc.local
 endif
+
+"
+" This doesn't appear to work when residing in filetype.vim;
+" something about the call order between this and R-plugin's syntax files.
+"
+au filetype rmd,r,tex 
+      \ setlocal formatoptions+=croql |
+      \ setlocal iskeyword+=_,.
 
 
