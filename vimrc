@@ -18,6 +18,7 @@ call vundle#begin()
   Plugin 'bling/vim-airline'
   Plugin 'tpope/vim-fugitive'
   Plugin 'LaTeX-Box'
+  Plugin 'ShowMarks'
 call vundle#end() 
 
 filetype plugin indent on
@@ -122,6 +123,7 @@ let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 "set cindent
 set timeoutlen=200
 set tabstop=2
+set softtabstop=2
 set shiftwidth=2
 set expandtab
 set diffopt+=iwhite
@@ -179,7 +181,7 @@ let g:Tex_UseMakefile=1
 
 let vimrplugin_by_vim_instance=1
 let vimrplugin_vimpager='vertical'
-let vimrplugin_underscore=0
+let vimrplugin_assign = 0
 let vimrplugin_term='xterm'
 let r_syntax_folding=0
 
@@ -263,4 +265,13 @@ au filetype rmd,r,tex
       \ setlocal formatoptions+=croql |
       \ setlocal iskeyword+=_,.
 
+function! TabMessage(cmd)
+  redir => message
+  silent execute a:cmd
+  redir END
+  tabnew
+  silent put=message
+  set nomodified
+endfunction
+command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
 

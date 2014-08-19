@@ -28,6 +28,8 @@ augroup filetypedetect
         \ setl autoindent |
         \ setl makeprg=perl\ ~/pladot.pl\ %
 
+  au! BufRead,BufNewFile *.md setfiletype markdown
+
   "au filetype tex 
   "    \ setl makeprg=pdflatex\ -shell-escape\ % | 
   "    \ setl autoindent |
