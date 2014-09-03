@@ -42,8 +42,12 @@ augroup filetypedetect
   "
   " Setup Vimux for specific interactive sessions
   "
+  " remove nocorrect if you're not using zshell (it stops the input
+  " requirement when/if ipython doesn't exist)
   au filetype python 
-        \ nnoremap <LocalLeader>tr :call VimuxRunCommand("python")<CR>
+        \ nnoremap <LocalLeader>tr :call VimuxRunCommand("nocorrect ipython || python")<CR>
+  au filetype scala 
+        \ nnoremap <LocalLeader>tr :call VimuxRunCommand("scala")<CR>
   au filetype matlab 
         \ nnoremap <LocalLeader>tr :call VimuxRunCommand("matlab -nodisplay")<CR>
   au filetype haskell 

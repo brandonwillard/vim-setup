@@ -19,6 +19,7 @@ call vundle#begin()
   Plugin 'tpope/vim-fugitive'
   Plugin 'LaTeX-Box'
   Plugin 'ShowMarks'
+  Plugin 'derekwyatt/vim-scala'
 call vundle#end() 
 
 filetype plugin indent on
