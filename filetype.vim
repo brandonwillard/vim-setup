@@ -45,7 +45,7 @@ augroup filetypedetect
   " remove nocorrect if you're not using zshell (it stops the input
   " requirement when/if ipython doesn't exist)
   au filetype python 
-        \ nnoremap <LocalLeader>tr :call VimuxRunCommand("nocorrect ipython || python")<CR>
+        \ nnoremap <LocalLeader>tr :call VimuxRunCommand("nocorrect ipython \|\| python")<CR>
   au filetype scala 
         \ nnoremap <LocalLeader>tr :call VimuxRunCommand("scala")<CR>
   au filetype matlab 
