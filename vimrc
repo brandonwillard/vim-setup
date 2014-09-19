@@ -20,6 +20,9 @@ call vundle#begin()
   Plugin 'LaTeX-Box'
   Plugin 'ShowMarks'
   Plugin 'derekwyatt/vim-scala'
+  Plugin 'ivanov/vim-ipython'
+  Plugin 'noweb.vim--McDermott'
+  "Plugin 'julienr/vim-cellmode'
 call vundle#end() 
 
 filetype plugin indent on
@@ -233,13 +236,12 @@ let g:netrw_altv = 1
 
 "
 " Vimux settings
-" TODO get this to remove any trailing newlines
 " could use this to get keywords: expand("<cword>")
 " or this to get visual selection: getline("'<","'>")
 " current line: getline(".")
 "
 function! VimuxSlime()
-  call VimuxSendText(@z)
+  call VimuxSendText(substitute(escape(@z,"`"),'\n*$','','g'))
   call VimuxSendKeys("Enter")
 endfunction
 
@@ -275,4 +277,8 @@ function! TabMessage(cmd)
   set nomodified
 endfunction
 command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
+
+let noweb_backend="tex"
+let noweb_language="python"
+let noweb_fold_code = 0 
 
