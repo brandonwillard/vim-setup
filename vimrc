@@ -1,4 +1,4 @@
-set nocompatible
+"set nocompatible
 
 filetype off 
 set rtp+=~/.vim/bundle/Vundle.vim
@@ -11,18 +11,22 @@ call vundle#begin()
   Plugin 'christoomey/vim-tmux-navigator'
   Plugin 'tpope/vim-eunuch'
   Plugin 'syntastic'
-  Plugin 'SirVer/ultisnips'
-  Plugin 'honza/vim-snippets'
-  Plugin 'Valloric/YouCompleteMe'
+  Plugin 'Lokaltog/vim-easymotion'
+  "Plugin 'SirVer/ultisnips'
+  "Plugin 'honza/vim-snippets'
+  "Plugin 'Valloric/YouCompleteMe'
   Plugin 'Vim-R-plugin'
   Plugin 'bling/vim-airline'
-  Plugin 'tpope/vim-fugitive'
+  "Plugin 'tpope/vim-fugitive'
   Plugin 'LaTeX-Box'
   Plugin 'ShowMarks'
-  Plugin 'derekwyatt/vim-scala'
-  Plugin 'ivanov/vim-ipython'
+  "Plugin 'derekwyatt/vim-scala'
+  "Plugin 'ivanov/vim-ipython'
   Plugin 'noweb.vim--McDermott'
   "Plugin 'julienr/vim-cellmode'
+  "Plugin 'vim-pandoc/vim-pandoc'
+  "Plugin 'vim-pandoc/vim-pandoc-syntax'
+  "Plugin 'nathanaelkane/vim-indent-guides'
 call vundle#end() 
 
 filetype plugin indent on
@@ -44,10 +48,19 @@ color elflord
 set showmatch
 set number
 set foldmethod=syntax
-"set foldnestmax=1
+"set foldnestmax=1tte
 set nows
 set backspace=indent,eol,start
-"set spell spelllang=en_us
+syn spell toplevel
+set spell spelllang=en_us
+
+map / <Plug>(easymotion-sn)
+omap / <Plug>(easymotion-tn)
+" These `n` & `N` mappings are options. You do not have to map `n` & `N` to EasyMotion.
+" Without these mappings, `n` & `N` works fine. (These mappings just provide
+" different highlight method and have some other features )
+"map  n <Plug>(easymotion-next)
+"map  N <Plug>(easymotion-prev)
 
 set pastetoggle=<F2>
 if has ('X11') && has ('gui')
@@ -66,7 +79,7 @@ nnoremap <silent> <C-W>\ :TmuxNavigatePrevious<cr>
 " Status bar options
 "
 "set modeline
-"set showcmd
+set showcmd
 "set noshowmode
 "set showmode
 let g:airline#extensions#branch#enabled = 1
@@ -125,7 +138,7 @@ let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 
 "set smartindent
 "set cindent
-set timeoutlen=200
+set timeoutlen=600
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
@@ -181,17 +194,18 @@ let g:clang_complete_auto=0
 " TeX and R-plugin settings
 "
 let g:tex_flavor='latex'
-let g:Tex_UseMakefile=1
 
 let vimrplugin_by_vim_instance=1
 let vimrplugin_vimpager='vertical'
 let vimrplugin_assign = 0
+let vimrplugin_rnowebchunk = 0 
 let vimrplugin_term='xterm'
 let r_syntax_folding=0
 
 let vimrplugin_applescript=0
 "let vimrplugin_screenplugin=0
 
+let g:vimrplugin_insert_mode_cmds=0
 let g:vimrplugin_indent_commented=1
 let g:r_indent_align_args=1
 
@@ -225,7 +239,7 @@ command! JDB call JDBFn()
 let g:netrw_liststyle=3
 
 " Change directory to the current buffer when opening files.
-"set autochdir
+" set autochdir
 
 let g:netrw_list_hide= '.*\.swp$,.*\.swp\s,.*/$,.*/\s'
 
@@ -241,7 +255,9 @@ let g:netrw_altv = 1
 " current line: getline(".")
 "
 function! VimuxSlime()
-  call VimuxSendText(substitute(escape(@z,"`"),'\n*$','','g'))
+  " remove the trailing newline
+  "call VimuxSendText(substitute(escape(@z,"`"),'\n*$','','g'))
+  call VimuxSendText(escape(@z,"`"))
   call VimuxSendKeys("Enter")
 endfunction
 
@@ -260,13 +276,6 @@ if filereadable(expand("./.vimrc.local"))
   source ./.vimrc.local
 endif
 
-"
-" This doesn't appear to work when residing in filetype.vim;
-" something about the call order between this and R-plugin's syntax files.
-"
-au filetype rmd,r,tex 
-      \ setlocal formatoptions+=croql |
-      \ setlocal iskeyword+=_,.
 
 function! TabMessage(cmd)
   redir => message
@@ -282,3 +291,9 @@ let noweb_backend="tex"
 let noweb_language="python"
 let noweb_fold_code = 0 
 
+" helper for fixing syntax code:
+" http://vim.wikia.com/wiki/Identify_the_syntax_highlighting_group_used_at_the_cursor
+map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+
+let g:pandoc#modules#disabled = ['chdir']
+let g:pandoc#syntax#conceal#use = 0
