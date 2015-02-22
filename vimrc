@@ -15,7 +15,7 @@ call vundle#begin()
   "Plugin 'SirVer/ultisnips'
   "Plugin 'honza/vim-snippets'
   "Plugin 'Valloric/YouCompleteMe'
-  Plugin 'Vim-R-plugin'
+  Plugin 'jcfaria/Vim-R-plugin'
   Plugin 'bling/vim-airline'
   "Plugin 'tpope/vim-fugitive'
   Plugin 'LaTeX-Box'
