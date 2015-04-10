@@ -23,14 +23,19 @@ call vundle#begin()
   "Plugin 'derekwyatt/vim-scala'
   "Plugin 'ivanov/vim-ipython'
   Plugin 'noweb.vim--McDermott'
+  Plugin 'xolox/vim-easytags'
+  Plugin 'xolox/vim-misc'
   "Plugin 'julienr/vim-cellmode'
   "Plugin 'vim-pandoc/vim-pandoc'
   "Plugin 'vim-pandoc/vim-pandoc-syntax'
   "Plugin 'nathanaelkane/vim-indent-guides'
+  Plugin 'LargeFile'
 call vundle#end() 
 
 filetype plugin indent on
 
+" in MB
+let g:LargeFile=1024/2
 set copyindent
 set autoindent
 set nostartofline
@@ -55,7 +60,8 @@ syn spell toplevel
 set spell spelllang=en_us
 "set smartindent
 "set cindent
-set timeoutlen=600
+set noto
+"set timeoutlen=600
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
