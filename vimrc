@@ -15,6 +15,7 @@ call vundle#begin()
   "Plugin 'SirVer/ultisnips'
   "Plugin 'honza/vim-snippets'
   "Plugin 'Valloric/YouCompleteMe'
+  Plugin 'jalvesaq/R-Vim-runtime'
   Plugin 'jcfaria/Vim-R-plugin'
   Plugin 'bling/vim-airline'
   "Plugin 'tpope/vim-fugitive'
@@ -30,6 +31,7 @@ call vundle#begin()
   "Plugin 'vim-pandoc/vim-pandoc-syntax'
   "Plugin 'nathanaelkane/vim-indent-guides'
   Plugin 'LargeFile'
+  Plugin 'tpope/vim-surround'
 call vundle#end() 
 
 filetype plugin indent on

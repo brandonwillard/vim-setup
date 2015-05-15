@@ -1,5 +1,8 @@
 
-setl iskeyword+=_
+" these are reset when noweb syntax is loaded, so these
+" settings are in pnw's syntax file after loading noweb.
+"setl formatoptions+=croql
+"setl iskeyword+=_
 
 " noweb syntax file reads these as globals
 let noweb_backend="markdown"
