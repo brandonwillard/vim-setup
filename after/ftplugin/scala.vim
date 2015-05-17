@@ -1,3 +1,3 @@
 
-nnoremap <buffer> <LocalLeader>tr :call VimuxRunCommand("scala")<CR>
+let g:vimux_run_command = "scala"
 

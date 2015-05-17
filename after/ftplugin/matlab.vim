@@ -1,3 +1,3 @@
 
-nnoremap <buffer> <LocalLeader>tr :call VimuxRunCommand("matlab -nodisplay")<CR>
+let g:vimux_run_command = "matlab -nodisplay"
 

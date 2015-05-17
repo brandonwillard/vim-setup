@@ -27,7 +27,7 @@ function! SourceLines(in_lines)
     let last_n_ind = n_ind  
 
     "call VimuxSendText(escape(line, "`") . "\<C-M>")
-    call VimuxSendText(escape(line, "`"))
+    call VimuxSendText(escape(line, '`\'))
     call VimuxSendKeys("Enter")
   endfor
 
@@ -40,7 +40,13 @@ endfunction
 
 " remove nocorrect if you're not using zshell (it stops the input
 " requirement when/if ipython doesn't exist)
-nnoremap <buffer> <LocalLeader>tr :call VimuxRunCommand("nocorrect ipython --matplotlib \|\| python")<CR> 
-nnoremap <buffer> <LocalLeader>td :call VimuxRunCommand("nocorrect ipython --pydb --matplotlib \|\| python")<CR> 
+let g:vimux_run_command = "nocorrect ipython --matplotlib \|\| python"
+
+" provide a start for debug mode
+if empty(mapcheck("<LocalLeader>rc"))
+  nnoremap <buffer> <LocalLeader>rc :call VimuxRunCommand("nocorrect ipython --pydb --matplotlib \|\| python")<CR> 
+else
+  nnoremap <buffer> <LocalLeader>td :call VimuxRunCommand("nocorrect ipython --pydb --matplotlib \|\| python")<CR> 
+endif
 
 

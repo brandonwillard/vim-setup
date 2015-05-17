@@ -1,5 +1,5 @@
 
 setl formatoptions+=croql
 
-nnoremap <buffer> <LocalLeader>tr :call VimuxRunCommand("ghci --interactive")<CR>
+let g:vimux_run_command = "ghci --interactive"
 
