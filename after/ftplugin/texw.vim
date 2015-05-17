@@ -33,7 +33,7 @@ function! NowebPreviousChunk() range
     let chunk = len(rg)
     for var in range(1, chunk)
         let curline = line(".")
-        if RnwIsInRCode(0)
+        if NowebIsInCode(0)
             let i = search("^<<.*$", "bnW")
             if i != 0
                 call cursor(i-1, 1)
@@ -83,43 +83,12 @@ function! NowebSendChunkToTmux(m)
   endif
 endfunction
 
-function! SourceLines(lines)
-  let inside_def = 0
-  let last_n_ind = 0
-  let lines = copy(a:lines)
-  for i in range(0, len(lines)-1)
-    let line = lines[i]
-    if line =~ '^\s*$'
-      continue
-    endif
-
-    " track indents in python
-    if exists("g:noweb_language") && g:noweb_language == "python"
-      let n_ind = len(matchstr(lines[i], '^\(\s\)*'))
-      if n_ind < last_n_ind
-        call VimuxSendKeys("Enter")
-      endif
-      let last_n_ind = n_ind  
-    endif
-
-    call VimuxSendText(escape(line, "`") . "\<C-M>")
-  endfor
-
-  " just in case the lines ended at the end
-  " of a function declaration
-  if exists("g:noweb_language") && g:noweb_language == "python"
-    if last_n_ind > 0
-      call VimuxSendKeys("Enter")
-    endif
-  endif
-endfunction
-
 noremap <buffer> <LocalLeader>cd :call NowebSendChunkToTmux("down")<CR>
 noremap <buffer> <LocalLeader>cc :call NowebSendChunkToTmux("stay")<CR>
-"noremap <buffer> <LocalLeader>ch :call NowebSendFHChunkToTmux("stay")<CR>
 noremap <buffer> <LocalLeader>gN :call NowebPreviousChunk()<CR>
 noremap <buffer> <LocalLeader>gn :call NowebNextChunk()<CR>
 
-nnoremap <buffer> <LocalLeader>tr :call VimuxRunCommand("nocorrect ipython --matplotlib \|\| python")<CR>
-nnoremap <buffer> <LocalLeader>td :call VimuxRunCommand("nocorrect ipython --pydb --matplotlib \|\| python")<CR>
+" TODO: put the above noweb-specific code into a separate file and load that.
+"source after/ftplugin/noweb.vim
+runtime after/ftplugin/python.vim
 

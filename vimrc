@@ -85,6 +85,10 @@ set indentkeys-=0#
 set completeopt=longest,menuone
 set foldopen=block,insert,jump,mark,percent,quickfix,search,tag,undo
 
+" rmd/noweb chunk highlighting and folding
+let rmd_syn_hl_chunk = 1
+let noweb_fold_code = 1
+
 set pastetoggle=<F2>
 if has ('X11') && has ('gui')
     set clipboard=unnamedplus
