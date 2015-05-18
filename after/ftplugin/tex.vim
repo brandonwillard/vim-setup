@@ -10,12 +10,12 @@ setl iskeyword+=_,.,-,:
 "let maplocalleader = mapleader
 " make start-stop block out of the previous word
 "imap <buffer> <LocalLeader>tb \begin<Cr>\end<Cr><Esc>4bhdiw$pj$pO
-imap <buffer> [[ 		\begin{
-imap <buffer> ]]		<Plug>LatexCloseCurEnv
-nmap <buffer> <F5>		<Plug>LatexChangeEnv
-vmap <buffer> <F7>		<Plug>LatexWrapSelection
-vmap <buffer> <S-F7>		<Plug>LatexEnvWrapSelection
-imap <buffer> (( 		\eqref{
+imap <buffer> <LocalLeader>[[ 		\begin{
+imap <buffer> <LocalLeader>]]		<Plug>LatexCloseCurEnv
+nmap <buffer> <LocalLeader>ec		<Plug>LatexChangeEnv
+vmap <buffer> <LocalLeader>ws		<Plug>LatexWrapSelection
+vmap <buffer> <LocalLeader>ew		<Plug>LatexEnvWrapSelection
+imap <buffer> <LocalLeader>(( 		\eqref{
 
 if filereadable('Makefile')
   setl makeprg=make\ %:gs?tex?pdf?:t
