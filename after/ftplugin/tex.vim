@@ -17,12 +17,28 @@ vmap <buffer> <LocalLeader>ws		<Plug>LatexWrapSelection
 vmap <buffer> <LocalLeader>ew		<Plug>LatexEnvWrapSelection
 imap <buffer> <LocalLeader>(( 		\eqref{
 
-if filereadable('Makefile')
-  setl makeprg=make\ %:gs?tex?pdf?:t
-  setl errorformat=%f:%l:\ %m,%f:%l-%\\d%\\+:\ %m
-elseif filereadable('latex.mk')
-  exec "setl makeprg=make\\ -f\\ latex.mk\\ " . substitute(bufname("%"),"tex$","pdf", "")
-  setl errorformat=%f:%l:\ %m,%f:%l-%\\d%\\+:\ %m
+if exists('g:Make_loaded')
+  "let g:OldMake = function("Make")
+  
+  " Pass-through that simply turns no args into the current buffer's filename
+  " with pdf extension (i.e. builds the buffer's file).
+  fun! b:Make(args)
+    let l:args = strlen(a:args) ? a:args : expand("%:gs?tex?pdf?:t")
+    "OldMake(l:args)
+    call Make(l:args)
+  endfunction
+
+  "command! -nargs=? Make call LatexMake("<args>")
+  command! -nargs=? Make call b:Make("<args>")
+
+else
+  if filereadable('Makefile')
+    setl makeprg=make\ %:gs?tex?pdf?:t
+    setl errorformat=%f:%l:\ %m,%f:%l-%\\d%\\+:\ %m
+  elseif filereadable('latex.mk')
+    exec "setl makeprg=make\\ -f\\ latex.mk\\ " . substitute(bufname("%"),"tex$","pdf", "")
+    setl errorformat=%f:%l:\ %m,%f:%l-%\\d%\\+:\ %m
+  endif
 endif
 
 

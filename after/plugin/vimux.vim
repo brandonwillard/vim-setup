@@ -17,23 +17,25 @@ endfunction
 
 " send visual selection
 if empty(mapcheck("<LocalLeader>sa"))
-  vnoremap <LocalLeader>sa "zy :call VimuxSlime()<CR>  
+  vmap <LocalLeader>sa "zy :call VimuxSlime()<CR>  
+  vmap <LocalLeader>sd "zy :call VimuxSlime()<CR>  
 else
-  vnoremap <LocalLeader>ts "zy :call VimuxSlime()<CR>  
+  vmap <LocalLeader>ta "zy :call VimuxSlime()<CR>  
+  vmap <LocalLeader>td "zy :call VimuxSlime()<CR>  
 endif
 
 " send line
 if empty(mapcheck("<LocalLeader>l"))
-  noremap <LocalLeader>l "zY :call VimuxSlime()<CR>  
+  map <LocalLeader>l "zY :call VimuxSlime()<CR>  
 else
-  noremap <LocalLeader>tl "zY :call VimuxSlime()<CR>  
+  map <LocalLeader>tl "zY :call VimuxSlime()<CR>  
 endif
 
 " send/print word
 if empty(mapcheck("<LocalLeader>rp"))
-  nnoremap <LocalLeader>rp "zyiw :call VimuxSlime()<CR>  
+  nmap <LocalLeader>rp "zyiw :call VimuxSlime()<CR>  
 else
-  nnoremap <LocalLeader>tp "zyiw :call VimuxSlime()<CR>  
+  nmap <LocalLeader>tp "zyiw :call VimuxSlime()<CR>  
 endif
 
 function! VimuxBufferStart()

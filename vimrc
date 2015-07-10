@@ -32,6 +32,7 @@ call vundle#begin()
   "Plugin 'nathanaelkane/vim-indent-guides'
   Plugin 'LargeFile'
   Plugin 'tpope/vim-surround'
+  Plugin 'vshih/vim-make'
 call vundle#end() 
 
 filetype plugin indent on
