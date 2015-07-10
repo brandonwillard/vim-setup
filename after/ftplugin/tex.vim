@@ -43,6 +43,23 @@ endif
 
 
 "
+" Some basic synctex functionality for use with
+" qpdfview.
+"
+" The external sync command looks like:
+" qpdfview --unique foobar.pdf#src:foobar.tex:42:0
+"
+function! SyncTexForward()
+  if !exists('b:thispdf')
+    let b:thispdf = findfile(expand("%:gs?tex?pdf?:t"), "**;")
+  endif
+  let l:execstr = "!qpdfview --unique ".b:thispdf."\\#src:%:p:".line(".").":0 &"
+  silent exec l:execstr | redraw!
+endfunction
+
+nmap <Leader>f :call SyncTexForward()<CR>
+
+"
 " Reformat lines (getting the spacing correct) {{{
 " From http://tex.stackexchange.com/questions/1548/intelligent-paragraph-reflowing-in-vim?lq=1
 " doesn't really work; no support for $[$]...$[$]
