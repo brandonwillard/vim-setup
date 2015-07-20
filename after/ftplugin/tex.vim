@@ -22,14 +22,14 @@ if exists('g:Make_loaded')
   
   " Pass-through that simply turns no args into the current buffer's filename
   " with pdf extension (i.e. builds the buffer's file).
-  fun! b:Make(args)
+  fun! LatexMake(args)
     let l:args = strlen(a:args) ? a:args : expand("%:gs?tex?pdf?:t")
     "OldMake(l:args)
     call Make(l:args)
   endfunction
 
   "command! -nargs=? Make call LatexMake("<args>")
-  command! -nargs=? Make call b:Make("<args>")
+  command! -nargs=? Make call LatexMake("<args>")
 
 else
   if filereadable('Makefile')
