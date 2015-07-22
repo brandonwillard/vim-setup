@@ -3,9 +3,7 @@
 "setl spell
 "setl textwidth=80
 "setl formatoptions+=t
-setl formatoptions+=croql
 setl sw=2
-setl iskeyword+=_,.,-,:
 
 "let maplocalleader = mapleader
 " make start-stop block out of the previous word
@@ -28,6 +26,20 @@ if exists('g:Make_loaded')
     call Make(l:args)
   endfunction
 
+  " Note: had to fix the vim-make plugin by adding the following:
+  "   " Output to quickfix.
+  "     cgetexpr l:out
+  "     let l:len = 0
+  "     for d in getqflist()
+  "       if d.valid > 0
+  "         let l:len = l:len + 1
+  "       endif
+  "     endfor
+
+  " Note: for this quickfix stuff to work well, run
+  " make without command echoing (i.e. preface with @)
+  " and pdflatex with -file-line-error.
+
   "command! -nargs=? Make call LatexMake("<args>")
   command! -nargs=? Make call LatexMake("<args>")
 
@@ -41,6 +53,13 @@ else
   endif
 endif
 
+"
+" small hack to make latex-box work for non-trivial setups
+"
+let b:thisaux = findfile(expand("%:gs?tex?aux?:t"), "**4;")
+let b:LatexBox_build_dir = fnamemodify(b:thisaux, ":p:h")
+let b:build_dir = fnamemodify(b:thisaux, ":p:h")
+let b:LatexBox_jobname = fnamemodify(b:thisaux, ":p:r")
 
 "
 " Some basic synctex functionality for use with
@@ -51,9 +70,9 @@ endif
 "
 function! SyncTexForward()
   if !exists('b:thispdf')
-    let b:thispdf = findfile(expand("%:gs?tex?pdf?:t"), "**;")
+    let b:thispdf = findfile(expand("%:gs?tex?pdf?:t"), "**4;")
   endif
-  let l:execstr = "!qpdfview --unique ".b:thispdf."\\#src:%:p:".line(".").":0 &"
+  let l:execstr = "!qpdfview --unique ".b:thispdf."\\#src:%:p:".line(".").":0 &> /dev/null &"
   silent exec l:execstr | redraw!
 endfunction
 
