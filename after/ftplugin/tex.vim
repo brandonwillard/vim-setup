@@ -3,9 +3,7 @@
 "setl spell
 "setl textwidth=80
 "setl formatoptions+=t
-setl formatoptions+=croql
 setl sw=2
-setl iskeyword+=_,.,-,:
 
 "let maplocalleader = mapleader
 " make start-stop block out of the previous word
@@ -41,6 +39,13 @@ else
   endif
 endif
 
+"
+" small hack to make latex-box work for non-trivial setups
+"
+let b:thisaux = findfile(expand("%:gs?tex?aux?:t"), "**;")
+let b:LatexBox_build_dir = fnamemodify(b:thisaux, ":p:h")
+let b:build_dir = fnamemodify(b:thisaux, ":p:h")
+let b:LatexBox_jobname = fnamemodify(b:thisaux, ":p:r")
 
 "
 " Some basic synctex functionality for use with
@@ -53,7 +58,7 @@ function! SyncTexForward()
   if !exists('b:thispdf')
     let b:thispdf = findfile(expand("%:gs?tex?pdf?:t"), "**;")
   endif
-  let l:execstr = "!qpdfview --unique ".b:thispdf."\\#src:%:p:".line(".").":0 &"
+  let l:execstr = "!qpdfview --unique ".b:thispdf."\\#src:%:p:".line(".").":0 &> /dev/null &"
   silent exec l:execstr | redraw!
 endfunction
 

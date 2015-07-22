@@ -19,7 +19,7 @@ call vundle#begin()
   Plugin 'jcfaria/Vim-R-plugin'
   Plugin 'bling/vim-airline'
   "Plugin 'tpope/vim-fugitive'
-  Plugin 'LaTeX-Box'
+  Plugin 'LaTeX-Box-Team/LaTeX-Box'
   Plugin 'ShowMarks'
   "Plugin 'derekwyatt/vim-scala'
   "Plugin 'ivanov/vim-ipython'
