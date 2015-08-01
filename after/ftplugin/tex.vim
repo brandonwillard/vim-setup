@@ -1,6 +1,6 @@
 
 "setl autoindent
-"setl spell
+setl spell
 "setl textwidth=80
 "setl formatoptions+=t
 setl sw=2
@@ -72,7 +72,7 @@ function! SyncTexForward()
   if !exists('b:thispdf')
     let b:thispdf = findfile(expand("%:gs?tex?pdf?:t"), "**4;")
   endif
-  let l:execstr = "!qpdfview --unique ".b:thispdf."\\#src:%:p:".line(".").":0 &> /dev/null &"
+  let l:execstr = "!qpdfview --unique ".b:thispdf."\\#src:".expand("%:p").":".line(".").":0 &> /dev/null &"
   silent exec l:execstr | redraw!
 endfunction
 

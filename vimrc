@@ -59,8 +59,9 @@ set foldmethod=syntax
 "set foldnestmax=1tte
 set nows
 set backspace=indent,eol,start
-syn spell toplevel
-set spell spelllang=en_us
+"syn spell toplevel
+syn spell default
+set spelllang=en_us
 "set smartindent
 "set cindent
 set noto
