@@ -33,6 +33,7 @@ call vundle#begin()
   Plugin 'LargeFile'
   Plugin 'tpope/vim-surround'
   Plugin 'vshih/vim-make'
+  "Plugin 'ktonga/vim-follow-my-lead'
 call vundle#end() 
 
 filetype plugin indent on
@@ -40,19 +41,20 @@ filetype plugin indent on
 " in MB
 let g:LargeFile=1024/2
 set copyindent
+set pi
 set autoindent
 set nostartofline
 set wildmode=longest:full
 set wildmenu
 set hid
 set ls=2
-syntax enable
-highlight comment ctermfg=blue
 set ttyfast
 set hls
 set bg=dark
 set t_Co=256 
 color elflord 
+syntax enable
+highlight comment ctermfg=blue
 set showmatch
 set number
 set foldmethod=syntax
