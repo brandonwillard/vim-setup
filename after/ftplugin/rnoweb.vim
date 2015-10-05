@@ -3,6 +3,14 @@
 setl formatoptions+=croql
 setl iskeyword+=_,.,-
 
+if filereadable('Makefile')
+  setl makeprg=make\ %:gs?[Rr]nw$?pdf?:t
+  "setl errorformat=%f:%l:\ %m,%f:%l-%\\d%\\+:\ %m
+elseif filereadable('latex.mk')
+  exec "setl makeprg=make\\ -f\\ latex.mk\\ " . substitute(bufname("%"),"[Rr]nw$","pdf", "")
+  "setl errorformat=%f:%l:\ %m,%f:%l-%\\d%\\+:\ %m
+endif
+
 " remove these annoying latex-box mappings
 "iunmap <buffer> [[
 "iunmap <buffer> ]]
@@ -38,18 +46,14 @@ if exists('g:Make_loaded')
   " make without command echoing (i.e. preface with @)
   " and pdflatex with -file-line-error.
 
-  "command! -nargs=? Make call LatexMake("<args>")
   command! -nargs=? Make call LatexMake("<args>")
 
-else
-  if filereadable('Makefile')
-    setl makeprg=make\ %:gs?[Rr]nw$?pdf?:t
-    "setl errorformat=%f:%l:\ %m,%f:%l-%\\d%\\+:\ %m
-  elseif filereadable('latex.mk')
-    exec "setl makeprg=make\\ -f\\ latex.mk\\ " . substitute(bufname("%"),"[Rr]nw$","pdf", "")
-    "setl errorformat=%f:%l:\ %m,%f:%l-%\\d%\\+:\ %m
-  endif
 endif
+
+let b:thisaux = findfile(expand("%:gs?[Rr]nw$?aux?:t"), "**4;")
+let b:LatexBox_build_dir = fnamemodify(b:thisaux, ":p:h")
+let b:build_dir = fnamemodify(b:thisaux, ":p:h")
+let b:LatexBox_jobname = fnamemodify(b:thisaux, ":p:r")
 
 "
 " Some basic synctex functionality for use with

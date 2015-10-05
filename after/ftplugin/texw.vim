@@ -88,6 +88,11 @@ noremap <buffer> <LocalLeader>cc :call NowebSendChunkToTmux("stay")<CR>
 noremap <buffer> <LocalLeader>gN :call NowebPreviousChunk()<CR>
 noremap <buffer> <LocalLeader>gn :call NowebNextChunk()<CR>
 
+let b:thisaux = findfile(expand("%:gs?texw$?aux?:t"), "**4;")
+let b:LatexBox_build_dir = fnamemodify(b:thisaux, ":p:h")
+let b:build_dir = fnamemodify(b:thisaux, ":p:h")
+let b:LatexBox_jobname = fnamemodify(b:thisaux, ":p:r")
+
 " TODO: put the above noweb-specific code into a separate file and load that.
 "source after/ftplugin/noweb.vim
 runtime after/ftplugin/python.vim

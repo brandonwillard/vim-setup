@@ -58,6 +58,13 @@ imap <buffer> <LocalLeader>(( 		\eqref{
 "setlocal efm+=%-Q%*[^()]
 "setlocal efm+=%-G%.%#
 
+if filereadable('Makefile')
+  setl makeprg=make\ %:gs?tex$?pdf?:t
+  "setl errorformat=%f:%l:\ %m,%f:%l-%\\d%\\+:\ %m
+elseif filereadable('latex.mk')
+  exec "setl makeprg=make\\ -f\\ latex.mk\\ " . substitute(bufname("%"),"tex$","pdf", "")
+  "setl errorformat=%f:%l:\ %m,%f:%l-%\\d%\\+:\ %m
+endif
 
 if exists('g:Make_loaded')
   "let g:OldMake = function("Make")
@@ -84,17 +91,8 @@ if exists('g:Make_loaded')
   " make without command echoing (i.e. preface with @)
   " and pdflatex with -file-line-error.
 
-  "command! -nargs=? Make call LatexMake("<args>")
   command! -nargs=? Make call LatexMake("<args>")
 
-else
-  if filereadable('Makefile')
-    setl makeprg=make\ %:gs?tex$?pdf?:t
-    "setl errorformat=%f:%l:\ %m,%f:%l-%\\d%\\+:\ %m
-  elseif filereadable('latex.mk')
-    exec "setl makeprg=make\\ -f\\ latex.mk\\ " . substitute(bufname("%"),"tex$","pdf", "")
-    "setl errorformat=%f:%l:\ %m,%f:%l-%\\d%\\+:\ %m
-  endif
 endif
 
 "
