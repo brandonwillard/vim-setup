@@ -8,7 +8,7 @@
 let noweb_backend="tex"
 let noweb_language="python"
 
-setl makeprg=make\ %:gs?[Tt]exw?pdf?:t
+setl makeprg=make\ %:gs?[Tt]exw$?pdf?:t
 
 "
 " The following Noweb* functions are copied from the vim-r-plugin.

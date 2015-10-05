@@ -93,6 +93,9 @@ set foldopen=block,insert,jump,mark,percent,quickfix,search,tag,undo
 let rmd_syn_hl_chunk = 1
 let noweb_fold_code = 1
 
+" disable LatexBox mappings
+let g:LatexBox_no_mappings = 1
+
 set pastetoggle=<F2>
 if has ('X11') && has ('gui')
     set clipboard=unnamedplus
@@ -159,6 +162,9 @@ noremap gj j
 noremap gk k
 map / <Plug>(easymotion-sn)
 omap / <Plug>(easymotion-tn)
+" don't yank when replacing (could add <leader> to preserve original
+" functionality).
+vnoremap p "_dP
 
 " These `n` & `N` mappings are optional. You do not have to map `n` & `N` to EasyMotion.
 " Without these mappings, `n` & `N` works fine. (These mappings just provide
@@ -185,4 +191,5 @@ omap / <Plug>(easymotion-tn)
 "" open user completion menu closing previous if open and opening new menu without changing the text
 "inoremap <expr> <S-Space> (pumvisible() ? (col('.') > 1 ? '<Esc>i<Right>' : '<Esc>i') : '') .
 "            \ '<C-x><C-u><C-r>=pumvisible() ? "\<lt>C-n>\<lt>C-p>\<lt>Down>" : ""<CR>'
+
 

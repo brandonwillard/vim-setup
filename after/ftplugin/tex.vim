@@ -19,44 +19,44 @@ imap <buffer> <LocalLeader>(( 		\eqref{
 " set the errorformat (from pdf-latex suite)
 "
 " first, stop syntastic from overwriting efm:
-let g:syntastic_tex_checkers=['']
-"setlocal efm=
-"setlocal efm-=%f:%l:%m
-"setlocal efm-=%f:%l:%c:%m
-setlocal efm=%E!\ LaTeX\ %trror:\ %m
-setlocal efm+=%E!\ %m
-setlocal efm+=%E%f:%l:\ %m
-setlocal efm+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
-setlocal efm+=%+W%.%#\ at\ lines\ %l--%*\\d
-setlocal efm+=%+WLaTeX\ %.%#Warning:\ %m
-let pm='-'
-exec 'setlocal efm+=%'.pm.'Cl.%l\ %m'
-exec 'setlocal efm+=%'.pm.'Cl.%l\ '
-exec 'setlocal efm+=%'.pm.'C\ \ %m'
-exec 'setlocal efm+=%'.pm.'C%.%#-%.%#'
-exec 'setlocal efm+=%'.pm.'C%.%#[]%.%#'
-exec 'setlocal efm+=%'.pm.'C[]%.%#'
-exec 'setlocal efm+=%'.pm.'C%.%#%[{}\\]%.%#'
-exec 'setlocal efm+=%'.pm.'C<%.%#>%m'
-exec 'setlocal efm+=%'.pm.'C\ \ %m'
-exec 'setlocal efm+=%'.pm.'GSee\ the\ LaTeX%m'
-exec 'setlocal efm+=%'.pm.'GType\ \ H\ <return>%m'
-exec 'setlocal efm+=%'.pm.'G\ ...%.%#'
-exec 'setlocal efm+=%'.pm.'G%.%#\ (C)\ %.%#'
-exec 'setlocal efm+=%'.pm.'G(see\ the\ transcript%.%#)'
-exec 'setlocal efm+=%'.pm.'G\\s%#'
-exec 'setlocal efm+=%'.pm.'O(%*[^()])%r'
-exec 'setlocal efm+=%'.pm.'P(%f%r'
-exec 'setlocal efm+=%'.pm.'P\ %\\=(%f%r'
-exec 'setlocal efm+=%'.pm.'P%*[^()](%f%r'
-exec 'setlocal efm+=%'.pm.'P(%f%*[^()]'
-exec 'setlocal efm+=%'.pm.'P[%\\d%[^()]%#(%f%r'
-setlocal efm+=%-P%*[^()]
-exec 'setlocal efm+=%'.pm.'Q)%r'
-exec 'setlocal efm+=%'.pm.'Q%*[^()])%r'
-exec 'setlocal efm+=%'.pm.'Q[%\\d%*[^()])%r'
-setlocal efm+=%-Q%*[^()]
-setlocal efm+=%-G%.%#
+"let g:syntastic_tex_checkers=['']
+""setlocal efm=
+""setlocal efm-=%f:%l:%m
+""setlocal efm-=%f:%l:%c:%m
+"setlocal efm=%E!\ LaTeX\ %trror:\ %m
+"setlocal efm+=%E!\ %m
+"setlocal efm+=%E%f:%l:\ %m
+"setlocal efm+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
+"setlocal efm+=%+W%.%#\ at\ lines\ %l--%*\\d
+"setlocal efm+=%+WLaTeX\ %.%#Warning:\ %m
+"let pm='-'
+"exec 'setlocal efm+=%'.pm.'Cl.%l\ %m'
+"exec 'setlocal efm+=%'.pm.'Cl.%l\ '
+"exec 'setlocal efm+=%'.pm.'C\ \ %m'
+"exec 'setlocal efm+=%'.pm.'C%.%#-%.%#'
+"exec 'setlocal efm+=%'.pm.'C%.%#[]%.%#'
+"exec 'setlocal efm+=%'.pm.'C[]%.%#'
+"exec 'setlocal efm+=%'.pm.'C%.%#%[{}\\]%.%#'
+"exec 'setlocal efm+=%'.pm.'C<%.%#>%m'
+"exec 'setlocal efm+=%'.pm.'C\ \ %m'
+"exec 'setlocal efm+=%'.pm.'GSee\ the\ LaTeX%m'
+"exec 'setlocal efm+=%'.pm.'GType\ \ H\ <return>%m'
+"exec 'setlocal efm+=%'.pm.'G\ ...%.%#'
+"exec 'setlocal efm+=%'.pm.'G%.%#\ (C)\ %.%#'
+"exec 'setlocal efm+=%'.pm.'G(see\ the\ transcript%.%#)'
+"exec 'setlocal efm+=%'.pm.'G\\s%#'
+"exec 'setlocal efm+=%'.pm.'O(%*[^()])%r'
+"exec 'setlocal efm+=%'.pm.'P(%f%r'
+"exec 'setlocal efm+=%'.pm.'P\ %\\=(%f%r'
+"exec 'setlocal efm+=%'.pm.'P%*[^()](%f%r'
+"exec 'setlocal efm+=%'.pm.'P(%f%*[^()]'
+"exec 'setlocal efm+=%'.pm.'P[%\\d%[^()]%#(%f%r'
+"setlocal efm+=%-P%*[^()]
+"exec 'setlocal efm+=%'.pm.'Q)%r'
+"exec 'setlocal efm+=%'.pm.'Q%*[^()])%r'
+"exec 'setlocal efm+=%'.pm.'Q[%\\d%*[^()])%r'
+"setlocal efm+=%-Q%*[^()]
+"setlocal efm+=%-G%.%#
 
 
 if exists('g:Make_loaded')
@@ -65,7 +65,7 @@ if exists('g:Make_loaded')
   " Pass-through that simply turns no args into the current buffer's filename
   " with pdf extension (i.e. builds the buffer's file).
   fun! LatexMake(args)
-    let l:args = strlen(a:args) ? a:args : expand("%:gs?tex?pdf?:t")
+    let l:args = strlen(a:args) ? a:args : expand("%:gs?tex$?pdf?:t")
     "OldMake(l:args)
     call Make(l:args)
   endfunction
@@ -89,7 +89,7 @@ if exists('g:Make_loaded')
 
 else
   if filereadable('Makefile')
-    setl makeprg=make\ %:gs?tex?pdf?:t
+    setl makeprg=make\ %:gs?tex$?pdf?:t
     "setl errorformat=%f:%l:\ %m,%f:%l-%\\d%\\+:\ %m
   elseif filereadable('latex.mk')
     exec "setl makeprg=make\\ -f\\ latex.mk\\ " . substitute(bufname("%"),"tex$","pdf", "")
@@ -100,7 +100,7 @@ endif
 "
 " small hack to make latex-box work for non-trivial setups
 "
-let b:thisaux = findfile(expand("%:gs?tex?aux?:t"), "**4;")
+let b:thisaux = findfile(expand("%:gs?tex$?aux?:t"), "**4;")
 let b:LatexBox_build_dir = fnamemodify(b:thisaux, ":p:h")
 let b:build_dir = fnamemodify(b:thisaux, ":p:h")
 let b:LatexBox_jobname = fnamemodify(b:thisaux, ":p:r")
@@ -114,7 +114,7 @@ let b:LatexBox_jobname = fnamemodify(b:thisaux, ":p:r")
 "
 function! SyncTexForward()
   if !exists('b:thispdf')
-    let b:thispdf = findfile(expand("%:gs?tex?pdf?:t"), "**4;")
+    let b:thispdf = findfile(expand("%:gs?tex$?pdf?:t"), "**4;")
   endif
   let l:execstr = "!qpdfview --unique ".b:thispdf."\\#src:".expand("%:p").":".line(".").":0 &> /dev/null &"
   silent exec l:execstr | redraw!
@@ -126,30 +126,30 @@ nmap <Leader>f :call SyncTexForward()<CR>
 " Reformat lines (getting the spacing correct) {{{
 " From http://tex.stackexchange.com/questions/1548/intelligent-paragraph-reflowing-in-vim?lq=1
 " doesn't really work; no support for $[$]...$[$]
-fun! TeX_fmt()
-    if (getline(".") != "")
-    let save_cursor = getpos(".")
-        let op_wrapscan = &wrapscan
-        set nowrapscan
-        let par_begin = '^\(%D\)\=\s*\($\|\\label\|\\begin\|\\end\|\\\[\|\\\]\|\\\(sub\)*section\>\|\\item\>\|\\NC\>\|\\blank\>\|\\noindent\>\)'
-        let par_end   = '^\(%D\)\=\s*\($\|\\begin\|\\end\|\\\[\|\\\]\|\\place\|\\\(sub\)*section\>\|\\item\>\|\\NC\>\|\\blank\>\)'
-    try
-      exe '?'.par_begin.'?+'
-    catch /E384/
-      1
-    endtry
-        norm V
-    try
-      exe '/'.par_end.'/-'
-    catch /E385/
-      $
-    endtry
-    norm gq
-        let &wrapscan = op_wrapscan
-    call setpos('.', save_cursor) 
-    endif
-endfun
-" }}}
-
+"fun! TeX_fmt()
+"    if (getline(".") != "")
+"    let save_cursor = getpos(".")
+"        let op_wrapscan = &wrapscan
+"        set nowrapscan
+"        let par_begin = '^\(%D\)\=\s*\($\|\\label\|\\begin\|\\end\|\\\[\|\\\]\|\\\(sub\)*section\>\|\\item\>\|\\NC\>\|\\blank\>\|\\noindent\>\)'
+"        let par_end   = '^\(%D\)\=\s*\($\|\\begin\|\\end\|\\\[\|\\\]\|\\place\|\\\(sub\)*section\>\|\\item\>\|\\NC\>\|\\blank\>\)'
+"    try
+"      exe '?'.par_begin.'?+'
+"    catch /E384/
+"      1
+"    endtry
+"        norm V
+"    try
+"      exe '/'.par_end.'/-'
+"    catch /E385/
+"      $
+"    endtry
+"    norm gq
+"        let &wrapscan = op_wrapscan
+"    call setpos('.', save_cursor) 
+"    endif
+"endfun
+"" }}}
 
 "nmap Q :call TeX_fmt()<CR> 
+
