@@ -17,6 +17,7 @@ call vundle#begin()
   "Plugin 'Valloric/YouCompleteMe'
   if has('nvim')
     Plugin 'jalvesaq/Nvim-R'
+    Plugin 'kassio/neoterm'
   else
     Plugin 'jalvesaq/R-Vim-runtime'
     Plugin 'jcfaria/Vim-R-plugin'
@@ -107,9 +108,10 @@ let noweb_fold_code = 1
 let g:LatexBox_no_mappings = 1
 
 set pastetoggle=<F2>
-if has ('X11') && has ('gui')
-    set clipboard=unnamedplus
-endif
+set clipboard+=unnamedplus
+"if has('X11') && has('gui')
+"    set clipboard+=unnamedplus
+"endif
 
 "set modeline
 set showcmd
