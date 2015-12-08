@@ -15,11 +15,16 @@ call vundle#begin()
   "Plugin 'SirVer/ultisnips'
   "Plugin 'honza/vim-snippets'
   "Plugin 'Valloric/YouCompleteMe'
-  Plugin 'jalvesaq/R-Vim-runtime'
-  Plugin 'jcfaria/Vim-R-plugin'
+  if has('nvim')
+    Plugin 'jalvesaq/Nvim-R'
+  else
+    Plugin 'jalvesaq/R-Vim-runtime'
+    Plugin 'jcfaria/Vim-R-plugin'
+  endif
   Plugin 'bling/vim-airline'
-  "Plugin 'tpope/vim-fugitive'
-  Plugin 'LaTeX-Box-Team/LaTeX-Box'
+  Plugin 'tpope/vim-fugitive'
+  "Plugin 'LaTeX-Box-Team/LaTeX-Box'
+  Plugin 'lervag/vimtex'
   Plugin 'ShowMarks'
   "Plugin 'derekwyatt/vim-scala'
   "Plugin 'ivanov/vim-ipython'
@@ -88,7 +93,12 @@ set indentkeys-=0#
 " don't select the first option that pops up.
 set completeopt=longest,menuone
 set foldopen=block,insert,jump,mark,percent,quickfix,search,tag,undo
+let g:vimtex_fold_enabled = 0
 
+if has("nvim")
+  let g:rplugin_has_wmctrl = 1
+  let R_pdfviewer = "qpdfview"
+endif
 " rmd/noweb chunk highlighting and folding
 let rmd_syn_hl_chunk = 1
 let noweb_fold_code = 1

@@ -19,6 +19,12 @@ $ git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 
 You'll have to open Vim and run `BundleInstall` to setup the plugins mentioned in `vimrc`.
 
+## Neovim
+
+I've recently added some Neovim features/support; the only major difference
+was the need for a symlink to the `~/.vim/` directory in `~/.config/`.  I had
+to name the symlink `nvim`, too.
+
 # tmux
 
 This setup contains a custom shell script, tmux settings and a Vim script that
