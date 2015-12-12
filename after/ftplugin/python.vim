@@ -56,9 +56,16 @@ if has("nvim")
     call jobsend(t:ipython_term_id, "%cpaste\<cr>".a:expr."\<cr>\<c-d>")
   endfunction
 
-  function! s:GetExpression(...) range
-    if a:firstline == 1 && a:lastline == line('$')
-      return expand('<cword>')
+  function! s:RunFileIPythonTerm()
+    if !exists('t:ipython_term_id')
+      throw 'No running IPython terminal'
+    endif
+    call jobsend(t:ipython_term_id, "%run ".expand("%")."\<cr>")
+  endfunction
+
+  function! s:GetExpression(curmode) range
+    if (a:firstline == 1 && a:lastline == line('$')) || a:curmode == "n"
+      return expand('<cWORD>')
     endif
     let [lnum1, col1] = getpos("'<")[1:2]
     let [lnum2, col2] = getpos("'>")[1:2]
@@ -68,8 +75,9 @@ if has("nvim")
     return join(lines, "\n")
   endfunction
 
+  command! RunFileIPythonCmd call s:RunFileIPythonTerm() 
   command! EvalLineIPythonCmd call s:EvalIPythonTerm(escape(getline("."), '`\')) 
-  command! -range EvalIPythonCmd call s:EvalIPythonTerm(s:GetExpression(<f-args>)) 
+  command! -range -nargs=1 EvalIPythonCmd call s:EvalIPythonTerm(s:GetExpression(<f-args>)) 
   command! CloseIPythonTermCmd :call s:CloseIPythonTerm() 
   "command! -nargs=1 SpawnIPythonTermCmd :call s:SpawnIPythonTerm(<f-args>) 
   command! SpawnIPythonTermCmd :call s:SpawnIPythonTerm(s:ipython_run_command) 
@@ -78,9 +86,10 @@ if has("nvim")
   nnoremap <silent> <LocalLeader>tr :SpawnIPythonTermCmd<CR>
   nnoremap <silent> <LocalLeader>td :SpawnIPythonTermDebugCmd<CR>
   nnoremap <silent> <LocalLeader>tq :CloseIPythonTermCmd<CR>
-  nnoremap <silent> <LocalLeader>ts :EvalIPythonCmd<CR>
-  vnoremap <silent> <LocalLeader>ts :EvalIPythonCmd<CR>
+  nnoremap <silent> <LocalLeader>ts :EvalIPythonCmd n<CR>
+  vnoremap <silent> <LocalLeader>ts :EvalIPythonCmd v<CR>
   nnoremap <silent> <LocalLeader>tl :EvalLineIPythonCmd<CR>
+  nnoremap <silent> <LocalLeader>tf :RunFileIPythonCmd<CR>
 
 else 
 
