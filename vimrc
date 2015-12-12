@@ -100,6 +100,8 @@ let g:vimtex_fold_enabled = 0
 if has("nvim")
   let g:rplugin_has_wmctrl = 1
   let R_pdfviewer = "qpdfview"
+  " allow us to easily use window motions in a terminal
+  tnoremap <c-w> <c-\><c-n><c-w>
 endif
 " rmd/noweb chunk highlighting and folding
 let rmd_syn_hl_chunk = 1

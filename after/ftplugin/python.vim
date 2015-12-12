@@ -12,6 +12,11 @@ let s:ipython_debug_command = "nocorrect ipython --pydb --matplotlib \|\| python
 
 if has("nvim")
 
+  if exists("g:evim_ipython_repl_loaded")
+    finish
+  endif
+
+  let g:evim_ipython_repl_loaded = 1
   "
   " inspired by: 
   " https://github.com/tarruda/neovim/blob/95242bba133d3bee1937238ba0aeb0f048d4a0e3/contrib/neovim_gdb/neovim_gdb.vim
@@ -29,9 +34,11 @@ if has("nvim")
     "if exists('t:ipython_term_id')
     "  throw 'Already running an IPython terminal'
     "endif
-    sp
+    sb
+    wincmd j
     enew | let t:ipython_term_id = termopen(a:expr, {"on_exit":"s:CleanIPythonTerm"})
     let t:ipython_buf_id = bufnr('%')
+    wincmd p
   endfunction
 
   function! s:CloseIPythonTerm()
