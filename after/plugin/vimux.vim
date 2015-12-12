@@ -1,4 +1,9 @@
 
+let scriptnames = GetVimCommandOutput("scriptnames")
+if match(scriptnames, "/".expand("%:t")) < 0
+  finish
+endif
+
 "--------------------------------------------------------
 "
 " functions/commands

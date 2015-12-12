@@ -1,4 +1,4 @@
-"set nocompatible
+set nocompatible
 
 filetype off 
 set rtp+=~/.vim/bundle/Vundle.vim
@@ -7,7 +7,6 @@ call vundle#begin()
   " required! 
   Plugin 'gmarik/Vundle.vim'
   Plugin 'The-NERD-Commenter'
-  Plugin 'vimux'
   Plugin 'christoomey/vim-tmux-navigator'
   Plugin 'tpope/vim-eunuch'
   Plugin 'syntastic'
@@ -17,8 +16,10 @@ call vundle#begin()
   "Plugin 'Valloric/YouCompleteMe'
   if has('nvim')
     Plugin 'jalvesaq/Nvim-R'
-    Plugin 'kassio/neoterm'
+    "Plugin 'bfredl/nvim-ipy'
+    "Plugin 'kassio/neoterm'
   else
+    Plugin 'vimux'
     Plugin 'jalvesaq/R-Vim-runtime'
     Plugin 'jcfaria/Vim-R-plugin'
   endif
@@ -69,7 +70,7 @@ set nows
 set backspace=indent,eol,start
 "syn spell toplevel
 syn spell default
-set spelllang=en_us
+"set spelllang=en_us
 "set smartindent
 "set cindent
 set noto
@@ -122,10 +123,23 @@ set showcmd
 " look in ~/.vim/after/plugins, ~/.vim/after/syntax, ~/.vim/after/ftplugin
 " for the plugin, syntax and filetype settings.
 "
-
 if filereadable(expand("./.vimrc.local"))
   source ./.vimrc.local
 endif
+
+function! GetVimCommandOutput(command) 
+  " from: https://github.com/mbadran/headlights/blob/master/plugin/headlights.vim
+  " capture and return the output of a vim command
+  " initialise to a blank value in case the command throws a vim error
+  " (try-catch doesn't always work here, for some reason)
+  let l:output = ''
+
+  redir => l:output
+    execute "silent verbose " . a:command
+  redir END
+
+  return l:output
+endfunction
 
 function! TabMessage(cmd)
   redir => message
