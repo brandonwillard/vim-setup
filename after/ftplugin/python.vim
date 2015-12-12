@@ -61,6 +61,7 @@ if has("nvim")
     return join(lines, "\n")
   endfunction
 
+  command! EvalLineIPythonCmd call s:EvalIPythonTerm(escape(getline("."), '`\')) 
   command! -range EvalIPythonCmd call s:EvalIPythonTerm(s:GetExpression(<f-args>)) 
   command! CloseIPythonTermCmd :call s:CloseIPythonTerm() 
   "command! -nargs=1 SpawnIPythonTermCmd :call s:SpawnIPythonTerm(<f-args>) 
@@ -72,6 +73,7 @@ if has("nvim")
   nnoremap <silent> <LocalLeader>tq :CloseIPythonTermCmd<CR>
   nnoremap <silent> <LocalLeader>ts :EvalIPythonCmd<CR>
   vnoremap <silent> <LocalLeader>ts :EvalIPythonCmd<CR>
+  nnoremap <silent> <LocalLeader>tl :EvalLineIPythonCmd<CR>
 
 else 
 
