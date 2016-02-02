@@ -3,20 +3,22 @@ set nocompatible
 filetype off 
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin() 
-  " let Vundle manage Vundle
-  " required! 
   Plugin 'gmarik/Vundle.vim'
   Plugin 'The-NERD-Commenter'
   Plugin 'christoomey/vim-tmux-navigator'
   Plugin 'tpope/vim-eunuch'
   Plugin 'syntastic'
   Plugin 'Lokaltog/vim-easymotion'
-  "Plugin 'SirVer/ultisnips'
-  "Plugin 'honza/vim-snippets'
-  "Plugin 'Valloric/YouCompleteMe'
+  Plugin 'qpkorr/vim-bufkill'
+  Plugin 'hynek/vim-python-pep8-indent'
+  Plugin 'hdima/python-syntax'
+  Plugin 'davidhalter/jedi-vim'
+  Plugin 'benekastah/neomake'
   if has('nvim')
     Plugin 'jalvesaq/Nvim-R'
-    "Plugin 'bfredl/nvim-ipy'
+    " This, and other remote-plugins, requires :UpdateRemotePlugins 
+    " after bundle installation.
+    Plugin 'bfredl/nvim-ipy'
     "Plugin 'kassio/neoterm'
   else
     Plugin 'vimux'
@@ -25,22 +27,15 @@ call vundle#begin()
   endif
   Plugin 'bling/vim-airline'
   Plugin 'tpope/vim-fugitive'
-  "Plugin 'LaTeX-Box-Team/LaTeX-Box'
   Plugin 'lervag/vimtex'
   Plugin 'ShowMarks'
-  "Plugin 'derekwyatt/vim-scala'
-  "Plugin 'ivanov/vim-ipython'
   Plugin 'noweb.vim--McDermott'
   Plugin 'xolox/vim-easytags'
   Plugin 'xolox/vim-misc'
-  "Plugin 'julienr/vim-cellmode'
-  "Plugin 'vim-pandoc/vim-pandoc'
-  "Plugin 'vim-pandoc/vim-pandoc-syntax'
-  "Plugin 'nathanaelkane/vim-indent-guides'
   Plugin 'LargeFile'
   Plugin 'tpope/vim-surround'
-  Plugin 'vshih/vim-make'
   "Plugin 'ktonga/vim-follow-my-lead'
+  Plugin 'altercation/vim-colors-solarized'
 call vundle#end() 
 
 filetype plugin indent on
@@ -57,9 +52,15 @@ set hid
 set ls=2
 set ttyfast
 set hls
-set bg=dark
-set t_Co=256 
-color elflord 
+
+"set t_Co=256 
+"set t_AB=^[[48;5;%dm
+"set t_AF=^[[38;5;%dmu
+"colorscheme elflord 
+colorscheme solarized
+let g:solarized_termcolors=256
+set background=dark
+
 syntax enable
 highlight comment ctermfg=blue
 set showmatch
@@ -116,7 +117,25 @@ set clipboard+=unnamedplus
 "    set clipboard+=unnamedplus
 "endif
 
-"set modeline
+let g:NERDAllowAnyVisualDelims=1
+let g:NERDCommentWholeLinesInVMode=1
+let g:NERDRemoveAltComs=1
+let g:NERDRemoveExtraSpaces=1
+let g:NERDDefaultNesting=1
+
+let g:jedi#use_splits_not_buffers = "left"
+let g:jedi#popup_on_dot = 0
+let g:jedi#popup_select_first = 0
+let g:jedi#show_call_signatures = "2"
+let g:jedi#goto_command = "<leader>d"
+let g:jedi#goto_assignments_command = "<leader>g"
+let g:jedi#goto_definitions_command = ""
+let g:jedi#documentation_command = "K"
+let g:jedi#usages_command = "<leader>n"
+let g:jedi#completions_command = "<C-N>"
+let g:jedi#rename_command = "<leader>r"
+
+set modeline
 set showcmd
 "set noshowmode
 "set showmode
@@ -176,6 +195,10 @@ if has("autocmd") && exists("+omnifunc")
         \		setlocal omnifunc=syntaxcomplete#Complete |
         \	endif
 endif  
+
+" from: https://github.com/justinmk/config/blob/7b97ae50b5377b35d37128fe1225c47e5fcba7d0/.vimrc#L1021
+" disable Ex mode key 
+noremap Q <Nop>
 
 map [[ ?{<CR>w99[{
 map ][ /}<CR>b99]}

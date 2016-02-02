@@ -8,55 +8,12 @@ setl sw=2
 "let maplocalleader = mapleader
 " make start-stop block out of the previous word
 "imap <buffer> <LocalLeader>tb \begin<Cr>\end<Cr><Esc>4bhdiw$pj$pO
-imap <buffer> <LocalLeader>[[ 		\begin{
-imap <buffer> <LocalLeader>]]		<Plug>LatexCloseCurEnv
-nmap <buffer> <LocalLeader>ec		<Plug>LatexChangeEnv
-vmap <buffer> <LocalLeader>ws		<Plug>LatexWrapSelection
-vmap <buffer> <LocalLeader>ew		<Plug>LatexEnvWrapSelection
-imap <buffer> <LocalLeader>(( 		\eqref{
-
-" 
-" set the errorformat (from pdf-latex suite)
-"
-" first, stop syntastic from overwriting efm:
-"let g:syntastic_tex_checkers=['']
-""setlocal efm=
-""setlocal efm-=%f:%l:%m
-""setlocal efm-=%f:%l:%c:%m
-"setlocal efm=%E!\ LaTeX\ %trror:\ %m
-"setlocal efm+=%E!\ %m
-"setlocal efm+=%E%f:%l:\ %m
-"setlocal efm+=%+WLaTeX\ %.%#Warning:\ %.%#line\ %l%.%#
-"setlocal efm+=%+W%.%#\ at\ lines\ %l--%*\\d
-"setlocal efm+=%+WLaTeX\ %.%#Warning:\ %m
-"let pm='-'
-"exec 'setlocal efm+=%'.pm.'Cl.%l\ %m'
-"exec 'setlocal efm+=%'.pm.'Cl.%l\ '
-"exec 'setlocal efm+=%'.pm.'C\ \ %m'
-"exec 'setlocal efm+=%'.pm.'C%.%#-%.%#'
-"exec 'setlocal efm+=%'.pm.'C%.%#[]%.%#'
-"exec 'setlocal efm+=%'.pm.'C[]%.%#'
-"exec 'setlocal efm+=%'.pm.'C%.%#%[{}\\]%.%#'
-"exec 'setlocal efm+=%'.pm.'C<%.%#>%m'
-"exec 'setlocal efm+=%'.pm.'C\ \ %m'
-"exec 'setlocal efm+=%'.pm.'GSee\ the\ LaTeX%m'
-"exec 'setlocal efm+=%'.pm.'GType\ \ H\ <return>%m'
-"exec 'setlocal efm+=%'.pm.'G\ ...%.%#'
-"exec 'setlocal efm+=%'.pm.'G%.%#\ (C)\ %.%#'
-"exec 'setlocal efm+=%'.pm.'G(see\ the\ transcript%.%#)'
-"exec 'setlocal efm+=%'.pm.'G\\s%#'
-"exec 'setlocal efm+=%'.pm.'O(%*[^()])%r'
-"exec 'setlocal efm+=%'.pm.'P(%f%r'
-"exec 'setlocal efm+=%'.pm.'P\ %\\=(%f%r'
-"exec 'setlocal efm+=%'.pm.'P%*[^()](%f%r'
-"exec 'setlocal efm+=%'.pm.'P(%f%*[^()]'
-"exec 'setlocal efm+=%'.pm.'P[%\\d%[^()]%#(%f%r'
-"setlocal efm+=%-P%*[^()]
-"exec 'setlocal efm+=%'.pm.'Q)%r'
-"exec 'setlocal efm+=%'.pm.'Q%*[^()])%r'
-"exec 'setlocal efm+=%'.pm.'Q[%\\d%*[^()])%r'
-"setlocal efm+=%-Q%*[^()]
-"setlocal efm+=%-G%.%#
+"imap <buffer> <LocalLeader>[[ 		\begin{
+"imap <buffer> <LocalLeader>]]		<Plug>LatexCloseCurEnv
+"nmap <buffer> <LocalLeader>ec		<Plug>LatexChangeEnv
+"vmap <buffer> <LocalLeader>ws		<Plug>LatexWrapSelection
+"vmap <buffer> <LocalLeader>ew		<Plug>LatexEnvWrapSelection
+"imap <buffer> <LocalLeader>(( 		\eqref{
 
 if filereadable('Makefile')
   setl makeprg=make\ %:gs?tex$?pdf?:t

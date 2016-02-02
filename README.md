@@ -22,9 +22,11 @@ You'll have to open Vim and run `BundleInstall` to setup the plugins mentioned i
 ## Neovim
 
 I've recently added some Neovim features/support; the only major difference
-was the need for a symlink to the `~/.vim/` directory in `~/.config/`.  I had
-to name the symlink `nvim`, too.
-
+was the need for symlinks to the original vim setup:
+```
+$ ln -s ~/.vim ~/.config/nvim
+$ ln -s ~/.vimrc ~/.config/nvim/init.vim
+```
 # tmux
 
 This setup contains a custom shell script, tmux settings and a Vim script that

@@ -1,14 +1,19 @@
 
-"setl tabstop=4
-"setl softtabstop=4
-"setl shiftwidth=4
-"setl expandtab
+setl tabstop=4
+setl expandtab
+setl shiftwidth=2
+setl softtabstop=2
+"setl foldmethod=indent
+"setl foldnestmax=2
 setl iskeyword+=_
+setl autoindent
 
 " remove nocorrect if you're not using zshell (it stops the input
 " requirement when/if ipython doesn't exist)
 let s:ipython_run_command = "nocorrect ipython --matplotlib \|\| python"
 let s:ipython_debug_command = "nocorrect ipython --pydb --matplotlib \|\| python"
+"let s:ipython_run_command = "nocorrect jupyter console \|\| python"
+"let s:ipython_debug_command = "nocorrect jupyter console --InteractiveShell.pdb=True --ZMQTerminalInteractiveShell.image_handler=PIL \|\| python"
 
 if has("nvim")
 
