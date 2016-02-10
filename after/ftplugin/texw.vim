@@ -11,5 +11,6 @@ let noweb_language="python"
 
 runtime after/ftplugin/noweb-tweaks.vim
 runtime after/ftplugin/python.vim
-
+runtime after/ftplugin/tex.vim
+runtime ftplugin/python/jedi.vim
 

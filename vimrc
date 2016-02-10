@@ -104,12 +104,17 @@ if has("nvim")
   " allow us to easily use window motions in a terminal
   tnoremap <c-w> <c-\><c-n><c-w>
 endif
+
 " rmd/noweb chunk highlighting and folding
 let rmd_syn_hl_chunk = 1
 let noweb_fold_code = 1
 
 " disable LatexBox mappings
 let g:LatexBox_no_mappings = 1
+
+" disable tex code->character conversion
+set conceallevel=0
+let g:tex_fold_enabled=1
 
 set pastetoggle=<F2>
 set clipboard+=unnamedplus

@@ -10,9 +10,9 @@ augroup filetypedetect
 
   au! BufRead,BufNewFile *.Md,*.md setfiletype markdown
 
-  au! BufRead,BufNewFile *.Texw,*.texw setfiletype texw
+  au! BufRead,BufNewFile *.Texw,*.texw setfiletype=python.texw
 
-  au! BufRead,BufNewFile *.Pnw,*.pnw setfiletype pnw
+  au! BufRead,BufNewFile *.Pnw,*.pnw setfiletype=python.pnw
 
 augroup END
 

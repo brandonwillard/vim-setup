@@ -7,6 +7,7 @@ setl softtabstop=2
 "setl foldnestmax=2
 setl iskeyword+=_
 setl autoindent
+setl conceallevel=0
 
 " remove nocorrect if you're not using zshell (it stops the input
 " requirement when/if ipython doesn't exist)
