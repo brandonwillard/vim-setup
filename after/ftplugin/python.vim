@@ -40,10 +40,12 @@ if has("nvim")
     "if exists('t:ipython_term_id')
     "  throw 'Already running an IPython terminal'
     "endif
-    sb
+    "sb
+    split
     wincmd j
-    enew | let t:ipython_term_id = termopen(a:expr, {"on_exit":"s:CleanIPythonTerm"})
+    enew | let t:ipython_term_id = termopen(a:expr, {"on_exit":"s:CleanIPythonTerm"}) 
     let t:ipython_buf_id = bufnr('%')
+    set nobuflisted
     wincmd p
   endfunction
 

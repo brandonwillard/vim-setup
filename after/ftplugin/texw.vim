@@ -14,3 +14,5 @@ runtime after/ftplugin/python.vim
 runtime after/ftplugin/tex.vim
 runtime ftplugin/python/jedi.vim
 
+setl conceallevel=0
+

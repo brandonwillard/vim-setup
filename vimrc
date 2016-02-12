@@ -38,6 +38,9 @@ call vundle#begin()
   Plugin 'altercation/vim-colors-solarized'
 call vundle#end() 
 
+" run my 'after' code last
+set rtp+=~/.vim/after
+
 filetype plugin indent on
 
 " in MB
@@ -52,6 +55,7 @@ set hid
 set ls=2
 set ttyfast
 set hls
+set switchbuf=useopen
 
 "set t_Co=256 
 "set t_AB=^[[48;5;%dm
