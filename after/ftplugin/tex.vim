@@ -38,6 +38,6 @@ endfunction
 
 nmap <Leader>f :call SyncTexForward()<CR>
 
-compiler latexmk
+compiler tex
 
 

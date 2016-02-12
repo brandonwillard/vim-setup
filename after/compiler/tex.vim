@@ -10,6 +10,9 @@
 "CompilerSet errorformat&		" use the default 'errorformat'
 "CompilerSet makeprg=nmake
 
+unlet! current_compiler
+runtime! compiler/latexmk.vim
+
 if filereadable('Makefile')
   exec "setl makeprg=make\\ ".expand("%:r:t").".pdf"
 elseif filereadable('latex.mk')

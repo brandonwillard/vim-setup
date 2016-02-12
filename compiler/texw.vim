@@ -14,8 +14,12 @@
 " since we're already within a 'compiler' command call, we can't use
 " 'compiler' again without a clash on 'CompilerSet' 
 runtime! compiler/tex.vim
-runtime! compiler/latexmk.vim
+"unlet! current_compiler
+"runtime! compiler/latexmk.vim
+"runtime! after/compiler/tex.vim
+
 let current_compiler = "texw"
+
 " add a simple python erf
 setl errorformat+=%C\ %.%#,%A\ \ File\ \"%f\"\\,\ line\ %l%.%#,%Z%[%^\ ]%\\@=%m
 
