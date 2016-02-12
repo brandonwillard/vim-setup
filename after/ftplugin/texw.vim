@@ -16,3 +16,5 @@ runtime ftplugin/python/jedi.vim
 
 setl conceallevel=0
 
+compiler texw
+
