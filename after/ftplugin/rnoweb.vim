@@ -1,7 +1,7 @@
 
-
-setl formatoptions+=croql
-setl iskeyword+=_,.,-
-
 runtime after/ftplugin/noweb-tweaks.vim
+runtime after/ftplugin/r.vim
+
+setl iskeyword+=-
+
 

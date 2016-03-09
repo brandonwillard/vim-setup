@@ -1,3 +1,8 @@
+"
+" FIXME: need to update this to match `.texw`.
+"
+runtime after/ftplugin/noweb-tweaks.vim
+runtime after/ftplugin/python.vim
 
 " these are reset when noweb syntax is loaded, so these
 " settings are in pnw's syntax file after loading noweb.
@@ -10,9 +15,6 @@ let noweb_language="python"
 
 " not sure if this should actually build a md file or not...
 setl makeprg=make\ %:gs?[Pp]nw$?html?:t
-
-runtime after/ftplugin/noweb-tweaks.vim
-runtime after/ftplugin/python.vim
 
 nnoremap <buffer> <LocalLeader>tr :call VimuxRunCommand("nocorrect ipython --matplotlib \|\| python")<CR>
 nnoremap <buffer> <LocalLeader>td :call VimuxRunCommand("nocorrect ipython --pydb --matplotlib \|\| python")<CR>

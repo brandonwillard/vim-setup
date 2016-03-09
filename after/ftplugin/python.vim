@@ -1,13 +1,22 @@
 
-setl tabstop=4
-setl expandtab
-setl shiftwidth=2
-setl softtabstop=2
-"setl foldmethod=indent
-"setl foldnestmax=2
 setl iskeyword+=_
-setl autoindent
 setl conceallevel=0
+"setl cino=(0
+"set cindent
+
+
+" add python paths to vim search (so you can open source files with gf, etc)
+" from: http://vim.wikia.com/wiki/VimTip1546
+python << EOF
+import os
+import sys
+import vim
+for p in sys.path:
+    # Add each directory in sys.path, if it exists.
+    if os.path.isdir(p):
+        # Command 'set' needs backslash before each space.
+        vim.command(r"set path+=%s" % (p.replace(" ", r"\ ")))
+EOF
 
 " remove nocorrect if you're not using zshell (it stops the input
 " requirement when/if ipython doesn't exist)

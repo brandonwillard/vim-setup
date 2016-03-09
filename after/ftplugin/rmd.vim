@@ -1,6 +1,5 @@
 
-setl formatoptions+=croql
-setl iskeyword+=_,.
+runtime after/ftplugin/r.vim
 
-setl makeprg=make\ %:gs?[Rr]md$?html?:t
+"setl makeprg=make\ %:gs?[Rr]md$?html?:t
 

@@ -21,12 +21,17 @@ You'll have to open Vim and run `BundleInstall` to setup the plugins mentioned i
 
 ## Neovim
 
-I've recently added some Neovim features/support; the only major difference
+I've recently added some [Neovim](https://github.com/neovim/neovim)
+features/support; the only major difference
 was the need for symlinks to the original vim setup:
 ```
 $ ln -s ~/.vim ~/.config/nvim
 $ ln -s ~/.vimrc ~/.config/nvim/init.vim
 ```
+
+Oh, and if you're installing a plugin with scripts in "rplugin/*",
+run `:UpdateRemotePlugins`; otherwise, the plugin scripts simply won't work.
+
 # tmux
 
 This setup contains a custom shell script, tmux settings and a Vim script that

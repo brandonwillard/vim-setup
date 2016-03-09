@@ -13,6 +13,11 @@
 unlet! current_compiler
 runtime! compiler/latexmk.vim
 
+" FIXME: the errorformat doesn't seem to capture
+" /home/bwillar0/projects/papers/hs-marginals/src/tex/hs-marginals.tex:911: Package pdftex.def Error: File
+"`figures/hs-marginals_ meijer_rewrite_lzp1dz_matplot_1.pdf' not found.
+
+
 if filereadable('Makefile')
   exec "setl makeprg=make\\ ".expand("%:r:t").".pdf"
 elseif filereadable('latex.mk')
