@@ -2,6 +2,10 @@
 "
 " The following Noweb* functions are adapted from the vim-r-plugin.
 " 
+if exists("b:noweb_settings_loaded")
+  finish
+endif
+let b:noweb_settings_loaded=1
 
 function! NowebIsInCode(vrb)
   let chunkline = search("^<<", "bncW")
@@ -73,14 +77,15 @@ function! NowebSendChunkToTmux(m)
   endif
 endfunction
 
+" TODO: these ones...
 "noremap <buffer> <LocalLeader>cd :call NowebSendChunkToTmux("down")<CR>
 "noremap <buffer> <LocalLeader>cc :call NowebSendChunkToTmux("stay")<CR>
 
-"noremap <buffer> <LocalLeader>gN :call NowebPreviousChunk()<CR>
-"noremap <buffer> <LocalLeader>gn :call NowebNextChunk()<CR>
-noremap <buffer><silent> <Plug>noweb-prev-chunk :call NowebPreviousChunk()<CR>
-noremap <buffer><silent> <Plug>noweb-next-chunk :call NowebNextChunk()<CR>
+nnoremap <buffer><silent> <Plug>(noweb-prev-chunk) :<C-U>call NowebPreviousChunk()<CR>
+nnoremap <buffer><silent> <Plug>(noweb-next-chunk) :<C-U>call NowebNextChunk()<CR>
 
-noremap <buffer> <LocalLeader>gN <Plug>noweb-prev-chunk<CR>
-noremap <buffer> <LocalLeader>gn <Plug>noweb-next-chunk<CR>
+nmap <buffer> <LocalLeader>gN <Plug>(noweb-prev-chunk)
+nmap <buffer> <LocalLeader>gn <Plug>(noweb-next-chunk)
+
+
 
