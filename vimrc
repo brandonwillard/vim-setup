@@ -115,7 +115,7 @@ if has("nvim")
   " allow us to easily use window motions in a terminal
   tnoremap <c-w> <c-\><c-n><c-w>
   " leave insert mode in terminal with ESC
-  tnoremap <Esc>       *@<C-\><C-N>
+  tnoremap <Esc> <C-\><C-N>
 endif
 
 " Use Ctrl+Space to do omnicompletion:
