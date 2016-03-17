@@ -23,6 +23,7 @@ call vundle#begin()
   Plugin 'hdima/python-syntax'
   Plugin 'davidhalter/jedi-vim'
   Plugin 'benekastah/neomake'
+  Plugin 'Rykka/riv.vim'
   if has('nvim')
     Plugin 'jalvesaq/Nvim-R'
     " This, and other remote-plugins, requires :UpdateRemotePlugins 
@@ -531,6 +532,10 @@ let g:ycm_key_list_select_previous_completion = ['<c-s-tab>', '<up>']
 "map  N <Plug>(easymotion-prev)
 map / <Plug>(easymotion-sn)
 omap / <Plug>(easymotion-tn)
+" }}}
+
+" riv {{{
+let g:riv_python_rst_hl=1
 " }}}
 
 " vim:foldmethod=marker:foldlevel=0
