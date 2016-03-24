@@ -24,6 +24,7 @@ call vundle#begin()
   Plugin 'davidhalter/jedi-vim'
   Plugin 'benekastah/neomake'
   Plugin 'Rykka/riv.vim'
+  Plugin 'OnSyntaxChange'
   if has('nvim')
     Plugin 'jalvesaq/Nvim-R'
     " This, and other remote-plugins, requires :UpdateRemotePlugins 
@@ -372,6 +373,7 @@ let g:jedi#documentation_command = "K"
 let g:jedi#usages_command = "<leader>n"
 let g:jedi#completions_command = "<C-N>"
 let g:jedi#rename_command = "<leader>r"
+let g:jedi#auto_vim_configuration = 0
 " }}}
 
 " Ultisnips {{{
