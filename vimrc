@@ -388,6 +388,7 @@ let g:airline#extensions#branch#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tmuxline#enabled = 1
 let g:airline#extensions#syntastic#enabled = 1
+let g:airline#extensions#virtualenv#enabled = 1 
 " }}}
 
 " Eclim {{{

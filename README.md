@@ -32,6 +32,10 @@ $ ln -s ~/.vimrc ~/.config/nvim/init.vim
 Oh, and if you're installing a plugin with scripts in "rplugin/*",
 run `:UpdateRemotePlugins`; otherwise, the plugin scripts simply won't work.
 
+Note: Neovim doesn't appear to have the old clientserver functionality at the
+moment [see here](https://github.com/tpope/vim-dispatch/issues/163), so
+`--servername` isn't available and the Synctex features won't work.
+
 # tmux
 
 This setup contains a custom shell script, tmux settings and a Vim script that
@@ -56,7 +60,30 @@ $ vim='vim --servername VIM'
 then, in an editor with synctex capabilities (qpdfview for this example), add a line
 like the following for the "source editor" option:
 ```
-vim --servername=VIM --remote +%2 %1
+vim --servername VIM --remote +%2 %1
 ```
-(FYI: here, i.e. qpdfview, `%1` is the filename and `%2` is the line number)
+(FYI: here, i.e. in qpdfview, `%1` is the filename and `%2` is the line number)
+
+
+# Noweb
+                          
+There are two types of custom [noweb](https://en.wikipedia.org/wiki/Noweb)
+settings that are worth mentioning, beyond simple noweb syntax highlighting
+(currently via
+[noweb.vim--McDermott](http://www.vim.org/scripts/script.php?script_id=3038))
+and a simple addition for inline statements.  
+
+First is the code (mostly Nvim-centric) for sending (Python) commands within a noweb file 
+(I use the `.texw` extension for LaTeX + Python).  Those commands are currently found in
+`after/ftplugin/noweb-tweaks.vim`.  
+
+The other important feature attempts to preserve Vim options as one moves back-and-forth between
+the LaTeX and Python parts of the document.  It relies on a neat plugin ([OnSyntaxChange](http://www.vim.org/scripts/script.php?script_id=4085)) that provides the
+event hooks and a hackish routine that loads the LaTeX file settings, saves them, then does the same
+for Python.  The saved settings are assigned to variables prefixed by the filetypes and loaded 
+on invocation of the events.  It seems to work, so I can't complain.
+If other Vim options need to be saved, there's an array that they can be added to, so look for that
+in `after/ftplugin/texw.vim`.
+Otherwise, this approach hasn't been generalized to any noweb pairing of
+languages, but it looks quite possible to do with effectively the same code.
 
