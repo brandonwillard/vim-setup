@@ -1,6 +1,9 @@
 # Introduction
 
-These are my personal, hacked-up Vim settings/plugins.
+These are my personal, hacked-up Vim settings/plugins.  They have a special emphasis
+on generic [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop)
+and [noweb](https://en.wikipedia.org/wiki/Noweb) environments, as well as integration of the two. 
+
 
 # Setup
 
@@ -22,8 +25,8 @@ You'll have to open Vim and run `BundleInstall` to setup the plugins mentioned i
 ## Neovim
 
 I've recently added some [Neovim](https://github.com/neovim/neovim)
-features/support; the only major difference
-was the need for symlinks to the original vim setup:
+features/support; the only noticeable migration requirement involves creating
+symlinks to one's original Vim setup: 
 ```
 $ ln -s ~/.vim ~/.config/nvim
 $ ln -s ~/.vimrc ~/.config/nvim/init.vim
@@ -32,8 +35,8 @@ $ ln -s ~/.vimrc ~/.config/nvim/init.vim
 Oh, and if you're installing a plugin with scripts in "rplugin/*",
 run `:UpdateRemotePlugins`; otherwise, the plugin scripts simply won't work.
 
-Note: Neovim doesn't appear to have the old clientserver functionality at the
-moment [see here](https://github.com/tpope/vim-dispatch/issues/163), so
+Note: Neovim doesn't appear to have the old `+clientserver` functionality at the
+moment ([see here](https://github.com/tpope/vim-dispatch/issues/163)), so
 `--servername` isn't available and the Synctex features won't work.
 
 # tmux
@@ -52,12 +55,13 @@ the `.vim/` directory should contain the required shell scripts.
 
 # LaTeX
 
-To setup cool stuff like synctex just create an alias for vim that sets
-the server name, e.g.
+To set up
+[synctex](http://tex.stackexchange.com/questions/118489/what-exactly-is-synctex)
+just create an alias for vim that sets the server name, e.g.
 ```
 $ vim='vim --servername VIM' 
 ```
-then, in an editor with synctex capabilities (qpdfview for this example), add a line
+then, in an editor with synctex capabilities (`qpdfview` for this example), add a line
 like the following for the "source editor" option:
 ```
 vim --servername VIM --remote +%2 %1
