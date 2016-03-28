@@ -68,7 +68,6 @@ nmap <buffer> <LocalLeader>gN <Plug>(noweb-prev-chunk)
 nmap <buffer> <LocalLeader>gn <Plug>(noweb-next-chunk)
 " }}}
 
-
 " REPL additions {{{
 if exists("b:loaded_repl")
   function! NowebSendChunk(m)
@@ -76,14 +75,10 @@ if exists("b:loaded_repl")
         echomsg "Not inside a code chunk."
         return
     endif
-    if !exists("g:VimuxRunnerPaneIndex")
-      echomsg "No VimuxRunner pane open"
-      return
-    endif
     let chunkline = search("^<<", "bncW") + 1
     let docline = search("^@", "ncW") - 1
     let lines = join(getline(chunkline, docline), "\n")
-    call b:ReplEvalTerm(lines)
+    call b:ReplSendString(lines)
     if a:m == "down"
         call NowebNextChunk()
     endif

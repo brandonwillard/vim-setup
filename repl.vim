@@ -118,7 +118,8 @@ endfunction
 
 command! ReplSendFileCmd call b:ReplSendFile() 
 command! ReplSendLineCmd call b:ReplSendString(escape(getline("."), '`\')) 
-command! -range -nargs=1 ReplSendStringCmd call b:ReplSendString(s:ReplGetSelection(<f-args>)) 
+command! -range -nargs=1 ReplSendStringCmd call b:ReplSendString(<f-args>) 
+command! -range -nargs=1 ReplSendSelectionCmd call b:ReplSendString(s:ReplGetSelection(<f-args>)) 
 command! ReplCloseTermCmd :call b:ReplCloseTerm() 
 "command! -nargs=1 ReplSpawnTermCmd :call b:ReplSpawnTerm(<f-args>) 
 command! ReplSpawnTermCmd :call b:ReplSpawnTerm(b:repl_run_command) 

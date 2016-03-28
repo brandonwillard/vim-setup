@@ -124,8 +124,8 @@ if exists("b:loaded_repl")
   nnoremap <silent> <LocalLeader>tr :ReplSpawnTermCmd<CR>
   nnoremap <silent> <LocalLeader>td :ReplSpawnTermDebugCmd<CR>
   nnoremap <silent> <LocalLeader>tq :ReplCloseTermCmd<CR>
-  nnoremap <silent> <LocalLeader>ts :ReplSendStringCmd n<CR>
-  vnoremap <silent> <LocalLeader>ts :ReplSendStringCmd v<CR>
+  nnoremap <silent> <LocalLeader>ts :ReplSendSelectionCmd n<CR>
+  vnoremap <silent> <LocalLeader>ts :ReplSendSelectionCmd v<CR>
   nnoremap <silent> <LocalLeader>tl :ReplSendLineCmd<CR>
   nnoremap <silent> <LocalLeader>tf :ReplSendFileCmd<CR>
 endif
