@@ -26,6 +26,8 @@ runtime after/ftplugin/noweb-tweaks.vim
 " manually for each filetype.
 " TODO: generalize this and add to a generic noweb after/ file
 " (noweb-tweaks?).
+" TODO: what about the `b:undo_ftplugin` and `b:undo_indent` variables?
+" Looks like we could generate the `options_list` from that, no?
 "
 " The OnSyntaxChange plugin (http://www.vim.org/scripts/script.php?script_id=4085)
 " provides the mechanism for triggering these changes.

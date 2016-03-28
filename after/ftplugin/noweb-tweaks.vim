@@ -7,6 +7,7 @@ if exists("b:noweb_settings_loaded")
 endif
 let b:noweb_settings_loaded=1
 
+" Chunk functions {{{
 function! NowebIsInCode(vrb)
   let chunkline = search("^<<", "bncW")
   let docline = search("^@", "bncW")
@@ -57,35 +58,44 @@ function! NowebPreviousChunk() range
     endfor
     return
 endfunction
+" }}}
 
-
-function! NowebSendChunkToTmux(m)
-  if NowebIsInCode(0) == 0
-      echomsg "Not inside a code chunk."
-      return
-  endif
-  if !exists("g:VimuxRunnerPaneIndex")
-    echomsg "No VimuxRunner pane open"
-    return
-  endif
-  let chunkline = search("^<<", "bncW") + 1
-  let docline = search("^@", "ncW") - 1
-  let lines = getline(chunkline, docline)
-  call SourceLines(lines)
-  if a:m == "down"
-      call NowebNextChunk()
-  endif
-endfunction
-
-" TODO: these ones...
-"noremap <buffer> <LocalLeader>cd :call NowebSendChunkToTmux("down")<CR>
-"noremap <buffer> <LocalLeader>cc :call NowebSendChunkToTmux("stay")<CR>
-
+" Chunk mappings {{{
 nnoremap <buffer><silent> <Plug>(noweb-prev-chunk) :<C-U>call NowebPreviousChunk()<CR>
 nnoremap <buffer><silent> <Plug>(noweb-next-chunk) :<C-U>call NowebNextChunk()<CR>
 
 nmap <buffer> <LocalLeader>gN <Plug>(noweb-prev-chunk)
 nmap <buffer> <LocalLeader>gn <Plug>(noweb-next-chunk)
+" }}}
+
+
+" REPL additions {{{
+if exists("b:loaded_repl")
+  function! NowebSendChunk(m)
+    if NowebIsInCode(0) == 0
+        echomsg "Not inside a code chunk."
+        return
+    endif
+    if !exists("g:VimuxRunnerPaneIndex")
+      echomsg "No VimuxRunner pane open"
+      return
+    endif
+    let chunkline = search("^<<", "bncW") + 1
+    let docline = search("^@", "ncW") - 1
+    let lines = join(getline(chunkline, docline), "\n")
+    call b:ReplEvalTerm(lines)
+    if a:m == "down"
+        call NowebNextChunk()
+    endif
+  endfunction
+
+  nnoremap <buffer><silent> <Plug>(noweb-send-chunk) :<C-U>call NowebSendChunk("stay")<CR>
+
+  nmap <buffer> <LocalLeader>tc <Plug>(noweb-send-chunk)
+
+endif
+" }}}
 
 
 
+" vim:foldmethod=marker:foldlevel=0

@@ -47,10 +47,17 @@ call vundle#begin()
   Plugin 'tpope/vim-surround'
   "Plugin 'ktonga/vim-follow-my-lead'
   Plugin 'altercation/vim-colors-solarized'
+
+  "Plugin 'file:///home/bwillar0/.vim/'
+
 call vundle#end() 
+
+" TODO: create a plugin, or from some other directory.
+runtime! repl.vim
 
 " run my 'after' code last
 set rtp+=~/.vim/after
+
 " }}}
 filetype plugin indent on
 
@@ -106,11 +113,23 @@ syn spell default
 
 " Terminal {{{
 set ttyfast
+
 " }}}
 
 " Mapping {{{
 let mapleader='\'
 let maplocalleader=','
+
+if exists("b:loaded_repl") 
+  nnoremap <silent> <LocalLeader>tr :ReplSpawnTermCmd<CR>
+  nnoremap <silent> <LocalLeader>td :ReplSpawnTermDebugCmd<CR>
+  nnoremap <silent> <LocalLeader>tq :ReplCloseTermCmd<CR>
+  nnoremap <silent> <LocalLeader>ts :ReplSendStringCmd n<CR>
+  vnoremap <silent> <LocalLeader>ts :ReplSendStringCmd v<CR>
+  nnoremap <silent> <LocalLeader>tl :ReplSendLineCmd<CR>
+  nnoremap <silent> <LocalLeader>tf :ReplSendFileCmd<CR>
+endif
+
 set noto
 "set timeoutlen=600
 if has("nvim")
@@ -227,13 +246,6 @@ set clipboard+=unnamedplus
 
 " Various {{{
 set virtualedit=all
-"
-" look in ~/.vim/after/plugins, ~/.vim/after/syntax, ~/.vim/after/ftplugin
-" for the plugin, syntax and filetype settings.
-"
-if filereadable(expand("./.vimrc.local"))
-  source ./.vimrc.local
-endif
 " }}}
 
 " Messages and Info {{{
@@ -478,45 +490,6 @@ endif
 " or this to get visual selection: getline("'<","'>")
 " current line: getline(".")
 "
-if !has("nvim")
-
-  function! VimuxSlime()
-    call VimuxSendText(escape(@z,'`\'))
-    call VimuxSendKeys("Enter")
-  endfunction
-
-  function! VimuxBufferStart()
-    if exists("g:vimux_run_command")
-      call VimuxRunCommand(g:vimux_run_command)
-    else
-      call VimuxOpenPane()
-    endif
-  endfunction
-
-  " send visual selection
-  if empty(mapcheck("<LocalLeader>ts"))
-    vmap <LocalLeader>ts "zy :call VimuxSlime()<CR>  
-  endif
-
-  " send line
-  if empty(mapcheck("<LocalLeader>tl"))
-    map <LocalLeader>tl "zY :call VimuxSlime()<CR>  
-  endif
-
-  " send/print word
-  if empty(mapcheck("<LocalLeader>tp"))
-    nmap <LocalLeader>tp "zyiw :call VimuxSlime()<CR>  
-  endif
-
-  " general run/open and quit/close
-  if empty(mapcheck("<LocalLeader>tr"))
-    nnoremap <LocalLeader>tr :call VimuxBufferStart()<CR>  
-  endif
-
-  if empty(mapcheck("<LocalLeader>tq"))
-    nnoremap <LocalLeader>tq :VimuxCloseRunner<CR>
-  endif
-endif
  
 " }}}
 
