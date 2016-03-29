@@ -84,9 +84,43 @@ if exists("b:loaded_repl")
     endif
   endfunction
 
+  "
+  " From the Nvim-R plugin
+  "
+  function! NowebSendFHChunk()
+      let begchk = "^<<.*>>=\$"
+      let endchk = "^@"
+
+      let codelines = []
+      let here = line(".")
+      let curbuf = getline(1, "$")
+      let idx = 0
+      while idx < here
+          if curbuf[idx] =~ begchk
+              let idx += 1
+              while curbuf[idx] !~ endchk && idx < here
+                  let codelines += [curbuf[idx]]
+                  let idx += 1
+              endwhile
+          else
+              let idx += 1
+          endif
+      endwhile
+
+      let comblines = join(codelines, "\n")
+      call b:ReplSendString(comblines)
+  endfunction
+
+
+
+  command! NowebSendChunkCmd call NowebSendChunk("stay") 
+  command! NowebSendFHChunkCmd call NowebSendFHChunk() 
+
   nnoremap <buffer><silent> <Plug>(noweb-send-chunk) :<C-U>call NowebSendChunk("stay")<CR>
+  nnoremap <buffer><silent> <Plug>(noweb-send-fh-chunk) :<C-U>call NowebSendFHChunk()<CR>
 
   nmap <buffer> <LocalLeader>tc <Plug>(noweb-send-chunk)
+  nmap <buffer> <LocalLeader>tC <Plug>(noweb-send-fh-chunk)
 
 endif
 " }}}
