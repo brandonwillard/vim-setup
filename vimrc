@@ -52,9 +52,6 @@ call vundle#begin()
 
 call vundle#end() 
 
-" TODO: create a plugin, or from some other directory.
-runtime! repl.vim
-
 " run my 'after' code last
 set rtp+=~/.vim/after
 
@@ -120,7 +117,7 @@ set ttyfast
 let mapleader='\'
 let maplocalleader=','
 
-if exists("b:loaded_repl") 
+"if exists("b:loaded_repl") 
   nnoremap <silent> <LocalLeader>tr :ReplSpawnTermCmd<CR>
   nnoremap <silent> <LocalLeader>td :ReplSpawnTermDebugCmd<CR>
   nnoremap <silent> <LocalLeader>tq :ReplCloseTermCmd<CR>
@@ -128,7 +125,7 @@ if exists("b:loaded_repl")
   vnoremap <silent> <LocalLeader>ts :ReplSendSelectionCmd v<CR>
   nnoremap <silent> <LocalLeader>tl :ReplSendLineCmd<CR>
   nnoremap <silent> <LocalLeader>tf :ReplSendFileCmd<CR>
-endif
+"endif
 
 set noto
 "set timeoutlen=600
@@ -255,6 +252,17 @@ set showcmd
 " }}}
 
 " Functions {{{
+
+" This just feels super hackish: we're extracting the string name
+" of the function that `b:ReplSendFile` currently references, then
+" we're creating another function reference for that.
+" This way we avoid creating a recursive `b:ReplSendString` (just in case).
+function! CopyFuncRef(funcref)
+  let t:default_funcref = string(a:funcref)
+  let t:default_funcname = matchstr(t:default_funcref, '\vfunction\(''\zs(.*)\ze''\)')
+  return function(t:default_funcname) 
+endfunction
+
 function! GetVimCommandOutput(command) 
   " from: https://github.com/mbadran/headlights/blob/master/plugin/headlights.vim
   " capture and return the output of a vim command
@@ -304,6 +312,9 @@ command! -nargs=+ -complete=command Output call OutputSplitWindow(<f-args>)
 " }}}
 
 " Autocommands {{{
+
+autocmd BufReadPre,FileReadPre * :runtime! repl.vim 
+
 " Don't screw up folds when inserting text that might affect them, until
 " leaving insert mode. Foldmethod is local to the window. Protect against
 " screwing up folding when switching between windows.

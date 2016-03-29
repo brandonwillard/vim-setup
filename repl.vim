@@ -25,7 +25,6 @@ let b:repl_debug_command = ""
 " }}}
 
 " REPL function stubs {{{
-
 function! ReplSendString_na(...)
   throw "no function registered"
   return 0
@@ -130,7 +129,7 @@ command! ReplSpawnTermDebugCmd :call b:ReplSpawnTerm(b:repl_debug_command)
 if has("nvim")
 
   " Nvim REPL implementations {{{
-  function! s:ReplCleanTerm_nvim()
+  function! ReplCleanTerm_nvim()
     if exists("t:repl_term_id")
       unlet t:repl_term_id 
     endif
@@ -146,7 +145,7 @@ if has("nvim")
     "sb
     split
     wincmd j
-    enew | let t:repl_term_id = termopen(a:expr, {"on_exit": "s:ReplCleanTerm_nvim"}) 
+    enew | let t:repl_term_id = termopen(a:expr, {"on_exit": "ReplCleanTerm_nvim"}) 
     let t:repl_buf_id = bufnr('%')
     set nobuflisted
     wincmd p
@@ -186,7 +185,8 @@ if has("nvim")
   let b:ReplSendFormat = function('ReplSendFormat_nvim') 
 
   " }}}
-  
+    
+
 else 
 
   "
@@ -256,6 +256,7 @@ else
   "endif
 
   " }}}
+
 
 endif
 

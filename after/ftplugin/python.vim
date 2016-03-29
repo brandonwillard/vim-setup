@@ -31,18 +31,8 @@ if exists("b:loaded_repl")
   let b:repl_run_command = "nocorrect ipython --matplotlib \|\| python"
   let b:repl_debug_command = "nocorrect ipython --pydb --matplotlib \|\| python"
 
-  " This just feels super hackish: we're extracting the string name
-  " of the function that `b:ReplSendFile` currently references, then
-  " we're creating another function reference for that.
-  " This way we avoid creating a recursive `b:ReplSendString` (just in case).
-  function s:CopyFuncRef(funcref)
-    let t:default_funcref = string(a:funcref)
-    let t:default_funcname = matchstr(t:default_funcref, '\vfunction\(''\zs(.*)\ze''\)')
-    return function(t:default_funcname) 
-  endfunction
-
-  let b:ReplSendString_default = s:CopyFuncRef(b:ReplSendString)
-  let b:ReplSendFile_default = s:CopyFuncRef(b:ReplSendFile)
+  let b:ReplSendString_default = CopyFuncRef(b:ReplSendString)
+  let b:ReplSendFile_default = CopyFuncRef(b:ReplSendFile)
 
   " IPython has a magic for executing blocks of code; use it.
   function! ReplSendString_ipy(expr)
