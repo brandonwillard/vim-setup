@@ -129,14 +129,16 @@ command! ReplSpawnTermDebugCmd :call b:ReplSpawnTerm(b:repl_debug_command)
 if has("nvim")
 
   " Nvim REPL implementations {{{
-  function! ReplCleanTerm_nvim()
-    if exists("t:repl_term_id")
-      unlet t:repl_term_id 
-    endif
-    if exists("t:repl_buf_id")
-      unlet t:repl_buf_id 
-    endif
-  endfunction
+  if !exists("*s:ReplCleanTerm_nvim")
+    function s:ReplCleanTerm_nvim()
+      if exists("t:repl_term_id")
+        unlet t:repl_term_id 
+      endif
+      if exists("t:repl_buf_id")
+        unlet t:repl_buf_id 
+      endif
+    endfunction
+  endif
 
   function! ReplSpawnTerm_nvim(expr)
     "if exists('t:repl_term_id')
@@ -145,7 +147,7 @@ if has("nvim")
     "sb
     split
     wincmd j
-    enew | let t:repl_term_id = termopen(a:expr, {"on_exit": "ReplCleanTerm_nvim"}) 
+    enew | let t:repl_term_id = termopen(a:expr, {"on_exit": "s:ReplCleanTerm_nvim"}) 
     let t:repl_buf_id = bufnr('%')
     set nobuflisted
     wincmd p

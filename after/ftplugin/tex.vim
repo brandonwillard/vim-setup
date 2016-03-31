@@ -16,6 +16,19 @@ setl conceallevel=0
 "vmap <buffer> <LocalLeader>ew		<Plug>LatexEnvWrapSelection
 "imap <buffer> <LocalLeader>(( 		\eqref{
 
+" section jumping
+noremap <buffer> <silent> <Leader>gn :<c-u>call TexJump2Section( v:count1, '' )<CR>
+noremap <buffer> <silent> <Leader>gN :<c-u>call TexJump2Section( v:count1, 'b' )<CR>
+function! TexJump2Section( cnt, dir )
+  let i = 0
+  let pat = '^\s*\\\(part\|chapter\|\(sub\)*section\|paragraph\)\>\|\%$\|\%^'
+   let flags = 'W' . a:dir
+   while i < a:cnt && search( pat, flags ) > 0
+     let i = i+1
+   endwhile
+   let @/ = pat
+ endfunction
+
 let b:thisaux = findfile(expand("%:r:t").".aux", "**4;")
 let b:LatexBox_build_dir = fnamemodify(b:thisaux, ":p:h")
 let b:build_dir = fnamemodify(b:thisaux, ":p:h")
