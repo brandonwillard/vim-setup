@@ -17,13 +17,14 @@ setl conceallevel=0
 "imap <buffer> <LocalLeader>(( 		\eqref{
 
 " section jumping
-noremap <buffer> <silent> <Leader>gn :<c-u>call TexJump2Section( v:count1, '' )<CR>
-noremap <buffer> <silent> <Leader>gN :<c-u>call TexJump2Section( v:count1, 'b' )<CR>
-function! TexJump2Section( cnt, dir )
+noremap <buffer> <silent> <Leader>gn :<c-u>call TexJump2Section(v:count1, '')<CR>
+noremap <buffer> <silent> <Leader>gN :<c-u>call TexJump2Section(v:count1, 'b')<CR>
+
+function! TexJump2Section(cnt, dir)
   let i = 0
   let pat = '^\s*\\\(part\|chapter\|\(sub\)*section\|paragraph\)\>\|\%$\|\%^'
    let flags = 'W' . a:dir
-   while i < a:cnt && search( pat, flags ) > 0
+   while i < a:cnt && search(pat, flags) > 0
      let i = i+1
    endwhile
    let @/ = pat

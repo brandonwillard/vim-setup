@@ -313,7 +313,7 @@ command! -nargs=+ -complete=command Output call OutputSplitWindow(<f-args>)
 
 " Autocommands {{{
 
-autocmd BufReadPre,FileReadPre * :runtime! repl.vim 
+"autocmd BufNew,BufReadPre * :runtime! repl.vim 
 
 " Don't screw up folds when inserting text that might affect them, until
 " leaving insert mode. Foldmethod is local to the window. Protect against

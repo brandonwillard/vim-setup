@@ -9,10 +9,12 @@ augroup filetypedetect
   au! BufRead,BufNewFile *.ladot setfiletype dot
 
   au! BufRead,BufNewFile *.Md,*.md setfiletype markdown
-
+    
   au! BufRead,BufNewFile *.Texw,*.texw setfiletype=python.texw
 
   au! BufRead,BufNewFile *.Pnw,*.pnw setfiletype=python.pnw
+
+  au! FileType python,r,*python*,rnoweb :runtime! repl.vim
 
 augroup END
 
