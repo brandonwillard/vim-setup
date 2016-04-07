@@ -5,6 +5,7 @@ setl spell
 "setl formatoptions+=t
 setl sw=2
 setl conceallevel=0
+set foldlevel=1
 
 " remove these annoying latex-box mappings
 "iunmap <buffer> [[

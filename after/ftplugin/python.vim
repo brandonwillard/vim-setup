@@ -36,14 +36,14 @@ if exists("b:loaded_repl")
 
   " IPython has a magic for executing blocks of code; use it.
   function! ReplSendString_ipy(expr)
-    let t:argv = "%cpaste\<cr>".a:expr."\<cr>\<c-d>"
-    return b:ReplSendString_default(t:argv)
+    let argv = ["%cpaste", a:expr, "<c-d>"]
+    return b:ReplSendString_default(argv)
   endfunction
 
   " IPython has a handy command that takes care of running files, so we
   " use that...
   function! ReplSendFile_ipy()
-    return b:ReplSendString_default("%run ".expand("%")."\<cr>")
+    return b:ReplSendString_default(["%run ".expand("%"), ""])
   endfunction
 
   " could just change the maps...

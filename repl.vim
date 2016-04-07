@@ -165,8 +165,8 @@ if has("nvim")
     if !exists('t:repl_term_id')
       throw 'No running repl terminal'
     endif
-    let t:formatted_expr = b:ReplSendFormat(a:expr)
-    call jobsend(t:repl_term_id, t:formatted_expr)
+    let formatted_expr = b:ReplSendFormat(a:expr)
+    call jobsend(t:repl_term_id, formatted_expr)
   endfunction
 
   function! ReplSendFormat_nvim(expr)

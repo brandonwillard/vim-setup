@@ -25,6 +25,7 @@ call vundle#begin()
   Plugin 'benekastah/neomake'
   Plugin 'Rykka/riv.vim'
   Plugin 'OnSyntaxChange'
+  Plugin 'jmcantrell/vim-virtualenv'
   if has('nvim')
     Plugin 'jalvesaq/Nvim-R'
     " This, and other remote-plugins, requires :UpdateRemotePlugins 
@@ -128,7 +129,7 @@ let maplocalleader=','
 "endif
 
 set noto
-"set timeoutlen=600
+set timeoutlen=50
 if has("nvim")
   " allow us to easily use window motions in a terminal
   tnoremap <c-w> <c-\><c-n><c-w>
