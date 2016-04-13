@@ -13,44 +13,67 @@ filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin() 
   Plugin 'gmarik/Vundle.vim'
+
+  " Syntax, Markdown
+  Plugin 'scrooloose/syntastic'
   Plugin 'The-NERD-Commenter'
+  Plugin 'Rykka/riv.vim'
+
+  " Motion, Buffers, Windows
   Plugin 'christoomey/vim-tmux-navigator'
-  Plugin 'tpope/vim-eunuch'
-  Plugin 'syntastic'
   Plugin 'Lokaltog/vim-easymotion'
   Plugin 'qpkorr/vim-bufkill'
+
+  " Python
+  Plugin 'tell-k/vim-autopep8'
+  Plugin 'jimf/vim-pep8-text-width'
   Plugin 'hynek/vim-python-pep8-indent'
   Plugin 'hdima/python-syntax'
   Plugin 'davidhalter/jedi-vim'
-  Plugin 'benekastah/neomake'
-  Plugin 'Rykka/riv.vim'
-  Plugin 'OnSyntaxChange'
   Plugin 'jmcantrell/vim-virtualenv'
+
+  " R
   if has('nvim')
     Plugin 'jalvesaq/Nvim-R'
-    " This, and other remote-plugins, requires :UpdateRemotePlugins 
-    " after bundle installation.
-    Plugin 'bfredl/nvim-ipy'
-    "Plugin 'kassio/neoterm'
   else
-    Plugin 'vimux'
     Plugin 'jalvesaq/R-Vim-runtime'
     Plugin 'jcfaria/Vim-R-plugin'
   endif
-  Plugin 'bling/vim-airline'
+
+  " Terminal/REPL
+  if has('nvim')
+    " This, and other remote-plugins, requires :UpdateRemotePlugins 
+    " after bundle installation.
+    "Plugin 'bfredl/nvim-ipy'
+    "Plugin 'kassio/neoterm'
+  else
+    Plugin 'vimux'
+  endif
+
+  " Filesystem, Make, Git 
+  Plugin 'benekastah/neomake'
   Plugin 'tpope/vim-fugitive'
-  Plugin 'lervag/vimtex'
-  Plugin 'ShowMarks'
-  Plugin 'noweb.vim--McDermott'
-  Plugin 'xolox/vim-easytags'
-  Plugin 'xolox/vim-misc'
   Plugin 'LargeFile'
+  Plugin 'tpope/vim-eunuch'
+
+  " TeX 
+  Plugin 'lervag/vimtex'
+  Plugin 'noweb.vim--McDermott'
+
+  " Vim Misc
+  Plugin 'ShowMarks'
+  Plugin 'xolox/vim-misc'
+  "Plugin 'xolox/vim-easytags'
+  Plugin 'xolox/vim-notes'
   Plugin 'tpope/vim-surround'
+  Plugin 'OnSyntaxChange'
   "Plugin 'ktonga/vim-follow-my-lead'
+  
+  " Theming
+  Plugin 'bling/vim-airline'
   Plugin 'altercation/vim-colors-solarized'
 
   "Plugin 'file:///home/bwillar0/.vim/'
-
 call vundle#end() 
 
 " run my 'after' code last
@@ -200,7 +223,8 @@ set background=dark
 " Python {{{
 " might help when your env is virtual or whatnot
 let g:python_host_prog='/usr/bin/python'
-let g:python3_host_prog='/usr/bin/python3'
+"let g:python2_host_prog='/usr/bin/python'
+"let g:python3_host_prog='/usr/bin/python3'
 let g:pymode_indent = 0
 " }}}
 
@@ -337,6 +361,18 @@ endif
 " [Generally] global plugin settings from here on.
 "
 
+" syntastic {{{ 
+let g:syntastic_python_checkers = ['flake8'] 
+let g:syntastic_enable_highlighting = 1  
+let g:syntastic_style_error_symbol = "E>" 
+let g:syntastic_warning_symbol = "W>" 
+let g:syntastic_auto_jump = 0  
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 0
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+" }}}
+
 " R-plugin {{{
 " don't select the first option that pops up.
 let R_user_maps_only = 1   
@@ -374,6 +410,7 @@ let noweb_fold_code = 1
 " disable LatexBox mappings
 let g:LatexBox_no_mappings = 1
 let g:tex_fold_enabled=1
+let g:tex_flavor = "latex"
 let g:vimtex_fold_enabled = 0
 " }}}
 
@@ -472,6 +509,13 @@ let g:pandoc#syntax#conceal#use = 0
 let marksCloseWhenSelected = 0
 let showmarks_include = "abcdefghijklmnopqrstuvwxyz"
 
+" }}}
+
+" vim-notes {{{
+let g:notes_directories = ['~/projects/notes']
+let g:notes_markdown_program = 'pandoc' "'pandoc -f markdown_github -t html'
+let g:notes_conceal_code = 0
+let g:notes_suffix = '.vmd'
 " }}}
 
 " tmux_navigator {{{

@@ -28,6 +28,8 @@ runtime after/ftplugin/noweb-tweaks.vim
 " (noweb-tweaks?).
 " TODO: what about the `b:undo_ftplugin` and `b:undo_indent` variables?
 " Looks like we could generate the `options_list` from that, no?
+" TODO: what about syntax files?  looks like `iskeyword` doesn't work
+" because of that.
 "
 " The OnSyntaxChange plugin (http://www.vim.org/scripts/script.php?script_id=4085)
 " provides the mechanism for triggering these changes.
