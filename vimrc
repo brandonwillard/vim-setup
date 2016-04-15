@@ -15,6 +15,7 @@ call vundle#begin()
   Plugin 'gmarik/Vundle.vim'
 
   " Syntax, Markdown
+  Plugin 'valloric/YouCompleteMe'
   Plugin 'scrooloose/syntastic'
   Plugin 'The-NERD-Commenter'
   Plugin 'Rykka/riv.vim'
@@ -29,7 +30,7 @@ call vundle#begin()
   Plugin 'jimf/vim-pep8-text-width'
   Plugin 'hynek/vim-python-pep8-indent'
   Plugin 'hdima/python-syntax'
-  Plugin 'davidhalter/jedi-vim'
+  "Plugin 'davidhalter/jedi-vim'
   Plugin 'jmcantrell/vim-virtualenv'
 
   " R
@@ -161,13 +162,13 @@ if has("nvim")
 endif
 
 " Use Ctrl+Space to do omnicompletion:
-"if has("gui_running")
-"  "set term=$TERM
-"  "set noguipty
-"  inoremap <C-Space> <C-x><C-o>
-"else
-"  inoremap <Nul> <C-x><C-o>
-"endif
+if has("gui_running")
+  "set term=$TERM
+  "set noguipty
+  inoremap <C-Space> <C-x><C-o>
+else
+  inoremap <Nul> <C-x><C-o>
+endif
 
 " from: https://github.com/justinmk/config/blob/7b97ae50b5377b35d37128fe1225c47e5fcba7d0/.vimrc#L1021
 " disable Ex mode key 
@@ -193,20 +194,6 @@ vnoremap p "_dP
 "map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
 
-"" <Enter> selects a popup menu item
-"inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-"" make <C-N/P> keep the highlighted selection when moving between menu items
-"inoremap <expr> <C-n> pumvisible() ? '<C-n>' :
-"  \ '<C-n><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
-"inoremap <expr> <M-,> pumvisible() ? '<C-n>' :
-"  \ '<C-x><C-o><C-n><C-p><C-r>=pumvisible() ? "\<lt>Down>" : ""<CR>'
-"" open omni completion menu closing previous if open and opening new menu without changing the text
-"inoremap <expr> <C-Space> (pumvisible() ? (col('.') > 1 ? '<Esc>i<Right>' : '<Esc>i') : '') .
-"            \ '<C-x><C-o><C-r>=pumvisible() ? "\<lt>C-n>\<lt>C-p>\<lt>Down>" : ""<CR>'
-"" open user completion menu closing previous if open and opening new menu without changing the text
-"inoremap <expr> <S-Space> (pumvisible() ? (col('.') > 1 ? '<Esc>i<Right>' : '<Esc>i') : '') .
-"            \ '<C-x><C-u><C-r>=pumvisible() ? "\<lt>C-n>\<lt>C-p>\<lt>Down>" : ""<CR>'
-
 " }}}
 
 " Appearance {{{
@@ -231,7 +218,7 @@ let g:pymode_indent = 0
 " Editing Text {{{
 set showmatch
 set backspace=indent,eol,start
-set completeopt=longest,menuone
+set completeopt=longest,menuone,preview,noinsert
 " }}}
 
 " Displaying Text {{{
@@ -422,19 +409,32 @@ let g:NERDRemoveExtraSpaces=1
 let g:NERDDefaultNesting=1
 " }}}
 
+" YouCompleteMe {{{
+let g:ycm_auto_trigger = 0
+"let g:ycm_python_binary_path = ''
+"let g:ycm_key_invoke_completion = '<Nop>' "'<C-Space>' 
+let g:ycm_autoclose_preview_window_after_completion = 1 
+let g:ycm_autoclose_preview_window_after_insertion = 1
+let g:ycm_key_list_select_completion = ['<C-N>']
+let g:ycm_key_list_select_previous_completion = ['<C-P>']
+let g:ycm_cache_omnifunc = 1 
+let g:ycm_use_ultisnips_completer = 1
+let g:ycm_goto_buffer_command = 'horizontal-split'
+" }}}
+
 " Jedi {{{
-let g:jedi#use_splits_not_buffers = "left"
-let g:jedi#popup_on_dot = 0
-let g:jedi#popup_select_first = 0
-let g:jedi#show_call_signatures = "2"
-let g:jedi#goto_command = "<leader>d"
-let g:jedi#goto_assignments_command = "<leader>g"
-let g:jedi#goto_definitions_command = ""
-let g:jedi#documentation_command = "K"
-let g:jedi#usages_command = "<leader>n"
-let g:jedi#completions_command = "<C-N>"
-let g:jedi#rename_command = "<leader>r"
-let g:jedi#auto_vim_configuration = 0
+"let g:jedi#use_splits_not_buffers = "left"
+"let g:jedi#popup_on_dot = 0
+"let g:jedi#popup_select_first = 0
+"let g:jedi#show_call_signatures = "2"
+"let g:jedi#goto_command = "<leader>d"
+"let g:jedi#goto_assignments_command = "<leader>g"
+"let g:jedi#goto_definitions_command = ""
+"let g:jedi#documentation_command = "K"
+"let g:jedi#usages_command = "<leader>n"
+"let g:jedi#completions_command = "<C-N>"
+"let g:jedi#rename_command = "<leader>r"
+"let g:jedi#auto_vim_configuration = 0
 " }}}
 
 " Ultisnips {{{
