@@ -38,7 +38,11 @@ call OnSyntaxChange#Install('NowebCode', 'codeChunk', 1, 'a')
 autocmd User SyntaxNowebCodeEnterA unsilent call SetCodeSettings("python")
 autocmd User SyntaxNowebCodeLeaveA unsilent call SetCodeSettings("tex") 
 
-let b:noweb_options_list = ["indentexpr", "indentkeys", "foldexpr", "formatexpr", "includeexpr", "foldtext", "comments", "commentstring", "omnifunc", "formatoptions", "iskeyword", "cinkeys", "softtabstop", "shiftwidth", "tabstop"]
+let b:noweb_options_list = ["indentexpr", "indentkeys", "foldexpr", "formatexpr", "includeexpr", "foldtext", "comments", "commentstring", "formatoptions", "iskeyword", "cinkeys", "softtabstop", "shiftwidth", "tabstop"]
+
+" extra hack for YouCompleteMe
+let b:tex_omnifunc = 'youcompleteme#OmniComplete'
+let b:python_omnifunc = 'youcompleteme#OmniComplete'
 
 function! SetCodeSettings(lang)
   "echom "setting " . a:lang . " settings"

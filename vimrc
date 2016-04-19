@@ -7,78 +7,87 @@
 
 
 " Important {{{
-set nocompatible
-filetype off 
-" Vundle Config {{{
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin() 
-  Plugin 'gmarik/Vundle.vim'
+
+" Plugins Config {{{
+call plug#begin('~/.vim/bundle/') 
+  Plug 'gmarik/Vundle.vim'
+
+  " remote-plugins require `:UpdateRemotePlugins`
+  " after bundle installation.
+  " Wrap this in `has('nvim')`?
+  function! DoRemote(arg)
+    echom "updating remote plugins"
+    UpdateRemotePlugins
+  endfunction
 
   " Syntax, Markdown
-  Plugin 'valloric/YouCompleteMe'
-  Plugin 'scrooloose/syntastic'
-  Plugin 'The-NERD-Commenter'
-  Plugin 'Rykka/riv.vim'
+  "Plugin 'valloric/YouCompleteMe'
+  if has('nvim')
+    Plug 'Shougo/deoplete.nvim', {'do': function('DoRemote')}
+  else
+    " TODO: add neocomplete
+  endif
+  Plug 'scrooloose/syntastic'
+  Plug 'The-NERD-Commenter'
+  Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
 
   " Motion, Buffers, Windows
-  Plugin 'christoomey/vim-tmux-navigator'
-  Plugin 'Lokaltog/vim-easymotion'
-  Plugin 'qpkorr/vim-bufkill'
+  Plug 'christoomey/vim-tmux-navigator'
+  Plug 'Lokaltog/vim-easymotion'
+  Plug 'qpkorr/vim-bufkill'
 
   " Python
-  Plugin 'tell-k/vim-autopep8'
-  Plugin 'jimf/vim-pep8-text-width'
-  Plugin 'hynek/vim-python-pep8-indent'
-  Plugin 'hdima/python-syntax'
-  "Plugin 'davidhalter/jedi-vim'
-  Plugin 'jmcantrell/vim-virtualenv'
+  Plug 'tell-k/vim-autopep8'
+  Plug 'jimf/vim-pep8-text-width'
+  Plug 'hynek/vim-python-pep8-indent'
+  Plug 'hdima/python-syntax'
+  if has('nvim')
+    Plug 'zchee/deoplete-jedi', { 'for': '*python*'} 
+    Plug 'bfredl/nvim-ipy', {'do': function('DoRemote'), 'for': '*python*'} 
+  else
+      "Plug 'davidhalter/jedi-vim'
+  endif
+  Plug 'jmcantrell/vim-virtualenv'
 
   " R
   if has('nvim')
-    Plugin 'jalvesaq/Nvim-R'
+    Plug 'jalvesaq/Nvim-R', { 'for': ['r', 'rnoweb', 'rmd']} 
   else
-    Plugin 'jalvesaq/R-Vim-runtime'
-    Plugin 'jcfaria/Vim-R-plugin'
+    Plug 'jalvesaq/R-Vim-runtime', { 'for': ['r', 'rnoweb', 'rmd']}
+    Plug 'jcfaria/Vim-R-plugin', { 'for': ['r', 'rnoweb', 'rmd']}
   endif
 
   " Terminal/REPL
   if has('nvim')
-    " This, and other remote-plugins, requires :UpdateRemotePlugins 
-    " after bundle installation.
-    "Plugin 'bfredl/nvim-ipy'
-    "Plugin 'kassio/neoterm'
+    "Plug 'kassio/neoterm'
   else
-    Plugin 'vimux'
+    Plug 'vimux'
   endif
 
   " Filesystem, Make, Git 
-  Plugin 'benekastah/neomake'
-  Plugin 'tpope/vim-fugitive'
-  Plugin 'LargeFile'
-  Plugin 'tpope/vim-eunuch'
+  Plug 'benekastah/neomake'
+  Plug 'tpope/vim-fugitive'
+  Plug 'LargeFile'
+  Plug 'tpope/vim-eunuch'
 
   " TeX 
-  Plugin 'lervag/vimtex'
-  Plugin 'noweb.vim--McDermott'
+  Plug 'lervag/vimtex'
+  Plug 'noweb.vim--McDermott'
 
   " Vim Misc
-  Plugin 'ShowMarks'
-  Plugin 'xolox/vim-misc'
-  "Plugin 'xolox/vim-easytags'
-  Plugin 'xolox/vim-notes'
-  Plugin 'tpope/vim-surround'
-  Plugin 'OnSyntaxChange'
-  "Plugin 'ktonga/vim-follow-my-lead'
+  Plug 'kshenoy/vim-signature'
+  Plug 'xolox/vim-misc'
+  "Plug 'xolox/vim-easytags'
+  Plug 'xolox/vim-notes'
+  Plug 'tpope/vim-surround'
+  Plug 'OnSyntaxChange'
+  "Plug 'ktonga/vim-follow-my-lead'
   
   " Theming
-  Plugin 'bling/vim-airline'
-  Plugin 'altercation/vim-colors-solarized'
+  Plug 'bling/vim-airline'
+  Plug 'altercation/vim-colors-solarized'
 
-  "Plugin 'file:///home/bwillar0/.vim/'
-call vundle#end() 
-
-" run my 'after' code last
-set rtp+=~/.vim/after
+call plug#end() 
 
 " }}}
 filetype plugin indent on
@@ -131,6 +140,7 @@ highlight comment ctermfg=blue
 "syn spell toplevel
 syn spell default
 "set spelllang=en_us
+let python_space_error_highlight = 1 
 " }}}
 
 " Terminal {{{
@@ -348,6 +358,25 @@ endif
 " [Generally] global plugin settings from here on.
 "
 
+" deoplete {{{
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#disable_auto_complete = 1
+"deoplete#sources#jedi#show_docstring
+if has("gui_running")
+    inoremap <silent><expr> <C-Space>
+    \ pumvisible() ? "\<C-n>" :
+    \ deoplete#mappings#manual_complete()
+else
+    inoremap <silent><expr> <Nul>
+    \ pumvisible() ? "\<C-n>" :
+    \ deoplete#mappings#manual_complete()
+endif
+" }}}
+
+" autopep8 {{{
+let g:autopep8_disable_show_diff=1 
+" }}}
+
 " syntastic {{{ 
 let g:syntastic_python_checkers = ['flake8'] 
 let g:syntastic_enable_highlighting = 1  
@@ -503,12 +532,6 @@ let g:netrw_altv = 1
 " pandoc {{{
 let g:pandoc#modules#disabled = ['chdir']
 let g:pandoc#syntax#conceal#use = 0
-" }}}
-
-" showmarks {{{
-let marksCloseWhenSelected = 0
-let showmarks_include = "abcdefghijklmnopqrstuvwxyz"
-
 " }}}
 
 " vim-notes {{{
