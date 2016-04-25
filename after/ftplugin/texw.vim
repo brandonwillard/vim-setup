@@ -1,9 +1,9 @@
 
-if exists("b:did_texw_settings")
+if exists("b:loaded_texw_ftplugin")
   finish
 endif
 
-let b:did_texw_settings = 1
+let b:loaded_texw_ftplugin = 1
 
 " these are reset when noweb syntax is loaded, so these
 " settings are in texw's syntax file after loading noweb.

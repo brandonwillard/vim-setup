@@ -29,29 +29,31 @@ EOF
 
 endif
 
-if exists("b:loaded_repl")
-  " Remove nocorrect if you're not using zshell (it stops the input
-  " requirement when/if ipython doesn't exist).
-  let b:repl_run_command = "nocorrect ipython2 --matplotlib \|\| python"
-  let b:repl_debug_command = "nocorrect ipython2 --pydb --matplotlib \|\| python"
-
-  let b:ReplSendString_default = CopyFuncRef(b:ReplSendString)
-  let b:ReplSendFile_default = CopyFuncRef(b:ReplSendFile)
-
-  " IPython has a magic for executing blocks of code; use it.
-  function! ReplSendString_ipy(expr)
-    let argv = ["%cpaste"] + split(a:expr, "\n") + ['--', '']
-    call b:ReplSendString_default(argv)
-  endfunction
-
-  " IPython has a handy command that takes care of running files, so we
-  " use that...
-  function! ReplSendFile_ipy()
-    return b:ReplSendString_default(["%run ".expand("%")])
-  endfunction
-
-  " could just change the maps...
-  let b:ReplSendString = function("ReplSendString_ipy")
-  let b:ReplSendFile = function("ReplSendFile_ipy")
+if !exists("b:loaded_repl")
+  runtime! plugin/repl.vim
 endif
+
+" Remove nocorrect if you're not using zshell (it stops the input
+" requirement when/if ipython doesn't exist).
+let b:repl_run_command = "nocorrect ipython2 --matplotlib \|\| python"
+let b:repl_debug_command = "nocorrect ipython2 --pydb --matplotlib \|\| python"
+
+let b:ReplSendString_default = CopyFuncRef(b:ReplSendString)
+let b:ReplSendFile_default = CopyFuncRef(b:ReplSendFile)
+
+" IPython has a magic for executing blocks of code; use it.
+function! ReplSendString_ipy(expr)
+  let argv = ["%cpaste"] + split(a:expr, "\n") + ['--', '']
+  call b:ReplSendString_default(argv)
+endfunction
+
+" IPython has a handy command that takes care of running files, so we
+" use that...
+function! ReplSendFile_ipy()
+  return b:ReplSendString_default(["%run ".expand("%")])
+endfunction
+
+" could just change the maps...
+let b:ReplSendString = function("ReplSendString_ipy")
+let b:ReplSendFile = function("ReplSendFile_ipy")
 

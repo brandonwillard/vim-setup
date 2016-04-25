@@ -10,7 +10,6 @@
 
 " Plugins Config {{{
 call plug#begin('~/.vim/bundle/') 
-  Plug 'gmarik/Vundle.vim'
 
   " remote-plugins require `:UpdateRemotePlugins`
   " after bundle installation.
@@ -41,9 +40,10 @@ call plug#begin('~/.vim/bundle/')
   Plug 'jimf/vim-pep8-text-width'
   Plug 'hynek/vim-python-pep8-indent'
   Plug 'hdima/python-syntax'
+  "Plug 'ivanov/vim-ipython', { 'for': '*python*'} 
   if has('nvim')
     Plug 'zchee/deoplete-jedi', { 'for': '*python*'} 
-    Plug 'bfredl/nvim-ipy', {'do': function('DoRemote'), 'for': '*python*'} 
+    "Plug 'bfredl/nvim-ipy', {'do': function('DoRemote'), 'for': '*python*'} 
   else
       "Plug 'davidhalter/jedi-vim'
   endif
@@ -69,6 +69,7 @@ call plug#begin('~/.vim/bundle/')
   Plug 'tpope/vim-fugitive'
   Plug 'LargeFile'
   Plug 'tpope/vim-eunuch'
+  Plug 'tpope/vim-scriptease'
 
   " TeX 
   Plug 'lervag/vimtex'
@@ -82,6 +83,8 @@ call plug#begin('~/.vim/bundle/')
   Plug 'tpope/vim-surround'
   Plug 'OnSyntaxChange'
   "Plug 'ktonga/vim-follow-my-lead'
+  
+  "Plug '~/.vim/bundle/nvim-example-python-plugin', {'do': function('DoRemote')} 
   
   " Theming
   Plug 'bling/vim-airline'
