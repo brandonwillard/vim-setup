@@ -3,6 +3,8 @@
 setl iskeyword+=_
 setl iskeyword-=.
 setl conceallevel=0
+set textwidth=79
+set cino+=(0
 "setl cino=(0
 "set cindent
 
@@ -56,4 +58,6 @@ endfunction
 " could just change the maps...
 let b:ReplSendString = function("ReplSendString_ipy")
 let b:ReplSendFile = function("ReplSendFile_ipy")
+
+command! PythonSendIPythonDebugLine :call b:ReplSendString_default('%debug -b ' . expand('%') . ':' . line('.'))
 

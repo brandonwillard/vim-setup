@@ -20,7 +20,9 @@ call plug#begin('~/.vim/bundle/')
   endfunction
 
   " Syntax, Markdown
-  "Plugin 'valloric/YouCompleteMe'
+  Plug 'SirVer/ultisnips', {'do': function('DoRemote')} 
+  Plug 'honza/vim-snippets'
+  "Plug 'valloric/YouCompleteMe'
   if has('nvim')
     Plug 'Shougo/deoplete.nvim', {'do': function('DoRemote')}
   else
@@ -28,26 +30,34 @@ call plug#begin('~/.vim/bundle/')
   endif
   Plug 'scrooloose/syntastic'
   Plug 'The-NERD-Commenter'
-  Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
+  "Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
 
   " Motion, Buffers, Windows
   Plug 'christoomey/vim-tmux-navigator'
   Plug 'Lokaltog/vim-easymotion'
   Plug 'qpkorr/vim-bufkill'
+  Plug 'kana/vim-textobj-user'
+  Plug 'kana/vim-textobj-line'
+  Plug 'sgur/vim-textobj-parameter'
+  Plug 'tpope/vim-surround'
 
   " Python
-  Plug 'tell-k/vim-autopep8'
-  Plug 'jimf/vim-pep8-text-width'
-  Plug 'hynek/vim-python-pep8-indent'
-  Plug 'hdima/python-syntax'
+  Plug 'bps/vim-textobj-python'
+  Plug 'klen/python-mode'
+  "Plug 'jmcantrell/vim-virtualenv'
+  "Plug 'tell-k/vim-autopep8'
+  "Plug 'jimf/vim-pep8-text-width'
+  "Plug 'hynek/vim-python-pep8-indent'
+  "Plug 'hdima/python-syntax'
   "Plug 'ivanov/vim-ipython', { 'for': '*python*'} 
   if has('nvim')
     Plug 'zchee/deoplete-jedi', { 'for': '*python*'} 
     "Plug 'bfredl/nvim-ipy', {'do': function('DoRemote'), 'for': '*python*'} 
+    Plug '~/.vim/dev/nvim-ipy', {'do': function('DoRemote'), 'for': '*python*'} 
+    "Plug '~/.vim/dev/nvim-example-python-plugin', {'do': function('DoRemote')} 
   else
       "Plug 'davidhalter/jedi-vim'
   endif
-  Plug 'jmcantrell/vim-virtualenv'
 
   " R
   if has('nvim')
@@ -74,17 +84,15 @@ call plug#begin('~/.vim/bundle/')
   " TeX 
   Plug 'lervag/vimtex'
   Plug 'noweb.vim--McDermott'
+  Plug 'rbonvall/vim-textobj-latex'
 
   " Vim Misc
   Plug 'kshenoy/vim-signature'
   Plug 'xolox/vim-misc'
   "Plug 'xolox/vim-easytags'
   Plug 'xolox/vim-notes'
-  Plug 'tpope/vim-surround'
   Plug 'OnSyntaxChange'
   "Plug 'ktonga/vim-follow-my-lead'
-  
-  "Plug '~/.vim/bundle/nvim-example-python-plugin', {'do': function('DoRemote')} 
   
   " Theming
   Plug 'bling/vim-airline'
@@ -225,7 +233,8 @@ set background=dark
 let g:python_host_prog='/usr/bin/python'
 "let g:python2_host_prog='/usr/bin/python'
 "let g:python3_host_prog='/usr/bin/python3'
-let g:pymode_indent = 0
+"let g:pymode_indent = 0
+command PythonAutopep8 :!autopep8 --in-place %
 " }}}
 
 " Editing Text {{{
@@ -361,6 +370,27 @@ endif
 " [Generally] global plugin settings from here on.
 "
 
+" surround {{{
+" TODO: how to delete/change?
+let g:surround_108 = "\\begin{\1\\begin{\1}\n\r\n\\end{\1\r}.*\r\1}" 
+" }}}
+
+" python-mode {{{
+let g:pymode_run = 0
+let g:pymode_lint_cwindow = 0
+let g:pymode_rope_completion = 0
+let g:pymode_rope_complete_on_dot = 0
+let g:pymode_rope_completion_bind = '' "'<C-Space>' 
+let g:pymode_breakpoint = 1 
+let g:pymode_breakpoint_bind = '<localleader>b'
+let g:pymode_breakpoint_cmd = '%debug '
+let g:pymode_rope_goto_definition_cmd = 'e'
+let g:pymode_rope_goto_definition_bind = '<localleader>gd' 
+let g:pymode_rope_lookup_project = 0
+let g:pymode_rope_project_root = $VIRTUAL_ENV
+let g:pymode_rope_show_doc_bind = '<localleader>K' 
+" }}}
+
 " deoplete {{{
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#disable_auto_complete = 1
@@ -374,6 +404,7 @@ else
     \ pumvisible() ? "\<C-n>" :
     \ deoplete#mappings#manual_complete()
 endif
+autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 " }}}
 
 " autopep8 {{{
@@ -431,6 +462,22 @@ let g:LatexBox_no_mappings = 1
 let g:tex_fold_enabled=1
 let g:tex_flavor = "latex"
 let g:vimtex_fold_enabled = 0
+
+if !exists('g:deoplete#omni_patterns')
+    let g:deoplete#omni_patterns = {}
+endif
+let g:deoplete#omni_patterns.tex =
+      \ '\v\\%('
+      \ . '\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|\a*ref%(\s*\{[^}]*|range\s*\{[^,}]*%(}\{)?)'
+      \ . '|hyperref\s*\[[^]]*'
+      \ . '|includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|%(include%(only)?|input)\s*\{[^}]*'
+      \ . '|\a*(gls|Gls|GLS)(pl)?\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|includepdf%(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . ')\m'
+let g:vimtex_latexmk_build_dir = '../../output'
 " }}}
 
 " NERDCommenter {{{
@@ -594,6 +641,13 @@ omap / <Plug>(easymotion-tn)
 
 " riv {{{
 let g:riv_python_rst_hl=1
+" }}}
+
+" ultisnips {{{
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+let g:UltiSnipsEditSplit="vertical"
 " }}}
 
 " vim:foldmethod=marker:foldlevel=0

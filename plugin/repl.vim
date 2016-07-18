@@ -76,6 +76,7 @@ function! s:ReplGetSelection(curmode) range
   let lines = getline(lnum1, lnum2)
   let lines[-1] = lines[-1][:col2 - 1]
   let lines[0] = lines[0][col1 - 1:]
+  call cursor(lnum2, 1)
   return join(lines, "\n")
 endfunction
 
@@ -116,7 +117,8 @@ endfunction
 " REPL default mappings and commands {{{
 
 command! ReplSendFileCmd call b:ReplSendFile() 
-command! ReplSendLineCmd call b:ReplSendString(escape(getline("."), '`\')) 
+"command! ReplSendLineCmd call b:ReplSendString(escape(getline("."), '`\')) 
+command! ReplSendLineCmd call b:ReplSendString(getline(".")) 
 command! -range -nargs=1 ReplSendStringCmd call b:ReplSendString(<f-args>) 
 command! -range -nargs=1 ReplSendSelectionCmd call b:ReplSendString(s:ReplGetSelection(<f-args>)) 
 command! ReplCloseTermCmd :call b:ReplCloseTerm() 
@@ -148,6 +150,10 @@ if has("nvim")
     split
     wincmd j
     enew | let t:repl_term_id = termopen(a:expr, {"on_exit": "s:ReplCleanTerm_nvim"}) 
+    if t:repl_term_id < 1
+      exec 'bd! '.bufnr('%')
+      throw 'termopen failed'
+    endif
     let t:repl_buf_id = bufnr('%')
     set nobuflisted
     wincmd p
@@ -158,6 +164,7 @@ if has("nvim")
       throw 'No running repl terminal'
     endif
     call jobsend(t:repl_term_id, "\<c-d>y\<cr>")
+    call jobstop(t:repl_term_id)
     exec 'bd! '.t:repl_buf_id
   endfunction
 

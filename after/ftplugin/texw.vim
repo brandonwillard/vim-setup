@@ -38,11 +38,7 @@ call OnSyntaxChange#Install('NowebCode', 'codeChunk', 1, 'a')
 autocmd User SyntaxNowebCodeEnterA unsilent call SetCodeSettings("python")
 autocmd User SyntaxNowebCodeLeaveA unsilent call SetCodeSettings("tex") 
 
-let b:noweb_options_list = ["indentexpr", "indentkeys", "foldexpr", "formatexpr", "includeexpr", "foldtext", "comments", "commentstring", "formatoptions", "iskeyword", "cinkeys", "softtabstop", "shiftwidth", "tabstop"]
-
-" extra hack for YouCompleteMe
-let b:tex_omnifunc = 'youcompleteme#OmniComplete'
-let b:python_omnifunc = 'youcompleteme#OmniComplete'
+let b:noweb_options_list = ["indentexpr", "indentkeys", "foldexpr", "formatexpr", "includeexpr", "foldtext", "comments", "commentstring", "formatoptions", "iskeyword", "cinkeys", "define", "softtabstop", "shiftwidth", "tabstop", "omnifunc", "expandtab", "copyindent", "preserveindent"]
 
 function! SetCodeSettings(lang)
   "echom "setting " . a:lang . " settings"
@@ -58,21 +54,33 @@ function! SetCodeSettings(lang)
 endfunction
 
 " TODO: what about the standard ftplugin files?
-runtime! after/ftplugin/tex.vim after/ftplugin/tex_*.vim after/ftplugin/tex/*.vim
+" This might be a way to determine/automate the following:
+" http://vim.wikia.com/wiki/Edit_configuration_files_for_a_filetype
+let s:old_ft_ignore_pat = g:ft_ignore_pat
+let g:ft_ignore_pat = '\.\(Z\|gz\|bz2\|zip\|tgz\|texw\|python\.texw\)$' 
+
+unlet! did_load_filetypes
 unlet! b:did_indent
+unlet! b:did_ftplugin
+runtime! ftplugin/tex.vim after/ftplugin/tex.vim after/ftplugin/tex_*.vim after/ftplugin/tex/*.vim
 runtime! indent/tex.vim indent/tex/*.vim 
 
 for topt in b:noweb_options_list
   let b:tex_{topt} = eval("&" . topt)
 endfor
 
-runtime! ftplugin/python/*.vim after/ftplugin/python.vim after/ftplugin/python/*.vim
+unlet! did_load_filetypes
 unlet! b:did_indent
+unlet! b:did_ftplugin
+runtime! ftplugin/python.vim ftplugin/python/*.vim after/ftplugin/python.vim after/ftplugin/python/*.vim
 runtime! indent/python.vim indent/python/*.vim 
 
 for topt in b:noweb_options_list
   let b:python_{topt} = eval("&" . topt)
 endfor
+
+let g:ft_ignore_pat = s:old_ft_ignore_pat
+let did_load_filetypes = 1
 
 setl conceallevel=0
 
