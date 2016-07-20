@@ -53,7 +53,8 @@ call plug#begin('~/.vim/bundle/')
   if has('nvim')
     Plug 'zchee/deoplete-jedi', { 'for': '*python*'} 
     "Plug 'bfredl/nvim-ipy', {'do': function('DoRemote'), 'for': '*python*'} 
-    Plug '~/.vim/dev/nvim-ipy', {'do': function('DoRemote'), 'for': '*python*'} 
+    "Plug '~/.vim/dev/nvim-ipy', {'do': function('DoRemote'), 'for': '*python*'} 
+    Plug '~/.vim/dev/nvim-jupyter', {'do': function('DoRemote'), 'for': '*python*'} 
     "Plug '~/.vim/dev/nvim-example-python-plugin', {'do': function('DoRemote')} 
   else
       "Plug 'davidhalter/jedi-vim'
