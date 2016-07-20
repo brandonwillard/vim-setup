@@ -143,9 +143,9 @@ if has("nvim")
   endif
 
   function! ReplSpawnTerm_nvim(expr)
-    "if exists('t:repl_term_id')
-    "  throw 'Already running a repl terminal'
-    "endif
+    if exists('t:repl_term_id')
+      throw 'Already running a repl terminal'
+    endif
     "sb
     split
     wincmd j
