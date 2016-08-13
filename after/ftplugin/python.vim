@@ -3,10 +3,14 @@
 setl iskeyword+=_
 setl iskeyword-=.
 setl conceallevel=0
-set textwidth=79
-set cino+=(0
-"setl cino=(0
-"set cindent
+setl textwidth=79
+setl cino+=(0
+setl formatprg=autopep8\ -a\ -
+" Can't get this to work, yet.  Looks like the shell script
+" doesn't really handle stdin pipes.
+" Could probably write a wrapper that adds the functionality:
+" http://stackoverflow.com/a/11111088/3006474
+"setl formatprg=yapf\ -
 
 
 " Add python paths to vim search (so you can open source files with gf, etc)
@@ -43,10 +47,52 @@ let b:repl_debug_command = "nocorrect ipython2 --pydb --matplotlib \|\| python"
 let b:ReplSendString_default = CopyFuncRef(b:ReplSendString)
 let b:ReplSendFile_default = CopyFuncRef(b:ReplSendFile)
 
+function! Strip(input_string)
+    return substitute(a:input_string, '^\s*\(.\{-}\)\s*$', '\1', '')
+endfunction
+
 " IPython has a magic for executing blocks of code; use it.
 function! ReplSendString_ipy(expr)
-  let argv = ["%cpaste"] + split(a:expr, "\n") + ['--', '']
+  let lines = copy(split(a:expr, "\n"))
+  call filter(lines, '!empty(v:val) && v:val !~ ''^\s*$''')
+  if empty(lines)
+    return
+  endif
+
+  let argv = []
+  if len(lines) > 1
+    let argv = ["%cpaste"] + lines + ['--', '']
+  else
+    let argv = lines + ['']
+  endif
   call b:ReplSendString_default(argv)
+
+  "call b:ReplSendString_default(["_=get_ipython().run_cell('.substitute(a:expr, "\n", '\\n', '').')",''])
+  
+  "let last_n_ind = 0
+  "let start_n_ind = len(matchstr(lines[0], '^\(\s\)*'))
+  "for i in range(0, len(lines)-1)
+  "  let line = lines[i]
+
+
+  "  " track indents for python
+  "  let n_ind = len(matchstr(lines[i], '^\(\s\)*'))
+  "  if n_ind < last_n_ind
+  "    "call b:ReplSendKey("Enter")
+  "    call b:ReplSendString_default(["\n\r", ''])
+  "  endif
+  "  let last_n_ind = n_ind  
+
+  "  "echo "sending ".escape(line, '`\')
+  "  call b:ReplSendString_default([escape(line, '`\'), ''])
+  "  sleep 100m
+  "endfor
+
+  "" just in case the lines ended at the end
+  "" of a function declaration
+  "if last_n_ind > start_n_ind
+  "  call b:ReplSendString_default(["\r", ''])
+  "endif
 endfunction
 
 " IPython has a handy command that takes care of running files, so we

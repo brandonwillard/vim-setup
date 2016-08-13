@@ -371,6 +371,13 @@ endif
 " [Generally] global plugin settings from here on.
 "
 
+" vimtex {{{
+"let g:vimtex_complete_enabled=0
+let g:vimtex_latexmk_callback=0
+let g:vimtex_latexmk_continuous=0
+let g:vimtex_view_enabled=0
+" }}}
+
 " surround {{{
 " TODO: how to delete/change?
 let g:surround_108 = "\\begin{\1\\begin{\1}\n\r\n\\end{\1\r}.*\r\1}" 
@@ -406,6 +413,21 @@ else
     \ deoplete#mappings#manual_complete()
 endif
 autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+
+" Settings for vimtex
+if !exists('g:deoplete#omni#input_patterns')
+    let g:deoplete#omni#input_patterns = {}
+endif
+let g:deoplete#omni#input_patterns.tex = '\\(?:'
+    \ .  '\w*cite\w*(?:\s*\[[^]]*\]){0,2}\s*{[^}]*'
+    \ . '|\w*ref(?:\s*\{[^}]*|range\s*\{[^,}]*(?:}{)?)'
+    \ . '|hyperref\s*\[[^]]*'
+    \ . '|includegraphics\*?(?:\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+    \ . '|(?:include(?:only)?|input)\s*\{[^}]*'
+    \ . '|\w*(gls|Gls|GLS)(pl)?\w*(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+    \ . '|includepdf(\s*\[[^]]*\])?\s*\{[^}]*'
+    \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
+    \ .')'
 " }}}
 
 " autopep8 {{{
@@ -518,9 +540,11 @@ let g:ycm_goto_buffer_command = 'horizontal-split'
 " }}}
 
 " Ultisnips {{{
-let g:UltiSnipsExpandTrigger="<c-j>"
+let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-j>"
 let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+let g:UltiSnipsEditSplit="vertical"
+let g:UltiSnipsListSnippets="<c-s>"
 " }}}
 
 " Airline {{{
@@ -642,13 +666,6 @@ omap / <Plug>(easymotion-tn)
 
 " riv {{{
 let g:riv_python_rst_hl=1
-" }}}
-
-" ultisnips {{{
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-j>"
-let g:UltiSnipsJumpBackwardTrigger="<c-k>"
-let g:UltiSnipsEditSplit="vertical"
 " }}}
 
 " vim:foldmethod=marker:foldlevel=0
