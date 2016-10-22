@@ -385,6 +385,7 @@ let g:surround_108 = "\\begin{\1\\begin{\1}\n\r\n\\end{\1\r}.*\r\1}"
 
 " python-mode {{{
 let g:pymode_run = 0
+let g:pymode_lint = 0
 let g:pymode_lint_cwindow = 0
 let g:pymode_rope_completion = 0
 let g:pymode_rope_complete_on_dot = 0
@@ -456,7 +457,9 @@ let R_pdfviewer = "qpdfview"
 let g:rplugin_has_wmctrl = 1
 let rmd_syn_hl_chunk = 1
 
-let vimrplugin_source_args = "local = TRUE"
+"let vimrplugin_source_args = 'local = TRUE'
+let R_source_args = 'local=T, echo=T, print.eval=T'
+
 let vimrplugin_by_vim_instance=1
 let vimrplugin_vimpager='vertical'
 let vimrplugin_assign = 0
