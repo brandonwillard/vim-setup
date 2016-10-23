@@ -94,7 +94,9 @@ call plug#begin('~/.vim/bundle/')
   Plug 'xolox/vim-notes'
   Plug 'OnSyntaxChange'
   "Plug 'ktonga/vim-follow-my-lead'
-  
+  Plug 'vim-scripts/genutils'
+  Plug 'albfan/vim-breakpts' 
+
   " Theming
   Plug 'bling/vim-airline'
   Plug 'altercation/vim-colors-solarized'
@@ -178,7 +180,7 @@ set noto
 set timeoutlen=50
 if has("nvim")
   " allow us to easily use window motions in a terminal
-  tnoremap <c-w> <c-\><c-n><c-w>
+  tnoremap <C-w> <C-\><C-n><C-w>
   " leave insert mode in terminal with ESC
   tnoremap <Esc> <C-\><C-N>
 endif
@@ -544,10 +546,10 @@ let g:ycm_goto_buffer_command = 'horizontal-split'
 
 " Ultisnips {{{
 let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-j>"
-let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+let g:UltiSnipsJumpForwardTrigger="<C-j>"
+let g:UltiSnipsJumpBackwardTrigger="<C-k>"
 let g:UltiSnipsEditSplit="vertical"
-let g:UltiSnipsListSnippets="<c-s>"
+let g:UltiSnipsListSnippets="<F3>"
 " }}}
 
 " Airline {{{
@@ -652,9 +654,9 @@ endif
 
 " youcompleteme {{{
 let g:ycm_auto_trigger=0
-let g:ycm_key_invoke_completion = '<c-space>'
-let g:ycm_key_list_select_completion = ['<c-tab>', '<down>']
-let g:ycm_key_list_select_previous_completion = ['<c-s-tab>', '<up>']
+let g:ycm_key_invoke_completion = '<C-space>'
+let g:ycm_key_list_select_completion = ['<C-tab>', '<down>']
+let g:ycm_key_list_select_previous_completion = ['<C-s-tab>', '<up>']
 " }}}
 
 " easymotion {{{

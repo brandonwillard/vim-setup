@@ -45,15 +45,20 @@ let b:repl_run_command = "nocorrect ipython2 --matplotlib \|\| python"
 let b:repl_debug_command = "nocorrect ipython2 --pydb --matplotlib \|\| python"
 
 let b:ReplSendString_default = CopyFuncRef(b:ReplSendString)
+let b:ReplSendFormat_default = CopyFuncRef(b:ReplSendFormat)
 let b:ReplSendFile_default = CopyFuncRef(b:ReplSendFile)
 
 function! Strip(input_string)
     return substitute(a:input_string, '^\s*\(.\{-}\)\s*$', '\1', '')
 endfunction
 
-function! ReplSendString_ipy(expr)
+"function! ReplSendFormat_ipy(expr)
+"
+"endfunction
 
-  let expr_str = "\x1b[200~".a:expr.""
+function! ReplSendString_ipy(expr)
+ 
+  let expr_str = "\x1b[200~".b:ReplSendFormat_default(a:expr).""
 
   call b:ReplSendString_default(expr_str)
   call b:ReplSendString_default(["\x1b[201~", "\r"])
@@ -68,6 +73,7 @@ endfunction
 
 " could just change the maps...
 let b:ReplSendString = function("ReplSendString_ipy")
+"let b:ReplSendFormat = function('ReplSendFormat_ipy') 
 let b:ReplSendFile = function("ReplSendFile_ipy")
 
 command! PythonSendIPythonDebugLine :call b:ReplSendString_default('%debug -b ' . expand('%') . ':' . line('.'))

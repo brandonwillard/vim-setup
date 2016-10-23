@@ -72,11 +72,16 @@ function! s:ReplGetSelection(curmode) range
     return expand('<cWORD>')
   endif
   let [lnum1, col1] = getpos("'<")[1:2]
-  let [lnum2, col2] = getpos("'>")[1:2]
+  let end_pos = getpos("'>")
+  let [lnum2, col2] = end_pos[1:2]
   let lines = getline(lnum1, lnum2)
   let lines[-1] = lines[-1][:col2 - 1]
   let lines[0] = lines[0][col1 - 1:]
-  call cursor(lnum2, 1)
+  " Sends the cursor to the beginning of the last visual select
+  " line.  We probably want to leave the cursor at the end of the
+  " visually selected region instead.
+  "call cursor(lnum2, 1)
+  execute "normal! gv\<Esc>"
   return join(lines, "\n")
 endfunction
 
@@ -177,7 +182,11 @@ if has("nvim")
   endfunction
 
   function! ReplSendFormat_nvim(expr)
-    return a:expr
+    let comb_expr = a:expr
+    if type(a:expr) == 3
+      let comb_expr = join(a:expr, "\n") 
+    endif
+    return xolox#misc#str#dedent(comb_expr)
   endfunction
 
   function! ReplSendFile_nvim()
