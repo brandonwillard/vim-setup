@@ -20,6 +20,8 @@ call plug#begin('~/.vim/bundle/')
   endfunction
 
   " Syntax, Markdown
+  Plug 'godlygeek/tabular'
+  Plug 'plasticboy/vim-markdown'
   Plug 'SirVer/ultisnips', {'do': function('DoRemote')} 
   Plug 'honza/vim-snippets'
   "Plug 'valloric/YouCompleteMe'
@@ -84,7 +86,7 @@ call plug#begin('~/.vim/bundle/')
 
   " TeX 
   Plug 'lervag/vimtex'
-  Plug 'noweb.vim--McDermott'
+  "Plug 'noweb.vim--McDermott'
   Plug 'rbonvall/vim-textobj-latex'
 
   " Vim Misc
@@ -671,6 +673,11 @@ omap / <Plug>(easymotion-tn)
 
 " riv {{{
 let g:riv_python_rst_hl=1
+" }}}
+
+" riv {{{
+let g:vim_markdown_math = 1
+let g:vim_markdown_frontmatter = 1
 " }}}
 
 " vim:foldmethod=marker:foldlevel=0

@@ -1,6 +1,6 @@
 
 "
-" The following Noweb* functions are adapted from the vim-r-plugin.
+" These Noweb* functions are adapted from the vim-r-plugin.
 " 
 if exists("b:loaded_noweb_ftplugin")
   finish
@@ -242,6 +242,103 @@ nmap <buffer> <LocalLeader>tw :<C-U>call NowebSendChunk("stay", "pweave_code")<C
 
 " }}}
 
+" The following is a hack to get 'dynamic' vim settings.  The settings
+" will change depending on the cursor location.
+"
+" First, we load the standard noweb 'backend' settings,
+" save some key option values in local variables,
+" then we do the same for the noweb 'language'.
+" Now, we can create functions that check the
+" cursor location to determine which settings to use.
+"
+" FIXME: Lame that we have to manually load and list out the settings
+" manually for each filetype.  Perhaps we could load these filetypes
+" into a scratch buffer and get the values from there.
+" TODO: generalize this and add to a generic noweb after/ file
+" (noweb-tweaks?).
+" TODO: what about the `b:undo_ftplugin` and `b:undo_indent` variables?
+" Looks like we could generate the `options_list` from that, no?
+" TODO: what about syntax files?  looks like `iskeyword` doesn't work
+" because of that.
+"
+" The OnSyntaxChange plugin (http://www.vim.org/scripts/script.php?script_id=4085)
+" provides the mechanism for triggering these changes.
+call OnSyntaxChange#Install('NowebCode', 'nowebChunk', 1, 'a')
 
+if !exists("b:noweb_language")
+  " Handle multi-filetypes (in a very specific way):
+  let b:noweb_language = split(&ft, '\.')[0] 
+endif
+if !exists("b:noweb_backend")
+  " Handle multi-filetypes (in a very specific way):
+  let b:noweb_backend = split(&ft, '\.')[1]  
+endif
+
+autocmd User SyntaxNowebCodeEnterA unsilent call SetCodeSettings('language')
+autocmd User SyntaxNowebCodeLeaveA unsilent call SetCodeSettings('backend') 
+
+let b:noweb_options_list = ["indentexpr", "indentkeys", "foldexpr",
+      \"formatexpr", "includeexpr", "foldtext", "comments", "formatprg",
+      \"commentstring", "formatoptions", "iskeyword", "cinkeys",
+      \"define", "softtabstop", "shiftwidth", "tabstop", "omnifunc",
+      \"expandtab", "copyindent", "preserveindent"]
+
+function! SetCodeSettings(lang)
+  echom "setting " . a:lang . " settings"
+  for topt in b:noweb_options_list
+    if exists("&".topt) 
+      let l:exec_str = "let &".topt." = b:".a:lang."_".topt
+      "echom l:exec_str
+      execute(l:exec_str) 
+    else
+      echoerr topt . " is not an option!"
+    endif
+  endfor
+endfunction
+
+" TODO: what about the standard ftplugin files?
+" This might be a way to determine/automate the following:
+" http://vim.wikia.com/wiki/Edit_configuration_files_for_a_filetype
+"
+" FYI: Using tpope's `:Runtime` to load these, so we no longer
+" need the surrounding `let/unlet` statements.
+"
+"let s:old_ft_ignore_pat = g:ft_ignore_pat
+"let g:ft_ignore_pat = '\.\(Z\|gz\|bz2\|zip\|tgz\|'.&ft.'\|'.b:noweb_language.'\.'.&ft.'\)$' 
+
+"unlet! did_load_filetypes
+"unlet! b:did_indent
+"unlet! b:did_ftplugin
+
+let b:backend_runtimes = "ftplugin/".b:noweb_backend.".vim" 
+let b:backend_runtimes .= " after/ftplugin/".b:noweb_backend.".vim" 
+let b:backend_runtimes .= " after/ftplugin/".b:noweb_backend."_*.vim" 
+let b:backend_runtimes .= " after/ftplugin/".b:noweb_backend."/*.vim"
+let b:backend_runtimes .= " indent/".b:noweb_backend.".vim" 
+let b:backend_runtimes .= " indent/".b:noweb_backend."/*.vim"
+execute "Runtime! ".b:backend_runtimes
+
+for topt in b:noweb_options_list
+  let b:backend_{topt} = eval("&" . topt)
+endfor
+
+"unlet! did_load_filetypes
+"unlet! b:did_indent
+"unlet! b:did_ftplugin
+
+let b:language_runtimes = "ftplugin/".b:noweb_language.".vim" 
+let b:language_runtimes .= " after/ftplugin/".b:noweb_language.".vim" 
+let b:language_runtimes .= " after/ftplugin/".b:noweb_language."_*.vim" 
+let b:language_runtimes .= " after/ftplugin/".b:noweb_language."/*.vim"
+let b:language_runtimes .= " indent/".b:noweb_language.".vim" 
+let b:language_runtimes .= " indent/".b:noweb_language."/*.vim"
+execute "Runtime! ".b:language_runtimes
+
+for topt in b:noweb_options_list
+  let b:language_{topt} = eval("&" . topt)
+endfor
+
+"let g:ft_ignore_pat = s:old_ft_ignore_pat
+"let did_load_filetypes = 1
 
 " vim:foldmethod=marker:foldlevel=0

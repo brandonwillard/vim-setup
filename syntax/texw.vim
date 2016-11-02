@@ -8,18 +8,16 @@ endif
 let s:keepcpo= &cpo
 set cpo&vim
 
+let b:noweb_backend="tex"
+let b:noweb_language="python"
 
-" FIXME: questionable...
-" clear out old/unecessary syntax
-"runtime syntax/nosyntax.vim
-:syntax clear
 runtime syntax/noweb.vim
 
 setl iskeyword+=_
 setl iskeyword-=.
 setl formatoptions+=croql
 
-let b:current_syntax = "texw"
+"let b:current_syntax = "texw"
 
 let &cpo = s:keepcpo
 unlet s:keepcpo

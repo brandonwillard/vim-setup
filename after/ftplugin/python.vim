@@ -77,4 +77,3 @@ let b:ReplSendString = function("ReplSendString_ipy")
 let b:ReplSendFile = function("ReplSendFile_ipy")
 
 command! PythonSendIPythonDebugLine :call b:ReplSendString_default('%debug -b ' . expand('%') . ':' . line('.'))
-
