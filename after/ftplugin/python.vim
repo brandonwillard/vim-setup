@@ -41,8 +41,8 @@ endif
 
 " Remove nocorrect if you're not using zshell (it stops the input
 " requirement when/if ipython doesn't exist).
-let b:repl_run_command = "nocorrect ipython2 --matplotlib \|\| python"
-let b:repl_debug_command = "nocorrect ipython2 --pydb --matplotlib \|\| python"
+let b:repl_run_command = "nocorrect ipython \|\| python"
+let b:repl_debug_command = "nocorrect ipython --pydb \|\| python"
 
 let b:ReplSendString_default = CopyFuncRef(b:ReplSendString)
 let b:ReplSendFormat_default = CopyFuncRef(b:ReplSendFormat)

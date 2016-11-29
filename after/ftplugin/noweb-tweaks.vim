@@ -274,26 +274,31 @@ if !exists("b:noweb_backend")
   let b:noweb_backend = split(&ft, '\.')[1]  
 endif
 
-autocmd User SyntaxNowebCodeEnterA unsilent call SetCodeSettings('language')
-autocmd User SyntaxNowebCodeLeaveA unsilent call SetCodeSettings('backend') 
+autocmd User SyntaxNowebCodeEnterA unsilent call SetCodeSettings(b:noweb_language)
+autocmd User SyntaxNowebCodeLeaveA unsilent call SetCodeSettings(b:noweb_backend) 
 
-let b:noweb_options_list = ["indentexpr", "indentkeys", "foldexpr",
-      \"formatexpr", "includeexpr", "foldtext", "comments", "formatprg",
-      \"commentstring", "formatoptions", "iskeyword", "cinkeys",
-      \"define", "softtabstop", "shiftwidth", "tabstop", "omnifunc",
-      \"expandtab", "copyindent", "preserveindent"]
+let b:noweb_options_list = ["formatexpr", "includeexpr", "comments", "formatprg",
+      \"commentstring", "formatoptions", "iskeyword", "cinkeys", "define", 
+      \"omnifunc", "keywordprg", "wildignore", "include", "textwidth", "cinoptions"]
+
+" Append these option subsets
+let s:noweb_fold_options = ["foldexpr", "foldtext", "foldmethod", "foldlevel", "foldopen"]
+let s:noweb_indent_options = ["indentexpr", "indentkeys", "tabstop", "shiftwidth", 
+      \"softtabstop", "expandtab", "copyindent", "preserveindent"]
+
+let b:noweb_options_list += s:noweb_indent_options
 
 function! SetCodeSettings(lang)
-  echom "setting " . a:lang . " settings"
-  for topt in b:noweb_options_list
-    if exists("&".topt) 
-      let l:exec_str = "let &".topt." = b:".a:lang."_".topt
+  "echom "setting " . a:lang . " settings"
+  try
+    for topt in b:noweb_options_list
+      let l:exec_str = "let &".topt." = b:noweb_".a:lang."_".topt
       "echom l:exec_str
       execute(l:exec_str) 
-    else
-      echoerr topt . " is not an option!"
-    endif
-  endfor
+    endfor
+  catch
+    echoerr v:exception
+  endtry
 endfunction
 
 " TODO: what about the standard ftplugin files?
@@ -303,40 +308,39 @@ endfunction
 " FYI: Using tpope's `:Runtime` to load these, so we no longer
 " need the surrounding `let/unlet` statements.
 "
-"let s:old_ft_ignore_pat = g:ft_ignore_pat
-"let g:ft_ignore_pat = '\.\(Z\|gz\|bz2\|zip\|tgz\|'.&ft.'\|'.b:noweb_language.'\.'.&ft.'\)$' 
+for vlang in [b:noweb_backend, b:noweb_language]
+    "let s:old_ft_ignore_pat = g:ft_ignore_pat
+    "let g:ft_ignore_pat = '\.\(Z\|gz\|bz2\|zip\|tgz\|'.&ft.'\|'.vlang.'\.'.&ft.'\)$' 
 
-"unlet! did_load_filetypes
-"unlet! b:did_indent
-"unlet! b:did_ftplugin
+    "unlet! did_load_filetypes
+    "unlet! b:did_indent
+    "unlet! b:did_ftplugin
+    try
+      " let b:lang_runtimes = globpath(&rtp, "**/ftplugin/".vlang."*.vim", 0, 1, 0) 
+      " let b:lang_runtimes += globpath(&rtp, "**/indent/".vlang."*.vim", 0, 1, 0) 
+      " let b:lang_runtimes = uniq(sort(b:lang_runtimes))
+      " let s:lang_runtimes = ["ftplugin/".vlang.".vim", 
+      "             \" after/ftplugin/".vlang.".vim", 
+      "             \" after/ftplugin/".vlang."_*.vim",
+      "             \" after/ftplugin/".vlang."/*.vim",
+      "             \" indent/".vlang.".vim", 
+      "             \" indent/".vlang."/*.vim"]
+      " let &filetype=none
+      " execute "Runtime ".join(b:lang_runtimes, ' ')
+      let &filetype=vlang
 
-let b:backend_runtimes = "ftplugin/".b:noweb_backend.".vim" 
-let b:backend_runtimes .= " after/ftplugin/".b:noweb_backend.".vim" 
-let b:backend_runtimes .= " after/ftplugin/".b:noweb_backend."_*.vim" 
-let b:backend_runtimes .= " after/ftplugin/".b:noweb_backend."/*.vim"
-let b:backend_runtimes .= " indent/".b:noweb_backend.".vim" 
-let b:backend_runtimes .= " indent/".b:noweb_backend."/*.vim"
-execute "Runtime! ".b:backend_runtimes
-
-for topt in b:noweb_options_list
-  let b:backend_{topt} = eval("&" . topt)
+      for topt in b:noweb_options_list
+          " echom "setting noweb_".vlang."_".topt."=".eval("&" . topt) 
+          let b:noweb_{vlang}_{topt} = eval("&" . topt)
+      endfor
+    catch
+      echoerr v:exception
+    endtry
+    "unlet! did_load_filetypes
+    "unlet! b:did_indent
+    "unlet! b:did_ftplugin
 endfor
-
-"unlet! did_load_filetypes
-"unlet! b:did_indent
-"unlet! b:did_ftplugin
-
-let b:language_runtimes = "ftplugin/".b:noweb_language.".vim" 
-let b:language_runtimes .= " after/ftplugin/".b:noweb_language.".vim" 
-let b:language_runtimes .= " after/ftplugin/".b:noweb_language."_*.vim" 
-let b:language_runtimes .= " after/ftplugin/".b:noweb_language."/*.vim"
-let b:language_runtimes .= " indent/".b:noweb_language.".vim" 
-let b:language_runtimes .= " indent/".b:noweb_language."/*.vim"
-execute "Runtime! ".b:language_runtimes
-
-for topt in b:noweb_options_list
-  let b:language_{topt} = eval("&" . topt)
-endfor
+let &filetype='noweb'
 
 "let g:ft_ignore_pat = s:old_ft_ignore_pat
 "let did_load_filetypes = 1

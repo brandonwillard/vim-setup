@@ -31,7 +31,8 @@ call plug#begin('~/.vim/bundle/')
     " TODO: add neocomplete
   endif
   Plug 'scrooloose/syntastic'
-  Plug 'The-NERD-Commenter'
+  Plug 'tpope/vim-commentary'
+  "Plug 'The-NERD-Commenter'
   "Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
 
   " Motion, Buffers, Windows
@@ -673,9 +674,6 @@ omap / <Plug>(easymotion-tn)
 
 " riv {{{
 let g:riv_python_rst_hl=1
-" }}}
-
-" riv {{{
 let g:vim_markdown_math = 1
 let g:vim_markdown_frontmatter = 1
 " }}}
