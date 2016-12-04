@@ -292,7 +292,7 @@ function! SetCodeSettings(lang)
   "echom "setting " . a:lang . " settings"
   try
     for topt in b:noweb_options_list
-      let l:exec_str = "let &".topt." = b:noweb_".a:lang."_".topt
+      let l:exec_str = "let &l:".topt." = b:noweb_".a:lang."_".topt
       "echom l:exec_str
       execute(l:exec_str) 
     endfor
@@ -325,13 +325,20 @@ for vlang in [b:noweb_backend, b:noweb_language]
       "             \" after/ftplugin/".vlang."/*.vim",
       "             \" indent/".vlang.".vim", 
       "             \" indent/".vlang."/*.vim"]
-      " let &filetype=none
+      " let &filetype='none'
       " execute "Runtime ".join(b:lang_runtimes, ' ')
+
+      " Unset values:
+      for topt in b:noweb_options_list
+          " echom "unsetting noweb_".vlang."_".topt."=".eval("&l:" . topt) 
+          execute(":set ".topt."&") 
+      endfor
+
       let &filetype=vlang
 
       for topt in b:noweb_options_list
-          " echom "setting noweb_".vlang."_".topt."=".eval("&" . topt) 
-          let b:noweb_{vlang}_{topt} = eval("&" . topt)
+          " echom "setting noweb_".vlang."_".topt."=".eval("&l:" . topt) 
+          let b:noweb_{vlang}_{topt} = eval("&l:" . topt)
       endfor
     catch
       echoerr v:exception
