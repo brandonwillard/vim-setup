@@ -12,6 +12,16 @@ let b:loaded_texw_ftplugin = 1
 let b:noweb_backend="tex"
 let b:noweb_language="python"
 
+if exists('*textobj#user#plugin')
+  call textobj#user#plugin('noweb', {
+  \   'code': {
+  \     'pattern': ['^<<.*>>=', '^@'],
+  \     'select-a': 'aP',
+  \     'select-i': 'iP',
+  \   },
+  \ })
+endif
+
 " TODO: need to get multi-filetypes working
 runtime after/ftplugin/noweb-tweaks.vim
 "runtime after/ftplugin/python.vim
