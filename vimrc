@@ -157,7 +157,6 @@ highlight comment ctermfg=blue
 "syn spell toplevel
 syn spell default
 "set spelllang=en_us
-let python_space_error_highlight = 1 
 " }}}
 
 " Terminal {{{
@@ -240,6 +239,7 @@ let g:python_host_prog='/usr/bin/python'
 "let g:python2_host_prog='/usr/bin/python'
 "let g:python3_host_prog='/usr/bin/python3'
 "let g:pymode_indent = 0
+let python_space_error_highlight = 1 
 command PythonAutopep8 :!autopep8 --in-place %
 " }}}
 
@@ -275,6 +275,7 @@ set mousemodel=extend
 
 " Selecting Text {{{
 set selectmode-=mouse
+set selection=exclusive
 set clipboard+=unnamedplus
 "if has('X11') && has('gui')
 "    set clipboard+=unnamedplus
@@ -283,6 +284,7 @@ set clipboard+=unnamedplus
 
 " Various {{{
 set virtualedit=all
+set cursorline
 " }}}
 
 " Messages and Info {{{

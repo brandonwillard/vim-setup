@@ -23,7 +23,7 @@ function! TexJump2Section(cnt, dir)
 
 function! s:ConfigureLatexEnv()
   " We assume there is log output to work from...
-  let b:latex_log_file = findfile(expand("%:r:t").".log", "**4;")
+  let b:latex_log_file = findfile(expand("%:r:t").".log", "**2;")
   let b:latex_pdf_file = fnamemodify(b:latex_log_file, ":p:r").".pdf" 
   let b:latex_build_dir = fnamemodify(b:latex_log_file, ":p:h")
 

@@ -17,10 +17,8 @@ if !exists("b:noweb_backend")
   let b:noweb_backend = "nosyntax"
 endif
 
-if version < 600
-  execute "source <sfile>:p:h/" . b:noweb_backend . ".vim"
-else
-  execute "runtime! syntax/" . b:noweb_backend . ".vim"
+if !exists("b:noweb_language")
+  let b:noweb_language = "nosyntax"
 endif
 
 " This was probably set by the previous source/runtime call.
@@ -28,42 +26,39 @@ if exists("b:current_syntax")
   unlet b:current_syntax
 endif
 
-"syntax match codeChunkStart "^<<.*>>=$" display
-"syntax match codeChunkEnd "^@$" display
-"highlight link codeChunkStart Type
-"highlight link codeChunkEnd Type
-
-if !exists("b:noweb_language")
-  let b:noweb_language = "nosyntax"
+if version < 600
+  execute "source <sfile>:p:h/" . b:noweb_backend . ".vim"
+else
+  execute "runtime! syntax/" . b:noweb_backend . ".vim"
 endif
+
+unlet! b:current_syntax
 
 " Load the chunk code syntax settings into a variable:
 execute "syntax include @nowebCode syntax/" . b:noweb_language . ".vim"
+
+unlet! b:current_syntax
 
 if exists("noweb_fold_code") && noweb_fold_code == 1
   setl foldmethod=syntax
 
   syn region nowebChunk matchgroup=nowebDelimiter
-        \ start="^<<.*>>=" end="^@"
+        \ start="^<<.\{-}>>=" end="^@"
         \ matchgroup=nowebDelimiter
         \ contains=@nowebCode,nowebChunkReference,nowebChunk
         \ containedin=ALL
-        \ fold keepend
+        \ fold keepend contained
 
-  "syn region nowebChunk start="^<<.*>>=$" end="^@$"
-  "      \contains=@nowebCode transparent fold containedin=ALL keepend
 else
-  syn region nowebChunk matchgroup=nowebDelimiter start="^<<.*>>="
+  syn region nowebChunk matchgroup=nowebDelimiter start="^<<.\{-}>>="
         \ matchgroup=nowebDelimiter end="^@"
         \ contains=@nowebCode,nowebChunkReference,nowebChunk
         \ containedin=ALL
-        \ keepend
+        \ keepend contained
 
-  "syn region nowebChunk start="^<<.*>>=$" end="^@$"
-  "      \ contains=@nowebCode containedin=ALL keepend
 endif
 
-syn match nowebChunkReference "^<<.*>>=$" contained
+syn match nowebChunkReference "^<<.\{-}>>=$" contained
 
 syn region nowebSexpr matchgroup=Delimiter start="\\Sexpr{"
       \ matchgroup=Delimiter end="}" contains=@nowebCode

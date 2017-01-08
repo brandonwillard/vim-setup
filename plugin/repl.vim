@@ -75,8 +75,15 @@ function! s:ReplGetSelection(curmode) range
   let end_pos = getpos("'>")
   let [lnum2, col2] = end_pos[1:2]
   let lines = getline(lnum1, lnum2)
-  let lines[-1] = lines[-1][:col2 - 1]
+
+  let mode_offset = 1
+  if &selection == 'exclusive'
+    let mode_offset = 2
+  endif
+
+  let lines[-1] = lines[-1][:(col2 - mode_offset)]
   let lines[0] = lines[0][col1 - 1:]
+
   " Sends the cursor to the beginning of the last visual select
   " line.  We probably want to leave the cursor at the end of the
   " visually selected region instead.
