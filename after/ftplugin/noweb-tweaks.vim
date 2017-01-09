@@ -287,18 +287,22 @@ let s:noweb_indent_options = ["indentexpr", "indentkeys", "tabstop", "shiftwidth
       \"softtabstop", "expandtab", "copyindent", "preserveindent"]
 
 let b:noweb_options_list += s:noweb_indent_options
+let b:noweb_lang_settings = ''
 
 function! SetCodeSettings(lang)
-  "echom "setting " . a:lang . " settings"
-  try
-    for topt in b:noweb_options_list
-      let l:exec_str = "let &l:".topt." = b:noweb_".a:lang."_".topt
-      "echom l:exec_str
-      execute(l:exec_str) 
-    endfor
-  catch
-    echoerr v:exception
-  endtry
+  " echom "setting " . a:lang . " settings"
+  if b:noweb_lang_settings == '' || b:noweb_lang_settings != a:lang
+    let b:noweb_lang_settings = a:lang
+    try
+      for topt in b:noweb_options_list
+        let l:exec_str = "let &l:".topt." = b:noweb_".a:lang."_".topt
+        "echom l:exec_str
+        execute(l:exec_str) 
+      endfor
+    catch
+      echoerr v:exception
+    endtry
+  endif
 endfunction
 
 " TODO: what about the standard ftplugin files?

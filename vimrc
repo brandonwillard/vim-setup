@@ -142,6 +142,9 @@ set modelines=1
 " Moving Around, Searching and Patterns {{{
 set nostartofline
 set nows
+
+" Clear highlighting with <C-l>, too
+nnoremap <c-l> <c-l>:noh<cr>
 " }}}
 
 " Multiple Windows {{{
@@ -150,13 +153,18 @@ set ls=2
 set switchbuf=useopen
 " }}}
 
-" Syntax, Highligting and Spelling {{{
+" Syntax, Highlighting and Spelling {{{
 set hls
+set synmaxcol=200
+
 syntax enable
-highlight comment ctermfg=blue
-"syn spell toplevel
+
+autocmd BufEnter * :syn sync maxlines=200
+autocmd BufEnter * :syn sync minlines=50
+
 syn spell default
 "set spelllang=en_us
+
 " }}}
 
 " Terminal {{{
@@ -231,6 +239,12 @@ vnoremap p "_dP
 colorscheme torte
 let g:solarized_termcolors=256
 set background=dark
+
+highlight clear comment
+highlight comment ctermfg=blue
+highlight clear SpellBad
+highlight SpellBad cterm=undercurl ctermfg=red
+highlight Search cterm=NONE ctermbg=yellow
 " }}}
 
 " Python {{{
@@ -284,7 +298,7 @@ set clipboard+=unnamedplus
 
 " Various {{{
 set virtualedit=all
-set cursorline
+set nocursorline
 " }}}
 
 " Messages and Info {{{
@@ -373,6 +387,12 @@ if has("autocmd") && exists("+omnifunc")
 endif  
 " }}}
 
+" Latex {{{
+let g:tex_fold_enabled=0
+let g:tex_flavor = "latex"
+" let g:tex_fast = "bcmMsrV"
+" }}}
+
 
 "
 " [Generally] global plugin settings from here on.
@@ -380,9 +400,30 @@ endif
 
 " vimtex {{{
 "let g:vimtex_complete_enabled=0
+let g:vimtex_latexmk_enabled=0
 let g:vimtex_latexmk_callback=0
 let g:vimtex_latexmk_continuous=0
+let g:vimtex_latexmk_build_dir = '../../output'
+
 let g:vimtex_view_enabled=0
+let g:vimtex_view_general_viewer = 'qpdfview'
+let g:vimtex_view_general_options
+  \ = '--unique @pdf\#src:@tex:@line:@col'
+let g:vimtex_view_general_options_latexmk = '--unique'
+
+let g:vimtex_indent_enabled=0
+" let g:vimtex_fold_enabled = 1
+" let g:vimtex_delim_stopline = 300
+
+let g:vimtex_syntax_minted = [
+      \{
+      \   'lang' : 'python',
+      \   'ignore' : [
+      \     'pythonEscape',
+      \     'pythonBEscape',
+      \     ],
+      \ }
+      \]
 " }}}
 
 " surround {{{
@@ -411,6 +452,7 @@ let g:pymode_rope_show_doc_bind = '<localleader>K'
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#disable_auto_complete = 1
 "deoplete#sources#jedi#show_docstring
+
 if has("gui_running")
     inoremap <silent><expr> <C-Space>
     \ pumvisible() ? "\<C-n>" :
@@ -420,6 +462,7 @@ else
     \ pumvisible() ? "\<C-n>" :
     \ deoplete#mappings#manual_complete()
 endif
+
 autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 
 " Settings for vimtex
@@ -436,6 +479,22 @@ let g:deoplete#omni#input_patterns.tex = '\\(?:'
     \ . '|includepdf(\s*\[[^]]*\])?\s*\{[^}]*'
     \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
     \ .')'
+
+" if !exists('g:deoplete#omni_patterns')
+"     let g:deoplete#omni_patterns = {}
+" endif
+
+" let g:deoplete#omni_patterns.tex =
+"       \ '\v\\%('
+"       \ . '\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+"       \ . '|\a*ref%(\s*\{[^}]*|range\s*\{[^,}]*%(}\{)?)'
+"       \ . '|hyperref\s*\[[^]]*'
+"       \ . '|includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+"       \ . '|%(include%(only)?|input)\s*\{[^}]*'
+"       \ . '|\a*(gls|Gls|GLS)(pl)?\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+"       \ . '|includepdf%(\s*\[[^]]*\])?\s*\{[^}]*'
+"       \ . '|includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*'
+"       \ . ')\m'
 " }}}
 
 " autopep8 {{{
@@ -487,30 +546,6 @@ let g:r_indent_align_args=1
 " Noweb {{{
 " rmd/noweb chunk highlighting and folding
 let noweb_fold_code = 1
-" }}}
-
-" Latex {{{
-" disable LatexBox mappings
-let g:LatexBox_no_mappings = 1
-let g:tex_fold_enabled=1
-let g:tex_flavor = "latex"
-let g:vimtex_fold_enabled = 0
-
-if !exists('g:deoplete#omni_patterns')
-    let g:deoplete#omni_patterns = {}
-endif
-let g:deoplete#omni_patterns.tex =
-      \ '\v\\%('
-      \ . '\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-      \ . '|\a*ref%(\s*\{[^}]*|range\s*\{[^,}]*%(}\{)?)'
-      \ . '|hyperref\s*\[[^]]*'
-      \ . '|includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-      \ . '|%(include%(only)?|input)\s*\{[^}]*'
-      \ . '|\a*(gls|Gls|GLS)(pl)?\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-      \ . '|includepdf%(\s*\[[^]]*\])?\s*\{[^}]*'
-      \ . '|includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*'
-      \ . ')\m'
-let g:vimtex_latexmk_build_dir = '../../output'
 " }}}
 
 " NERDCommenter {{{

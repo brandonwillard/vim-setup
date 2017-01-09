@@ -1,8 +1,3 @@
-
-"setl autoindent
-setl spell
-"setl textwidth=80
-"setl formatoptions+=t
 setl sw=2
 setl conceallevel=0
 set foldlevel=1
@@ -21,17 +16,18 @@ function! TexJump2Section(cnt, dir)
    let @/ = pat
  endfunction
 
-function! s:ConfigureLatexEnv()
+function! s:ConfigureLatexBuildEnv()
   " We assume there is log output to work from...
   let b:latex_log_file = findfile(expand("%:r:t").".log", "**2;")
   let b:latex_pdf_file = fnamemodify(b:latex_log_file, ":p:r").".pdf" 
   let b:latex_build_dir = fnamemodify(b:latex_log_file, ":p:h")
 
-  let b:LatexBox_build_dir = b:latex_build_dir
-  let b:LatexBox_jobname = fnamemodify(b:latex_log_file, ":p:r")
+  let g:vimtex_latexmk_build_dir = b:latex_build_dir
+  " let b:LatexBox_build_dir = b:latex_build_dir
+  " let b:LatexBox_jobname = fnamemodify(b:latex_log_file, ":p:r")
 endfunction
 
-call s:ConfigureLatexEnv() 
+call s:ConfigureLatexBuildEnv() 
 
 "
 " Some basic synctex functionality for use with
