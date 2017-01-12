@@ -47,14 +47,14 @@ if exists("noweb_fold_code") && noweb_fold_code == 1
         \ matchgroup=nowebDelimiter
         \ contains=@nowebCode,nowebChunkReference,nowebChunk
         \ containedin=ALL
-        \ fold keepend contained
+        \ fold keepend
 
 else
   syn region nowebChunk matchgroup=nowebDelimiter start="^<<.\{-}>>="
         \ matchgroup=nowebDelimiter end="^@"
         \ contains=@nowebCode,nowebChunkReference,nowebChunk
         \ containedin=ALL
-        \ keepend contained
+        \ keepend
 
 endif
 
@@ -62,14 +62,21 @@ syn match nowebChunkReference "^<<.\{-}>>=$" contained
 
 syn region nowebSexpr matchgroup=Delimiter start="\\Sexpr{"
       \ matchgroup=Delimiter end="}" contains=@nowebCode
+      \ containedin=ALLBUT,nowebChunk oneline
+
+" Pweave specific?
+syn region nowebSexprPweave matchgroup=Delimiter start="<%=\="
+      \ matchgroup=Delimiter end="%>" contains=@nowebCode
+      \ containedin=ALLBUT,nowebChunk oneline
 
 syn region nowebSweaveOpts matchgroup=Delimiter
       \ start="\\SweaveOpts{" matchgroup=Delimiter end="}"
+      \ containedin=ALLBUT,nowebChunk oneline
 
 
 syn cluster noweb
       \ contains=nowebChunk,nowebChunkReference,nowebDelimiter,
-      \nowebSexpr,nowebSweaveOpts
+      \nowebSexpr,nowebSexprPweave,nowebSweaveOpts
 
 hi def link nowebDelimiter Delimiter
 hi def link nowebSweaveOpts Statement
