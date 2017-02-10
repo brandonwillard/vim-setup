@@ -143,8 +143,8 @@ command! ReplSpawnTermDebugCmd :call b:ReplSpawnTerm(b:repl_debug_command)
 if has("nvim")
 
   " Nvim REPL implementations {{{
-  if !exists("*s:ReplCleanTerm_nvim")
-    function s:ReplCleanTerm_nvim()
+  if !exists("*ReplCleanTerm_nvim")
+    function ReplCleanTerm_nvim(...)
       if exists("t:repl_term_id")
         unlet t:repl_term_id 
       endif
@@ -161,7 +161,7 @@ if has("nvim")
     "sb
     split
     wincmd j
-    enew | let t:repl_term_id = termopen(a:expr, {"on_exit": "s:ReplCleanTerm_nvim"}) 
+    enew | let t:repl_term_id = termopen(a:expr, {"on_exit": "ReplCleanTerm_nvim"}) 
     if t:repl_term_id < 1
       exec 'bd! '.bufnr('%')
       throw 'termopen failed'

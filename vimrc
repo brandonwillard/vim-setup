@@ -22,7 +22,8 @@ call plug#begin('~/.vim/bundle/')
   " Syntax, Markdown
   Plug 'godlygeek/tabular'
   Plug 'plasticboy/vim-markdown'
-  Plug 'SirVer/ultisnips', {'do': function('DoRemote')} 
+  " XXX: Broken python rope 
+  "Plug 'SirVer/ultisnips', {'do': function('DoRemote')} 
   Plug 'honza/vim-snippets'
   "Plug 'valloric/YouCompleteMe'
   if has('nvim')
@@ -435,12 +436,15 @@ let g:surround_108 = "\\begin{\1\\begin{\1}\n\r\n\\end{\1\r}.*\r\1}"
 let g:pymode_run = 0
 let g:pymode_lint = 0
 let g:pymode_lint_cwindow = 0
-let g:pymode_rope_completion = 0
-let g:pymode_rope_complete_on_dot = 0
-let g:pymode_rope_completion_bind = '' "'<C-Space>' 
+
 let g:pymode_breakpoint = 1 
 let g:pymode_breakpoint_bind = '<localleader>b'
 let g:pymode_breakpoint_cmd = '%debug '
+
+let g:pymode_rope = 0
+let g:pymode_rope_completion = 0
+let g:pymode_rope_complete_on_dot = 0
+let g:pymode_rope_completion_bind = '' "'<C-Space>' 
 let g:pymode_rope_goto_definition_cmd = 'e'
 let g:pymode_rope_goto_definition_bind = '<localleader>gd' 
 let g:pymode_rope_lookup_project = 0
