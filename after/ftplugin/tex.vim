@@ -19,12 +19,17 @@ function! TexJump2Section(cnt, dir)
 function! s:ConfigureLatexBuildEnv()
   " We assume there is log output to work from...
   let b:latex_log_file = findfile(expand("%:r:t").".log", "**2;")
-  let b:latex_pdf_file = fnamemodify(b:latex_log_file, ":p:r").".pdf" 
-  let b:latex_build_dir = fnamemodify(b:latex_log_file, ":p:h")
 
-  let g:vimtex_latexmk_build_dir = b:latex_build_dir
-  " let b:LatexBox_build_dir = b:latex_build_dir
-  " let b:LatexBox_jobname = fnamemodify(b:latex_log_file, ":p:r")
+  if b:latex_log_file == ''
+    call xolox#misc#msg#warn('No reference TeX log file found!')
+    let b:latex_pdf_file = ''
+    let b:latex_build_file = ''
+    let g:vimtex_latexmk_build_dir = ''
+  else
+    let b:latex_pdf_file = fnamemodify(b:latex_log_file, ":p:r").".pdf" 
+    let b:latex_build_dir = fnamemodify(b:latex_log_file, ":p:h")
+    let g:vimtex_latexmk_build_dir = b:latex_build_dir
+  endif
 endfunction
 
 call s:ConfigureLatexBuildEnv() 
@@ -37,9 +42,16 @@ call s:ConfigureLatexBuildEnv()
 " qpdfview --unique --instance VIMSERVER123 foobar.pdf#src:foobar.tex:42:0
 "
 function! SyncTexForward()
-  if !exists('b:latex_pdf_file') || b:latex_pdf_file == ""
-    call s:ConfigureLatexEnv() 
+  if !exists('b:latex_pdf_file') || b:latex_pdf_file == ''
+    call xolox#misc#msg#info('b:latex_pdf_file not instantiated; finding TeX settings...')
+    call s:ConfigureLatexBuildEnv() 
   endif
+
+  if !filereadable(b:latex_pdf_file)
+    call xolox#misc#msg#warn('No pdf file found for SyncTeX!')
+    return
+  endif
+
   let l:inst_name = substitute(v:servername, '\/', '_', 'g')
   let l:execstr = "!qpdfview --unique --instance ".l:inst_name." "
   let l:execstr .= b:latex_pdf_file."\\#src:".expand("%:p").":".line(".").
