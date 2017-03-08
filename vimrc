@@ -21,7 +21,7 @@ call plug#begin('~/.vim/bundle/')
 
   " Syntax, Markdown
   Plug 'godlygeek/tabular'
-  Plug 'plasticboy/vim-markdown'
+  Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
   " XXX: Broken python rope 
   "Plug 'SirVer/ultisnips', {'do': function('DoRemote')} 
   Plug 'honza/vim-snippets'
@@ -33,7 +33,6 @@ call plug#begin('~/.vim/bundle/')
   endif
   Plug 'scrooloose/syntastic'
   Plug 'tpope/vim-commentary'
-  "Plug 'The-NERD-Commenter'
   "Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
 
   " Motion, Buffers, Windows
@@ -46,14 +45,14 @@ call plug#begin('~/.vim/bundle/')
   Plug 'tpope/vim-surround'
 
   " Python
-  Plug 'bps/vim-textobj-python'
-  Plug 'klen/python-mode'
+  Plug 'bps/vim-textobj-python', {'for': '*python*'}
+  Plug 'python-mode/python-mode', {'for': '*python*'}
   "Plug 'jmcantrell/vim-virtualenv'
   "Plug 'tell-k/vim-autopep8'
   "Plug 'jimf/vim-pep8-text-width'
   "Plug 'hynek/vim-python-pep8-indent'
   "Plug 'hdima/python-syntax'
-  "Plug 'ivanov/vim-ipython', { 'for': '*python*'} 
+  "Plug 'ivanov/vim-ipython', {'for': '*python*'} 
   if has('nvim')
     Plug 'zchee/deoplete-jedi', { 'for': '*python*'} 
     "Plug 'bfredl/nvim-ipy', {'do': function('DoRemote'), 'for': '*python*'} 
@@ -87,9 +86,8 @@ call plug#begin('~/.vim/bundle/')
   Plug 'tpope/vim-scriptease'
 
   " TeX 
-  Plug 'lervag/vimtex'
-  "Plug 'noweb.vim--McDermott'
-  Plug 'rbonvall/vim-textobj-latex'
+  Plug 'lervag/vimtex', {'for': ['tex', 'noweb']}
+  Plug 'rbonvall/vim-textobj-latex', {'for': ['tex', 'noweb']}
 
   " Vim Misc
   Plug 'kshenoy/vim-signature'
@@ -156,7 +154,9 @@ set switchbuf=useopen
 
 " Syntax, Highlighting and Spelling {{{
 set hls
-set synmaxcol=200
+
+" When it's really slow, try something like this:
+" set synmaxcol=200
 
 syntax enable
 
@@ -249,10 +249,12 @@ highlight Search cterm=NONE ctermbg=yellow
 " }}}
 
 " Python {{{
-" might help when your env is virtual or whatnot
-let g:python_host_prog='/usr/bin/python'
-"let g:python2_host_prog='/usr/bin/python'
-"let g:python3_host_prog='/usr/bin/python3'
+" We should have separate pyenv virtualenvs for python 2 and 3.
+" The host progs should point to those.
+" See: https://github.com/zchee/deoplete-jedi/wiki/Setting-up-Python-for-Neovim#using-virtual-environments
+"
+let g:python_host_prog='/home/bwillar0/.pyenv/versions/neovim2/bin/python'
+let g:python3_host_prog='/home/bwillar0/.pyenv/versions/neovim3/bin/python'
 "let g:pymode_indent = 0
 let python_space_error_highlight = 1 
 command PythonAutopep8 :!autopep8 --in-place %
@@ -434,12 +436,23 @@ let g:surround_108 = "\\begin{\1\\begin{\1}\n\r\n\\end{\1\r}.*\r\1}"
 
 " python-mode {{{
 let g:pymode_run = 0
+
 let g:pymode_lint = 0
 let g:pymode_lint_cwindow = 0
 
 let g:pymode_breakpoint = 1 
 let g:pymode_breakpoint_bind = '<localleader>b'
 let g:pymode_breakpoint_cmd = '%debug '
+
+let g:pymode_options_colorcolumn = 0
+
+let g:pymode_folding = 0
+
+let g:pymode_syntax = 0
+let g:pymode_syntax_all = 0
+let g:pymode_syntax_slow_sync = 1
+
+let g:pymode_doc = 0
 
 let g:pymode_rope = 0
 let g:pymode_rope_completion = 0
