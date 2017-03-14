@@ -39,17 +39,29 @@ if !exists("b:loaded_repl")
   runtime! plugin/repl.vim
 endif
 
-" Remove nocorrect if you're not using zshell (it stops the input
-" requirement when/if ipython doesn't exist).
-let b:repl_run_command = "nocorrect ipython \|\| python"
-let b:repl_debug_command = "nocorrect ipython --pydb \|\| python"
+function! StartJupyterString()
+  let python_version = system('python -V')
+  " Remove nocorrect if you're not using zshell (it stops the input
+  if python_version =~ '^Python 3\.\?'
+    return "nocorrect jupyter-console --kernel python3 \|\| python"
+  elseif python_version =~ '^Python 2\.\?'
+    return "nocorrect jupyter-console --kernel python2 \|\| python"
+  else
+    return "nocorrect jupyter-console \|\| python"
+  endif
+endfunction
+
+let b:repl_run_command = StartJupyterString()
+let b:repl_debug_command = StartJupyterString()
+
+
 
 let b:ReplSendString_default = CopyFuncRef(b:ReplSendString)
 let b:ReplSendFormat_default = CopyFuncRef(b:ReplSendFormat)
 let b:ReplSendFile_default = CopyFuncRef(b:ReplSendFile)
 
 function! Strip(input_string)
-    return substitute(a:input_string, '^\s*\(.\{-}\)\s*$', '\1', '')
+  return substitute(a:input_string, '^\s*\(.\{-}\)\s*$', '\1', '')
 endfunction
 
 "function! ReplSendFormat_ipy(expr)
@@ -59,9 +71,10 @@ endfunction
 function! ReplSendString_ipy(expr)
  
   let expr_str = "\x1b[200~".b:ReplSendFormat_default(a:expr).""
+  " let expr_str = b:ReplSendFormat_default(a:expr)
 
   call b:ReplSendString_default(expr_str)
-  call b:ReplSendString_default(["\x1b[201~", "\r"])
+  call b:ReplSendString_default(["\x1b[201~", "\r", "\n"])
 
 endfunction
 

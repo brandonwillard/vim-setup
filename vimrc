@@ -306,8 +306,7 @@ set nocursorline
 
 " Messages and Info {{{
 set showcmd
-"set noshowmode
-"set showmode
+set showmode
 " }}}
 
 " Functions {{{
@@ -435,14 +434,14 @@ let g:surround_108 = "\\begin{\1\\begin{\1}\n\r\n\\end{\1\r}.*\r\1}"
 " }}}
 
 " python-mode {{{
-let g:pymode_run = 0
+let g:pymode_run = 1
 
 let g:pymode_lint = 0
 let g:pymode_lint_cwindow = 0
 
 let g:pymode_breakpoint = 1 
 let g:pymode_breakpoint_bind = '<localleader>b'
-let g:pymode_breakpoint_cmd = '%debug '
+" let g:pymode_breakpoint_cmd = '%debug '
 
 let g:pymode_options_colorcolumn = 0
 
@@ -454,7 +453,7 @@ let g:pymode_syntax_slow_sync = 1
 
 let g:pymode_doc = 0
 
-let g:pymode_rope = 0
+let g:pymode_rope = 1
 let g:pymode_rope_completion = 0
 let g:pymode_rope_complete_on_dot = 0
 let g:pymode_rope_completion_bind = '' "'<C-Space>' 
@@ -468,6 +467,7 @@ let g:pymode_rope_show_doc_bind = '<localleader>K'
 " deoplete {{{
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#disable_auto_complete = 1
+" let g:deoplete#complete_method = 'omnifunc'
 "deoplete#sources#jedi#show_docstring
 
 if has("gui_running")
