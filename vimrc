@@ -2,6 +2,15 @@
 " Check the folds below for settings.
 " Otherwise, see the after/ ftplugins/ and other directories.
 "
+" Some content inspired by the following:
+" * https://github.com/justinmk/config/blob/7b97ae50b5377b35d37128fe1225c47e5fcba7d0/.vimrc#L1021
+" * http://vim.wikia.com/wiki/Identify_the_syntax_highlighting_group_used_at_the_cursor
+" * https://github.com/zchee/deoplete-jedi/wiki/Setting-up-Python-for-Neovim#using-virtual-environments
+" * https://github.com/mbadran/headlights/blob/master/plugin/headlights.vim
+" * http://vim.wikia.com/wiki/Capture_ex_command_output
+" * http://vim.wikia.com/wiki/Make_Vim_completion_popup_menu_work_just_like_in_an_IDE
+" * https://github.com/blueyed/dotfiles/blob/master/vimrc
+"
 " -brandonwillard
 "
 
@@ -11,23 +20,15 @@
 " Plugins Config {{{
 call plug#begin('~/.vim/bundle/') 
 
-  " remote-plugins require `:UpdateRemotePlugins`
-  " after bundle installation.
-  " Wrap this in `has('nvim')`?
-  function! DoRemote(arg)
-    echom "updating remote plugins"
-    UpdateRemotePlugins
-  endfunction
-
   " Syntax, Markdown
   Plug 'godlygeek/tabular'
   Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
   " XXX: Broken python rope 
-  "Plug 'SirVer/ultisnips', {'do': function('DoRemote')} 
+  "Plug 'SirVer/ultisnips', {'do': ':UpdateRemotePlugins'} 
   Plug 'honza/vim-snippets'
   "Plug 'valloric/YouCompleteMe'
   if has('nvim')
-    Plug 'Shougo/deoplete.nvim', {'do': function('DoRemote')}
+    Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
   else
     " TODO: add neocomplete
   endif
@@ -47,6 +48,7 @@ call plug#begin('~/.vim/bundle/')
   " Python
   Plug 'bps/vim-textobj-python', {'for': '*python*'}
   Plug 'python-mode/python-mode', {'for': '*python*'}
+  Plug 'davidhalter/jedi-vim'
   "Plug 'jmcantrell/vim-virtualenv'
   "Plug 'tell-k/vim-autopep8'
   "Plug 'jimf/vim-pep8-text-width'
@@ -55,12 +57,11 @@ call plug#begin('~/.vim/bundle/')
   "Plug 'ivanov/vim-ipython', {'for': '*python*'} 
   if has('nvim')
     Plug 'zchee/deoplete-jedi', { 'for': '*python*'} 
-    "Plug 'bfredl/nvim-ipy', {'do': function('DoRemote'), 'for': '*python*'} 
-    "Plug '~/.vim/dev/nvim-ipy', {'do': function('DoRemote'), 'for': '*python*'} 
-    "Plug '~/.vim/dev/nvim-jupyter', {'do': function('DoRemote'), 'for': '*python*'} 
-    "Plug '~/.vim/dev/nvim-example-python-plugin', {'do': function('DoRemote')} 
+    "Plug 'bfredl/nvim-ipy', {'do': ':UpdateRemotePlugins', 'for': '*python*'} 
+    "Plug '~/.vim/dev/nvim-ipy', {'do': ':UpdateRemotePlugins', 'for': '*python*'} 
+    "Plug '~/.vim/dev/nvim-jupyter', {'do': ':UpdateRemotePlugins', 'for': '*python*'} 
+    "Plug '~/.vim/dev/nvim-example-python-plugin', {'do': ':UpdateRemotePlugins'} 
   else
-      "Plug 'davidhalter/jedi-vim'
   endif
 
   " R
@@ -124,6 +125,12 @@ set expandtab
 "set smarttab
 set cinkeys-=0#
 set indentkeys-=0#
+
+if exists('+breakindent')
+  set breakindent
+  set breakindentopt=min:20,shift:0,sbr
+endif
+set linebreak
 
 " }}}
 
@@ -197,15 +204,14 @@ if has("nvim")
 endif
 
 " Use Ctrl+Space to do omnicompletion:
-if has("gui_running")
-  "set term=$TERM
-  "set noguipty
-  inoremap <C-Space> <C-x><C-o>
-else
-  inoremap <Nul> <C-x><C-o>
-endif
+" if has("gui_running")
+"   "set term=$TERM
+"   "set noguipty
+"   inoremap <C-Space> <C-x><C-o>
+" else
+"   inoremap <Nul> <C-x><C-o>
+" endif
 
-" from: https://github.com/justinmk/config/blob/7b97ae50b5377b35d37128fe1225c47e5fcba7d0/.vimrc#L1021
 " disable Ex mode key 
 noremap Q <Nop>
 
@@ -225,7 +231,6 @@ noremap gk k
 vnoremap p "_dP
 
 " helper for debugging syntax code:
-" http://vim.wikia.com/wiki/Identify_the_syntax_highlighting_group_used_at_the_cursor
 "map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
 
@@ -251,7 +256,6 @@ highlight Search cterm=NONE ctermbg=yellow
 " Python {{{
 " We should have separate pyenv virtualenvs for python 2 and 3.
 " The host progs should point to those.
-" See: https://github.com/zchee/deoplete-jedi/wiki/Setting-up-Python-for-Neovim#using-virtual-environments
 "
 let g:python_host_prog='/home/bwillar0/.pyenv/versions/neovim2/bin/python'
 let g:python3_host_prog='/home/bwillar0/.pyenv/versions/neovim3/bin/python'
@@ -302,6 +306,10 @@ set clipboard+=unnamedplus
 " Various {{{
 set virtualedit=all
 set nocursorline
+
+if $VIRTUAL_ENV != ""
+  let &tags = $VIRTUAL_ENV.'/tags,' . &tags
+endif
 " }}}
 
 " Messages and Info {{{
@@ -322,7 +330,6 @@ function! CopyFuncRef(funcref)
 endfunction
 
 function! GetVimCommandOutput(command) 
-  " from: https://github.com/mbadran/headlights/blob/master/plugin/headlights.vim
   " capture and return the output of a vim command
   " initialise to a blank value in case the command throws a vim error
   " (try-catch doesn't always work here, for some reason)
@@ -336,7 +343,6 @@ function! GetVimCommandOutput(command)
 endfunction
 
 " Capture output of Ex commands
-" from: http://vim.wikia.com/wiki/Capture_ex_command_output
 " this function output the result of the Ex command into a split scratch
 " buffer
 function! OutputSplitWindow(...)
@@ -380,13 +386,12 @@ autocmd InsertEnter * if !exists('w:last_fdm') | let w:last_fdm=&foldmethod | se
 autocmd InsertLeave,WinLeave * if exists('w:last_fdm') | let &l:foldmethod=w:last_fdm | unlet w:last_fdm | endif
 
 " Omni/popup settings from here:
-" http://vim.wikia.com/wiki/Make_Vim_completion_popup_menu_work_just_like_in_an_IDE
-if has("autocmd") && exists("+omnifunc")
-  autocmd Filetype *
-        \	if &omnifunc == "" |
-        \		setlocal omnifunc=syntaxcomplete#Complete |
-        \	endif
-endif  
+" if has("autocmd") && exists("+omnifunc")
+"   autocmd Filetype *
+"         \	if &omnifunc == "" |
+"         \		setlocal omnifunc=syntaxcomplete#Complete |
+"         \	endif
+" endif  
 " }}}
 
 " Latex {{{
@@ -434,6 +439,7 @@ let g:surround_108 = "\\begin{\1\\begin{\1}\n\r\n\\end{\1\r}.*\r\1}"
 " }}}
 
 " python-mode {{{
+let g:pymode_debug = 1
 let g:pymode_run = 1
 
 let g:pymode_lint = 0
@@ -453,7 +459,9 @@ let g:pymode_syntax_slow_sync = 1
 
 let g:pymode_doc = 0
 
-let g:pymode_rope = 1
+" XXX: enable only for pure python files; no mixed/noweb files!
+let g:pymode_rope = 0
+let g:pymode_rope_regenerate_on_write = 0
 let g:pymode_rope_completion = 0
 let g:pymode_rope_complete_on_dot = 0
 let g:pymode_rope_completion_bind = '' "'<C-Space>' 
@@ -467,25 +475,28 @@ let g:pymode_rope_show_doc_bind = '<localleader>K'
 " deoplete {{{
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#disable_auto_complete = 1
-" let g:deoplete#complete_method = 'omnifunc'
+"let g:deoplete#complete_method = 'omnifunc'
 "deoplete#sources#jedi#show_docstring
 
-if has("gui_running")
-    inoremap <silent><expr> <C-Space>
+inoremap <silent><expr> <C-Space>
     \ pumvisible() ? "\<C-n>" :
+    \ <SID>check_back_space() ? "\<C-Space>" :
     \ deoplete#mappings#manual_complete()
-else
-    inoremap <silent><expr> <Nul>
-    \ pumvisible() ? "\<C-n>" :
-    \ deoplete#mappings#manual_complete()
-endif
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
 
 autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 
-" Settings for vimtex
+"let g:deoplete#omni_patterns = []
+
 if !exists('g:deoplete#omni#input_patterns')
     let g:deoplete#omni#input_patterns = {}
 endif
+
+" Settings for vimtex
 let g:deoplete#omni#input_patterns.tex = '\\(?:'
     \ .  '\w*cite\w*(?:\s*\[[^]]*\]){0,2}\s*{[^}]*'
     \ . '|\w*ref(?:\s*\{[^}]*|range\s*\{[^,}]*(?:}{)?)'
@@ -497,21 +508,6 @@ let g:deoplete#omni#input_patterns.tex = '\\(?:'
     \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
     \ .')'
 
-" if !exists('g:deoplete#omni_patterns')
-"     let g:deoplete#omni_patterns = {}
-" endif
-
-" let g:deoplete#omni_patterns.tex =
-"       \ '\v\\%('
-"       \ . '\a*cite\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-"       \ . '|\a*ref%(\s*\{[^}]*|range\s*\{[^,}]*%(}\{)?)'
-"       \ . '|hyperref\s*\[[^]]*'
-"       \ . '|includegraphics\*?%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-"       \ . '|%(include%(only)?|input)\s*\{[^}]*'
-"       \ . '|\a*(gls|Gls|GLS)(pl)?\a*%(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-"       \ . '|includepdf%(\s*\[[^]]*\])?\s*\{[^}]*'
-"       \ . '|includestandalone%(\s*\[[^]]*\])?\s*\{[^}]*'
-"       \ . ')\m'
 " }}}
 
 " autopep8 {{{
@@ -574,19 +570,27 @@ let g:NERDDefaultNesting=1
 " }}}
 
 " YouCompleteMe {{{
-let g:ycm_auto_trigger = 0
-"let g:ycm_python_binary_path = ''
-"let g:ycm_key_invoke_completion = '<Nop>' "'<C-Space>' 
-let g:ycm_autoclose_preview_window_after_completion = 1 
-let g:ycm_autoclose_preview_window_after_insertion = 1
-let g:ycm_key_list_select_completion = ['<C-N>']
-let g:ycm_key_list_select_previous_completion = ['<C-P>']
-let g:ycm_cache_omnifunc = 1 
-let g:ycm_use_ultisnips_completer = 1
-let g:ycm_goto_buffer_command = 'horizontal-split'
+" let g:ycm_auto_trigger = 0
+" "let g:ycm_python_binary_path = ''
+" "let g:ycm_key_invoke_completion = '<Nop>' "'<C-Space>' 
+" let g:ycm_autoclose_preview_window_after_completion = 1 
+" let g:ycm_autoclose_preview_window_after_insertion = 1
+" let g:ycm_key_list_select_completion = ['<C-N>']
+" let g:ycm_key_list_select_previous_completion = ['<C-P>']
+" let g:ycm_cache_omnifunc = 1 
+" let g:ycm_use_ultisnips_completer = 1
+" let g:ycm_goto_buffer_command = 'horizontal-split'
 " }}}
 
-" Jedi {{{
+" jedi {{{
+let g:jedi#completions_enabled = 0
+let g:jedi#auto_vim_configuration = 0
+let g:jedi#use_tabs_not_buffers = 0
+let g:jedi#rename_command = '<localleader>gR'
+let g:jedi#usages_command = '<localleader>gu'
+let g:jedi#smart_auto_mappings = 1
+let g:jedi#auto_close_doc = 1
+"let g:jedi#documentation_command = "K"
 "let g:jedi#use_splits_not_buffers = "left"
 "let g:jedi#popup_on_dot = 0
 "let g:jedi#popup_select_first = 0
@@ -594,11 +598,12 @@ let g:ycm_goto_buffer_command = 'horizontal-split'
 "let g:jedi#goto_command = "<leader>d"
 "let g:jedi#goto_assignments_command = "<leader>g"
 "let g:jedi#goto_definitions_command = ""
-"let g:jedi#documentation_command = "K"
 "let g:jedi#usages_command = "<leader>n"
 "let g:jedi#completions_command = "<C-N>"
 "let g:jedi#rename_command = "<leader>r"
-"let g:jedi#auto_vim_configuration = 0
+
+nnoremap <localleader>gd :<C-u>call jedi#goto()<CR>zv
+autocmd BufWinEnter '__doc__' setlocal bufhidden=delete
 " }}}
 
 " Ultisnips {{{

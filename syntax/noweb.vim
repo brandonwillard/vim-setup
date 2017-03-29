@@ -1,5 +1,34 @@
 " Noweb syntax file
 "
+" FIXME TODO: Check out how `vimScriptDelim`, `vimPythonRegion` works in VimL
+" files; it seems to not have the same weird problem overlapping python issue
+" seen with statements like `blah_12`, where the `12` is parsed as a separate
+" numeric literal syntax token.
+"
+" Nevermind, this is it:
+"
+"  let s:pythonpath= fnameescape(expand("<sfile>:p:h")."/python.vim")
+"  if !filereadable(s:pythonpath)
+"   for s:pythonpath in split(globpath(&rtp,"syntax/python.vim"),"\n")
+"    if filereadable(fnameescape(s:pythonpath))
+"     let s:pythonpath= fnameescape(s:pythonpath)
+"     break
+"    endif
+"   endfor
+"  endif
+"  if g:vimsyn_embed =~# 'P' && filereadable(s:pythonpath)
+"   unlet! b:current_syntax
+"   exe "syn include @vimPythonScript ".s:pythonpath
+"   VimFoldP syn region vimPythonRegion matchgroup=vimScriptDelim start=+py\%[thon]3\=\s*<<\s*\z(.*\)$+ end=+^\z1$+	contains=@vimPythonScript
+"   VimFoldP syn region vimPythonRegion matchgroup=vimScriptDelim start=+py\%[thon]3\=\s*<<\s*$+ end=+\.$+		contains=@vimPythonScript
+"   VimFoldP syn region vimPythonRegion matchgroup=vimScriptDelim start=+Py\%[thon]2or3\s*<<\s*\z(.*\)$+ end=+^\z1$+		contains=@vimPythonScript
+"   VimFoldP syn region vimPythonRegion matchgroup=vimScriptDelim start=+Py\%[thon]2or3\=\s*<<\s*$+ end=+\.$+		contains=@vimPythonScript
+"   syn cluster vimFuncBodyList	add=vimPythonRegion
+"  else
+"   syn region vimEmbedError start=+py\%[thon]3\=\s*<<\s*\z(.*\)$+ end=+^\z1$+
+"   syn region vimEmbedError start=+py\%[thon]3\=\s*<<\s*$+ end=+\.$+
+"  endif
+"  unlet s:pythonpath
 " Remarks: Inspired by noweb.vim--McDermott and vim-pweave.
 "
 

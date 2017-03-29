@@ -35,6 +35,15 @@ EOF
 
 endif
 
+" Only run certain pymode/rope features for pure python files.
+" E.g. definition lookup won't work (because it doesn't parse only
+" the code chunks, yet).
+" if !(exists("b:noweb_backend") || exists("b:noweb_language"))
+"   let g:pymode_rope = 1 
+" else
+"   let g:pymode_rope = 0 
+" endif
+
 if !exists("b:loaded_repl")
   runtime! plugin/repl.vim
 endif
