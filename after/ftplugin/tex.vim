@@ -53,10 +53,13 @@ function! SyncTexForward()
   endif
 
   let l:inst_name = substitute(v:servername, '\/', '_', 'g')
-  let l:execstr = "!qpdfview --unique --instance ".l:inst_name." "
-  let l:execstr .= b:latex_pdf_file."\\#src:".expand("%:p").":".line(".").
-			  \":0 &> /dev/null &"
-  echomsg l:execstr
+  let l:execstr = "!NVIM_LISTEN_ADDRESS=".v:servername
+  let l:execstr .= " qpdfview --unique --instance ".l:inst_name." "
+  let l:execstr .= b:latex_pdf_file."\\#src:".expand("%:p")
+  let l:execstr .= ":".line(".").":0 &> /dev/null &"
+
+  call xolox#misc#msg#debug(l:execstr)
+
   silent exec l:execstr | redraw!
 endfunction
 

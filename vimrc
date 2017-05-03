@@ -20,7 +20,7 @@
 " Plugins Config {{{
 call plug#begin('~/.vim/bundle/') 
 
-  " Syntax, Markdown
+  "## Syntax, Markdown
   Plug 'godlygeek/tabular'
   Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
   " XXX: Broken python rope 
@@ -36,7 +36,7 @@ call plug#begin('~/.vim/bundle/')
   Plug 'tpope/vim-commentary'
   "Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
 
-  " Motion, Buffers, Windows
+  "# Motion, Buffers, Windows
   Plug 'christoomey/vim-tmux-navigator'
   Plug 'Lokaltog/vim-easymotion'
   Plug 'qpkorr/vim-bufkill'
@@ -44,8 +44,10 @@ call plug#begin('~/.vim/bundle/')
   Plug 'kana/vim-textobj-line'
   Plug 'sgur/vim-textobj-parameter'
   Plug 'tpope/vim-surround'
+  " -- Make `.` work for maps and `<Plug>`s:
+  Plug 'tpope/vim-repeat'
 
-  " Python
+  "# Python
   Plug 'bps/vim-textobj-python', {'for': '*python*'}
   Plug 'python-mode/python-mode', {'for': '*python*'}
   Plug 'davidhalter/jedi-vim'
@@ -64,7 +66,7 @@ call plug#begin('~/.vim/bundle/')
   else
   endif
 
-  " R
+  "# R
   if has('nvim')
     Plug 'jalvesaq/Nvim-R', { 'for': ['r', 'rnoweb', 'rmd']} 
   else
@@ -72,37 +74,39 @@ call plug#begin('~/.vim/bundle/')
     Plug 'jcfaria/Vim-R-plugin', { 'for': ['r', 'rnoweb', 'rmd']}
   endif
 
-  " Terminal/REPL
+  "# Terminal/REPL
   if has('nvim')
     "Plug 'kassio/neoterm'
   else
     Plug 'vimux'
   endif
 
-  " Filesystem, Make, Git 
+  "# Filesystem, Make, Git 
   Plug 'benekastah/neomake'
   Plug 'tpope/vim-fugitive'
-  Plug 'LargeFile'
+  Plug 'vim-scripts/LargeFile'
   Plug 'tpope/vim-eunuch'
   Plug 'tpope/vim-scriptease'
 
-  " TeX 
+  "# TeX 
   Plug 'lervag/vimtex', {'for': ['tex', 'noweb']}
   Plug 'rbonvall/vim-textobj-latex', {'for': ['tex', 'noweb']}
 
-  " Vim Misc
+  "# Vim Misc
+  Plug 'rhysd/vim-grammarous'
   Plug 'kshenoy/vim-signature'
   Plug 'xolox/vim-misc'
   "Plug 'xolox/vim-easytags'
   Plug 'xolox/vim-notes'
-  Plug 'OnSyntaxChange'
+  Plug 'vim-scripts/OnSyntaxChange'
   "Plug 'ktonga/vim-follow-my-lead'
   Plug 'vim-scripts/genutils'
   Plug 'albfan/vim-breakpts' 
 
-  " Theming
+  "# Theming
   Plug 'bling/vim-airline'
-  Plug 'altercation/vim-colors-solarized'
+  " Plug 'altercation/vim-colors-solarized'
+  Plug 'google/vim-colorscheme-primary'
 
 call plug#end() 
 
@@ -126,11 +130,10 @@ set expandtab
 set cinkeys-=0#
 set indentkeys-=0#
 
-if exists('+breakindent')
-  set breakindent
-  set breakindentopt=min:20,shift:0,sbr
-endif
-set linebreak
+" if exists('+breakindent')
+"   set breakindent
+"   set breakindentopt=min:20,shift:0,sbr
+" endif
 
 " }}}
 
@@ -220,15 +223,12 @@ map ][ /}<CR>b99]}
 map ]] j0[[%/{<CR>
 map [] k$][%?}<CR>
 map <F7> :syn sync fromstart<CR>
-"set wrap
-" Basic motions aren't affected by line wrapping...
+
+" -- Basic motions aren't affected by line wrapping:
 noremap j gj
 noremap k gk
 noremap gj j
 noremap gk k
-" don't yank when replacing (could add <leader> to preserve original
-" functionality).
-vnoremap p "_dP
 
 " helper for debugging syntax code:
 "map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
@@ -237,13 +237,16 @@ vnoremap p "_dP
 " }}}
 
 " Appearance {{{
-"set t_Co=256 
+set t_Co=256
 "set t_AB=^[[48;5;%dm
 "set t_AF=^[[38;5;%dmu
-"colorscheme elflord 
+
 "colorscheme solarized
-colorscheme torte
-let g:solarized_termcolors=256
+" let g:solarized_termcolors=256
+
+" colorscheme torte
+colorscheme primary
+
 set background=dark
 
 highlight clear comment
@@ -251,6 +254,10 @@ highlight comment ctermfg=blue
 highlight clear SpellBad
 highlight SpellBad cterm=undercurl ctermfg=red
 highlight Search cterm=NONE ctermbg=yellow
+
+set wrap
+set linebreak
+set nolist
 " }}}
 
 " Python {{{
@@ -261,6 +268,9 @@ let g:python_host_prog='/home/bwillar0/.pyenv/versions/neovim2/bin/python'
 let g:python3_host_prog='/home/bwillar0/.pyenv/versions/neovim3/bin/python'
 "let g:pymode_indent = 0
 let python_space_error_highlight = 1 
+
+""
+" Run `autopep8` on the current buffer in-place.
 command PythonAutopep8 :!autopep8 --in-place %
 " }}}
 
@@ -304,7 +314,7 @@ set clipboard+=unnamedplus
 " }}}
 
 " Various {{{
-set virtualedit=all
+set virtualedit=insert,block,onemore
 set nocursorline
 
 if $VIRTUAL_ENV != ""
@@ -319,6 +329,8 @@ set showmode
 
 " Functions {{{
 
+""
+" Create a copy of a function reference.
 " This just feels super hackish: we're extracting the string name
 " of the function that `b:ReplSendFile` currently references, then
 " we're creating another function reference for that.
@@ -329,10 +341,11 @@ function! CopyFuncRef(funcref)
   return function(t:default_funcname) 
 endfunction
 
+""
+" Capture and return the output of a vim/ex command.
+" Initialise to a blank value in case the command throws a vim error
+" (XXX: try-catch doesn't always work here, for some reason).
 function! GetVimCommandOutput(command) 
-  " capture and return the output of a vim command
-  " initialise to a blank value in case the command throws a vim error
-  " (try-catch doesn't always work here, for some reason)
   let l:output = ''
 
   redir => l:output
@@ -342,9 +355,10 @@ function! GetVimCommandOutput(command)
   return l:output
 endfunction
 
-" Capture output of Ex commands
-" this function output the result of the Ex command into a split scratch
-" buffer
+""
+" Capture output of ex commands.
+" This function output the result of the ex command into a split scratch
+" buffer.
 function! OutputSplitWindow(...)
   let cmd = join(a:000, ' ')
   let temp_reg = @"
@@ -362,28 +376,34 @@ function! OutputSplitWindow(...)
     setl nomodifiable 
   endif
 endfunction
+
+""
+" Ex command for @function(OutputSplitWindow).
 command! -nargs=+ -complete=command Output call OutputSplitWindow(<f-args>)
 
-"function! TabMessage(cmd)
-"  redir => message
-"  silent execute a:cmd
-"  redir END
-"  tabnew
-"  silent put=message
-"  set nomodified
-"endfunction
-"command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
 " }}}
 
 " Autocommands {{{
 
 "autocmd BufNew,BufReadPre * :runtime! repl.vim 
 
+""
 " Don't screw up folds when inserting text that might affect them, until
-" leaving insert mode. Foldmethod is local to the window. Protect against
+" leaving insert mode. `Foldmethod` is local to the window. Protect against
 " screwing up folding when switching between windows.
-autocmd InsertEnter * if !exists('w:last_fdm') | let w:last_fdm=&foldmethod | setlocal foldmethod=manual | endif
-autocmd InsertLeave,WinLeave * if exists('w:last_fdm') | let &l:foldmethod=w:last_fdm | unlet w:last_fdm | endif
+" These two `autocmd`s do just that.
+augroup fix_folds
+	au!
+	au InsertEnter * if !exists('w:last_fdm') | let w:last_fdm=&foldmethod | setlocal foldmethod=manual | endif
+	au InsertLeave,WinLeave * if exists('w:last_fdm') | let &l:foldmethod=w:last_fdm | unlet w:last_fdm | endif
+augroup END
+
+""
+" Restore cursor position on file open (see :help restore-cursor).
+autocmd BufReadPost *
+	\ if line("'\"") > 1 && line("'\"") <= line("$") |
+	\   exe "normal! g`\"" |
+	\ endif
 
 " Omni/popup settings from here:
 " if has("autocmd") && exists("+omnifunc")
@@ -392,6 +412,7 @@ autocmd InsertLeave,WinLeave * if exists('w:last_fdm') | let &l:foldmethod=w:las
 "         \		setlocal omnifunc=syntaxcomplete#Complete |
 "         \	endif
 " endif  
+"
 " }}}
 
 " Latex {{{
@@ -448,7 +469,7 @@ let g:pymode_lint_cwindow = 0
 let g:pymode_breakpoint = 1 
 let g:pymode_breakpoint_bind = '<localleader>b'
 " let g:pymode_breakpoint_cmd = '%debug '
-
+let g:pymode_breakpoint_cmd = 'from IPython.core.debugger import Tracer; Tracer()()'
 let g:pymode_options_colorcolumn = 0
 
 let g:pymode_folding = 0
@@ -735,6 +756,15 @@ omap / <Plug>(easymotion-tn)
 let g:riv_python_rst_hl=1
 let g:vim_markdown_math = 1
 let g:vim_markdown_frontmatter = 1
+" }}}
+
+" vim-grammarous {{{
+
+" https://stackoverflow.com/questions/43574426/how-to-resolve-java-lang-noclassdeffounderror-javax-xml-bind-jaxbexception-in-j
+" let g:grammarous#java_cmd = "java --add-modules java.se.ee"
+let g:grammarous#use_vim_spelllang = 0
+let g:grammarous#enable_spell_check = 1
+
 " }}}
 
 " vim:foldmethod=marker:foldlevel=0
