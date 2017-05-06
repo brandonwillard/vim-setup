@@ -52,7 +52,7 @@ function! SyncTexForward()
     return
   endif
 
-  let l:inst_name = substitute(v:servername, '\/', '_', 'g')
+  let l:inst_name = substitute(v:servername, '[\/\.]', '_', 'g')
   let l:execstr = "!NVIM_LISTEN_ADDRESS=".v:servername
   let l:execstr .= " qpdfview --unique --instance ".l:inst_name." "
   let l:execstr .= b:latex_pdf_file."\\#src:".expand("%:p")
