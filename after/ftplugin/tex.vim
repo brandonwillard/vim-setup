@@ -65,6 +65,23 @@ endfunction
 
 nmap <Leader>f :call SyncTexForward()<CR>
 
+let g:neomake_tex_pdfmake_maker = {
+    \ 'exe': 'make',
+    \ 'args': [expand("%:r:t").".pdf"],
+    \ 'errorformat': &errorformat,
+    \ 'buffer_output': 0,
+    \ 'remove_invalid_entries': 1
+    \ }
+
+let g:neomake_tex_rubberinfo_maker = neomake#makers#ft#tex#rubberinfo()
+
+" XXX: This won't update with changes to `b:latex_build_dir`.  Need to
+" consider some sort of callback/autocommand.
+let g:neomake_tex_rubberinfo_maker.args = ['--into', b:latex_build_dir]
+
+
+let g:neomake_tex_enabled_makers = ['pdfmake', 'rubberinfo']
+
 compiler tex
 
 " vim:foldmethod=marker:foldlevel=0

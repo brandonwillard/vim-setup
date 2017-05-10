@@ -439,7 +439,8 @@ let g:vimtex_view_general_options
   \ = '--unique @pdf\#src:@tex:@line:@col'
 let g:vimtex_view_general_options_latexmk = '--unique'
 
-let g:vimtex_indent_enabled=0
+let g:vimtex_indent_enabled=1
+let g:vimtex_indent_bib_enabled=0
 " let g:vimtex_fold_enabled = 1
 " let g:vimtex_delim_stopline = 300
 
@@ -452,6 +453,20 @@ let g:vimtex_syntax_minted = [
       \     ],
       \ }
       \]
+" }}}
+
+" neomake {{{
+
+let g:neomake_serialize = 1
+let g:neomake_open_list = 2
+" let g:neomake_serialize_abort_on_error = 1
+" let g:neomake_remove_invalid_entries = 1
+
+" FYI: See `after/ftplugin/tex.vim` for more neomake settings.
+"
+" TODO: Consider using latexrun
+" let g:neomake_tex_enabled_makers = ['latexrun']
+
 " }}}
 
 " surround {{{
@@ -472,7 +487,7 @@ let g:pymode_breakpoint_bind = '<localleader>b'
 let g:pymode_breakpoint_cmd = 'from IPython.core.debugger import Tracer; Tracer()()'
 let g:pymode_options_colorcolumn = 0
 
-let g:pymode_folding = 0
+let g:pymode_folding = 1
 
 let g:pymode_syntax = 0
 let g:pymode_syntax_all = 0
