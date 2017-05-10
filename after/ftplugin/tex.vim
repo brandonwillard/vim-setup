@@ -23,7 +23,7 @@ function! s:ConfigureLatexBuildEnv()
   if b:latex_log_file == ''
     call xolox#misc#msg#warn('No reference TeX log file found!')
     let b:latex_pdf_file = ''
-    let b:latex_build_file = ''
+    let b:latex_build_dir = ''
     let g:vimtex_latexmk_build_dir = ''
   else
     let b:latex_pdf_file = fnamemodify(b:latex_log_file, ":p:r").".pdf" 
