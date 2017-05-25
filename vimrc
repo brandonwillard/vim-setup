@@ -256,7 +256,13 @@ highlight clear comment
 highlight comment ctermfg=blue
 highlight clear SpellBad
 highlight SpellBad cterm=undercurl ctermfg=red
+" Clear Search?
 highlight Search cterm=NONE ctermbg=yellow
+
+" Stop matchparen from making it look like the cursor has jumped
+" to the match.
+" Clear MatchParen?
+highlight MatchParen ctermbg=NONE ctermfg=blue guibg=NONE guifg=lightblue
 
 set wrap
 set linebreak

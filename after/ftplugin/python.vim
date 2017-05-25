@@ -9,7 +9,7 @@ setl softtabstop=4
 setl expandtab
 setl shiftround
 setl cino+=(0
-setl cinwords=if,elif,else,for,while,try,except,finally,def,class
+setl cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 setl formatoptions=croqljt
 setl formatprg=autopep8\ -a\ -
 " Can't get this to work, yet.  Looks like the shell script
