@@ -24,6 +24,7 @@ let b:noweb_language="python"
 
 runtime syntax/noweb.vim
 
+" TODO: Ugh, still haven't decided where these should go.
 setl formatoptions+=croql
 setl iskeyword+=_
 
@@ -31,4 +32,5 @@ setl iskeyword+=_
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
-" vim:ts=18  fdm=marker
+
+" vim:foldmethod=marker:foldlevel=0

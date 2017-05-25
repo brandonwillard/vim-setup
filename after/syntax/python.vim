@@ -6,11 +6,13 @@ endif
 let s:keepcpo= &cpo
 set cpo&vim
 
-setl iskeyword+=_
-setl iskeyword-=.
-setl conceallevel=0
+" XXX: These are already set in `after/ftplugin/python.vim`; which file should
+" they really be in?
+" setl iskeyword+=_
+" setl iskeyword-=.
+" setl conceallevel=0
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
-" vim:ts=18  fdm=marker
 
+" vim:foldmethod=marker:foldlevel=0

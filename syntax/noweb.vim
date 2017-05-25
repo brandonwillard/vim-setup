@@ -114,4 +114,4 @@ hi def link nowebChunkReference Delimiter
 " Could use b:noweb_backend . b:noweb_language
 let b:current_syntax = "noweb"
 
-" vim:ts=18  fdm=marker
+" vim:foldmethod=marker:foldlevel=0

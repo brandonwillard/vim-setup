@@ -28,6 +28,12 @@ runtime after/ftplugin/noweb-tweaks.vim
 
 setl conceallevel=0
 
+if exists("b:latex_project_let_vars")
+  let g:projectionist_heuristics["src/python/&output/"] = { 
+        \ "*.texw": { "let": b:latex_project_let_vars }
+        \ } 
+endif
+
 compiler texw
 
-" vim:ts=18  fdm=marker
+" vim:foldmethod=marker:foldlevel=0

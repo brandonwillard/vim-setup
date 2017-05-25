@@ -6,9 +6,11 @@ endif
 let s:keepcpo= &cpo
 set cpo&vim
 
-setl formatoptions+=croql
-setl iskeyword+=_,.,-,:
+" TODO: Again, which file should these settings really be in?
+" setl formatoptions+=croql
+" setl iskeyword+=_,.,-,:
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
-" vim:ts=18  fdm=marker
+
+" vim:foldmethod=marker:foldlevel=0

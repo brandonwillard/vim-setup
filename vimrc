@@ -51,6 +51,7 @@ call plug#begin('~/.vim/bundle/')
   Plug 'bps/vim-textobj-python', {'for': '*python*'}
   Plug 'python-mode/python-mode', {'for': '*python*'}
   Plug 'davidhalter/jedi-vim'
+  Plug 'tmhedberg/SimpylFold'
   "Plug 'jmcantrell/vim-virtualenv'
   "Plug 'tell-k/vim-autopep8'
   "Plug 'jimf/vim-pep8-text-width'
@@ -87,6 +88,7 @@ call plug#begin('~/.vim/bundle/')
   Plug 'vim-scripts/LargeFile'
   Plug 'tpope/vim-eunuch'
   Plug 'tpope/vim-scriptease'
+  Plug 'tpope/vim-projectionist'
 
   "# TeX 
   Plug 'lervag/vimtex', {'for': ['tex', 'noweb']}
@@ -102,6 +104,7 @@ call plug#begin('~/.vim/bundle/')
   "Plug 'ktonga/vim-follow-my-lead'
   Plug 'vim-scripts/genutils'
   Plug 'albfan/vim-breakpts' 
+  " Plug 'Konfekt/FastFold'
 
   "# Theming
   Plug 'bling/vim-airline'
@@ -266,7 +269,6 @@ set nolist
 "
 let g:python_host_prog='/home/bwillar0/.pyenv/versions/neovim2/bin/python'
 let g:python3_host_prog='/home/bwillar0/.pyenv/versions/neovim3/bin/python'
-"let g:pymode_indent = 0
 let python_space_error_highlight = 1 
 
 ""
@@ -475,6 +477,9 @@ let g:surround_108 = "\\begin{\1\\begin{\1}\n\r\n\\end{\1\r}.*\r\1}"
 " }}}
 
 " python-mode {{{
+
+" Don't let pymode set options; we should do this ourselves. 
+let g:pymode_options=0
 let g:pymode_debug = 1
 let g:pymode_run = 1
 
@@ -487,7 +492,7 @@ let g:pymode_breakpoint_bind = '<localleader>b'
 let g:pymode_breakpoint_cmd = 'from IPython.core.debugger import Tracer; Tracer()()'
 let g:pymode_options_colorcolumn = 0
 
-let g:pymode_folding = 1
+let g:pymode_folding = 0
 
 let g:pymode_syntax = 0
 let g:pymode_syntax_all = 0
@@ -779,6 +784,33 @@ let g:vim_markdown_frontmatter = 1
 " let g:grammarous#java_cmd = "java --add-modules java.se.ee"
 let g:grammarous#use_vim_spelllang = 0
 let g:grammarous#enable_spell_check = 1
+
+" }}}
+
+" vim-projectionist {{{
+
+"""
+" Create a projection named 'let' that lets a variable using the given
+" pair of values.
+" E.g.
+"
+" let g:projectionist_heuristics = {"src/tex/&output/": {
+"       \"*.tex": {
+"       \"let": ["b:tex_blah", '"bloh"']
+"       \}}
+"       \}
+"
+autocmd User ProjectionistActivate call s:proj_activate()
+function! s:proj_activate() abort
+  for [root, value] in projectionist#query('let')
+    for l:let_var in value
+      let l:exec_str = "let ".let_var[0]."=".let_var[1]
+      call xolox#misc#msg#debug(l:exec_str)
+      execute(l:exec_str) 
+    endfor
+    break
+  endfor
+endfunction
 
 " }}}
 

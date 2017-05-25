@@ -1,6 +1,8 @@
-setl sw=2
+setl shiftwidth=2
 setl conceallevel=0
-set foldlevel=1
+setl formatoptions+=croql
+setl iskeyword+=_,.,-,:
+setl foldlevel=1
 
 " section jumping
 noremap <buffer> <silent> <Leader>gn :<c-u>call TexJump2Section(v:count1, '')<CR>
@@ -9,32 +11,44 @@ noremap <buffer> <silent> <Leader>gN :<c-u>call TexJump2Section(v:count1, 'b')<C
 function! TexJump2Section(cnt, dir)
   let i = 0
   let pat = '^\s*\\\(part\|chapter\|\(sub\)*section\|paragraph\)\>\|\%$\|\%^'
-   let flags = 'W' . a:dir
-   while i < a:cnt && search(pat, flags) > 0
-     let i = i+1
-   endwhile
-   let @/ = pat
- endfunction
-
-function! s:ConfigureLatexBuildEnv()
-  " We assume there is log output to work from...
-  let b:latex_log_file = findfile(expand("%:r:t").".log", "**2;")
-
-  if b:latex_log_file == ''
-    call xolox#misc#msg#warn('No reference TeX log file found!')
-    let b:latex_pdf_file = ''
-    let b:latex_build_dir = ''
-    let g:vimtex_latexmk_build_dir = ''
-  else
-    let b:latex_pdf_file = fnamemodify(b:latex_log_file, ":p:r").".pdf" 
-    let b:latex_build_dir = fnamemodify(b:latex_log_file, ":p:h")
-    let g:vimtex_latexmk_build_dir = b:latex_build_dir
-  endif
+  let flags = 'W' . a:dir
+  while i < a:cnt && search(pat, flags) > 0
+    let i = i+1
+  endwhile
+  let @/ = pat
 endfunction
 
-call s:ConfigureLatexBuildEnv() 
+let b:latex_project_let_vars = [ 
+      \   ["b:latex_build_dir", '"{project}/output"'],
+      \   ["b:latex_pdf_file", '"{project}/output/{basename}.pdf"'],
+      \   ["g:vimtex_latexmk_build_dir", '"{project}/output"']
+      \ ]
 
-"
+let b:neomake_tex_pdfmake_maker = {
+    \ 'exe': 'make',
+    \ 'args': [expand("%:r:t").".pdf"],
+    \ 'errorformat': &errorformat,
+    \ 'buffer_output': 0,
+    \ 'remove_invalid_entries': 1
+    \ }
+
+let b:neomake_tex_rubberinfo_maker = neomake#makers#ft#tex#rubberinfo()
+
+" Add project-specific neomake buffer vars
+" NOTE: We're referencing a buffer variable initialized by projectionist
+let b:latex_project_let_vars += [ 
+      \   ["b:neomake_tex_rubberinfo_maker.args", '["--into", b:latex_build_dir]']
+      \ ]
+
+let b:neomake_tex_enabled_makers = ['pdfmake', 'rubberinfo']
+
+let g:projectionist_heuristics["src/tex/&output/"] = { 
+      \ "*.tex|*.texw": { "let": b:latex_project_let_vars }
+      \ } 
+
+compiler tex
+
+"""
 " Some basic synctex functionality for use with
 " qpdfview.
 "
@@ -43,8 +57,8 @@ call s:ConfigureLatexBuildEnv()
 "
 function! SyncTexForward()
   if !exists('b:latex_pdf_file') || b:latex_pdf_file == ''
-    call xolox#misc#msg#info('b:latex_pdf_file not instantiated; finding TeX settings...')
-    call s:ConfigureLatexBuildEnv() 
+    call xolox#misc#msg#warn('b:latex_pdf_file not set')
+    return
   endif
 
   if !filereadable(b:latex_pdf_file)
@@ -64,24 +78,5 @@ function! SyncTexForward()
 endfunction
 
 nmap <Leader>f :call SyncTexForward()<CR>
-
-let g:neomake_tex_pdfmake_maker = {
-    \ 'exe': 'make',
-    \ 'args': [expand("%:r:t").".pdf"],
-    \ 'errorformat': &errorformat,
-    \ 'buffer_output': 0,
-    \ 'remove_invalid_entries': 1
-    \ }
-
-let g:neomake_tex_rubberinfo_maker = neomake#makers#ft#tex#rubberinfo()
-
-" XXX: This won't update with changes to `b:latex_build_dir`.  Need to
-" consider some sort of callback/autocommand.
-let g:neomake_tex_rubberinfo_maker.args = ['--into', b:latex_build_dir]
-
-
-let g:neomake_tex_enabled_makers = ['pdfmake', 'rubberinfo']
-
-compiler tex
 
 " vim:foldmethod=marker:foldlevel=0

@@ -21,4 +21,4 @@ runtime after/ftplugin/noweb-tweaks.vim
 " not sure if this should actually build a md file or not...
 setl makeprg=make\ %:gs?[Pp]nw$?md?:t
 
-" vim:ts=18  fdm=marker
+" vim:foldmethod=marker:foldlevel=0

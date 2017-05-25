@@ -21,4 +21,5 @@ setl formatoptions+=croql
 
 let &cpo = s:keepcpo
 unlet s:keepcpo
-" vim:ts=18  fdm=marker
+
+" vim:foldmethod=marker:foldlevel=0

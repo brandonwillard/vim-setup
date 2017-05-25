@@ -21,4 +21,4 @@ augroup qf
   au FileType qf set nobuflisted
 augroup END
 
-" vim:ts=18  fdm=marker
+" vim:foldmethod=marker:foldlevel=0
