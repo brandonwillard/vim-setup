@@ -1,12 +1,18 @@
+if exists("b:loaded_rnoweb_ftplugin")
+  finish
+endif
 
-runtime after/ftplugin/noweb-tweaks.vim
-runtime after/ftplugin/r.vim
+let b:loaded_rnoweb_ftplugin = 1
+
+setl iskeyword+=-
+
+" runtime after/ftplugin/noweb_more.vim
+" runtime after/ftplugin/r.vim
 
 nmap <buffer> <LocalLeader>tk <Plug>RKnit
 vmap <buffer> <LocalLeader>tk <Plug>RKnit
 
 nmap <buffer> <LocalLeader>tm <Plug>RMakePDFK
 vmap <buffer> <LocalLeader>tm <Plug>RMakePDFK
-setl iskeyword+=-
 
-
+" vim:foldmethod=marker:foldlevel=0

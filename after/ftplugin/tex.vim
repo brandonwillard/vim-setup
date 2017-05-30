@@ -43,7 +43,7 @@ let b:latex_project_let_vars += [
 let b:neomake_tex_enabled_makers = ['pdfmake', 'rubberinfo']
 
 let g:projectionist_heuristics["src/tex/&output/"] = { 
-      \ "*.tex|*.texw": { "let": b:latex_project_let_vars }
+      \ "*.tex": { "let": b:latex_project_let_vars }
       \ } 
 
 compiler tex

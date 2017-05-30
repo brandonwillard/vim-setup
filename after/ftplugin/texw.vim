@@ -1,4 +1,3 @@
-
 if exists("b:loaded_texw_ftplugin")
   finish
 endif
@@ -22,9 +21,8 @@ if exists('*textobj#user#plugin')
   \ })
 endif
 
-" TODO: need to get multi-filetypes working
-runtime after/ftplugin/noweb-tweaks.vim
-"runtime after/ftplugin/python.vim
+" TODO: Determine if a multiple filetype is better (i.e. `ft=texw.noweb`).
+runtime after/ftplugin/noweb_more.vim
 
 setl conceallevel=0
 

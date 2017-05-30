@@ -76,11 +76,8 @@ call plug#begin('~/.vim/bundle/')
   endif
 
   "# Terminal/REPL
-  if has('nvim')
-    "Plug 'kassio/neoterm'
-  else
-    Plug 'vimux'
-  endif
+  "Plug 'brandonwillard/vimcmdline'
+  Plug '~/projects/code/vim-plugins/vimcmdline'
 
   "# Filesystem, Make, Git 
   Plug 'benekastah/neomake'
@@ -191,13 +188,13 @@ let mapleader='\'
 let maplocalleader=','
 
 "if exists("b:loaded_repl") 
-  nnoremap <silent> <LocalLeader>tr :ReplSpawnTermCmd<CR>
-  nnoremap <silent> <LocalLeader>td :ReplSpawnTermDebugCmd<CR>
-  nnoremap <silent> <LocalLeader>tq :ReplCloseTermCmd<CR>
-  nnoremap <silent> <LocalLeader>ts :ReplSendSelectionCmd n<CR>
-  vnoremap <silent> <LocalLeader>ts :ReplSendSelectionCmd v<CR>
-  nnoremap <silent> <LocalLeader>tl :ReplSendLineCmd<CR>
-  nnoremap <silent> <LocalLeader>tf :ReplSendFileCmd<CR>
+  " nnoremap <silent> <LocalLeader>tr :ReplSpawnTermCmd<CR>
+  " nnoremap <silent> <LocalLeader>td :ReplSpawnTermDebugCmd<CR>
+  " nnoremap <silent> <LocalLeader>tq :ReplCloseTermCmd<CR>
+  " nnoremap <silent> <LocalLeader>ts :ReplSendSelectionCmd n<CR>
+  " vnoremap <silent> <LocalLeader>ts :ReplSendSelectionCmd v<CR>
+  " nnoremap <silent> <LocalLeader>tl :ReplSendLineCmd<CR>
+  " nnoremap <silent> <LocalLeader>tf :ReplSendFileCmd<CR>
 "endif
 
 set noto
@@ -433,6 +430,27 @@ let g:tex_flavor = "latex"
 "
 " [Generally] global plugin settings from here on.
 "
+
+" vimcmdline {{{
+
+let g:cmdline_map_start = "<LocalLeader>tr"
+let g:cmdline_map_send = "<LocalLeader>ts"
+let g:cmdline_map_source_fun = "<LocalLeader>tf"
+let g:cmdline_map_send_paragraph = "<LocalLeader>tp"
+let g:cmdline_map_send_block = "<LocalLeader>tb"
+let g:cmdline_map_quit = "<LocalLeader>tq"
+
+let g:cmdline_vsplit = 0
+let g:cmdline_esc_term = 1
+let g:cmdline_in_buffer = 1 
+let g:cmdline_outhl = 0
+let g:cmdline_app = {}
+
+" Custom options
+let g:cmdline_nolisted = 1
+let g:cmdline_golinedown = 0
+
+" }}}
 
 " vimtex {{{
 "let g:vimtex_complete_enabled=0
@@ -709,15 +727,6 @@ let g:netrw_altv = 1
 
 " }}}
 
-" nvim-ipy {{{
-"let g:nvim_ipy_perform_mappings = 0
-"map <silent> <Leader>tr :IPython <cr>
-"map <silent> <Leader>ts <Plug>(IPy-Run)
-"map <silent> <Leader>tk <Plug>(IPy-Terminate)
-"map <silent> <Leader>tq <Plug>(IPy-Interrupt)
-"map <silent> <Leader>tp <Plug>(IPy-WordObjInfo)
-" }}}
-
 " pandoc {{{
 let g:pandoc#modules#disabled = ['chdir']
 let g:pandoc#syntax#conceal#use = 0
@@ -744,21 +753,6 @@ if !has("nvim")
   nnoremap <silent> <C-W>l :TmuxNavigateRight<cr>
   nnoremap <silent> <C-W>\ :TmuxNavigatePrevious<cr>
 endif
-" }}}
-
-" vimux {{{
-
-"let scriptnames = GetVimCommandOutput("scriptnames")
-"if match(scriptnames, "/".expand("%:t")) < 0
-"  finish
-"endif
-
-" Vimux settings
-" could use this to get keywords: expand("<cword>")
-" or this to get visual selection: getline("'<","'>")
-" current line: getline(".")
-"
- 
 " }}}
 
 " youcompleteme {{{
@@ -811,7 +805,7 @@ function! s:proj_activate() abort
   for [root, value] in projectionist#query('let')
     for l:let_var in value
       let l:exec_str = "let ".let_var[0]."=".let_var[1]
-      call xolox#misc#msg#debug(l:exec_str)
+      call xolox#misc#msg#debug("proj_activate:".l:exec_str)
       execute(l:exec_str) 
     endfor
     break
