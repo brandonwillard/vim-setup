@@ -24,14 +24,26 @@ function! ReplSendString_ipy(lines)
   " first part is, of course, the ESC control character
   " (ASCII: `^[`).  These exact control sequences are bracketed
   " paste modes in an xterm setting 
-  " (see https://cirw.in/blog/bracketed-paste).
-  " (check out this, too: http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html)
-  
-  let expr_str = "\x1b[200~".join(add(a:lines, ''), b:cmdline_nl)."\x1b[201~\n"
+  "
+  " References:
+  " https://cirw.in/blog/bracketed-paste
+  " http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html
+  " http://www.xfree86.org/current/ctlseqs.html
+  let expr_str = g:bps
+  let expr_str .= join(add(a:lines, ''), b:cmdline_nl)
+  let expr_str .= g:bpe
+  let expr_str .= b:cmdline_nl
 
   call VimCmdLineSendCmd(expr_str)
 
 endfunction
+
+" Enable (and likewise disable) bracketed paste mode in the terminal.
+let &t_ti .= "\<Esc>[?2004h"
+let &t_te .= "\<Esc>[?2004l"
+
+let g:bps = "\x1b[200~"
+let g:bpe = "\x1b[201~"
 
 " command! PythonSendIPythonDebugLine :call VimCmdLineSendCmd('%debug -b ' . expand('%') . ':' . line('.'))
 

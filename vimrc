@@ -187,16 +187,6 @@ set ttyfast
 let mapleader='\'
 let maplocalleader=','
 
-"if exists("b:loaded_repl") 
-  " nnoremap <silent> <LocalLeader>tr :ReplSpawnTermCmd<CR>
-  " nnoremap <silent> <LocalLeader>td :ReplSpawnTermDebugCmd<CR>
-  " nnoremap <silent> <LocalLeader>tq :ReplCloseTermCmd<CR>
-  " nnoremap <silent> <LocalLeader>ts :ReplSendSelectionCmd n<CR>
-  " vnoremap <silent> <LocalLeader>ts :ReplSendSelectionCmd v<CR>
-  " nnoremap <silent> <LocalLeader>tl :ReplSendLineCmd<CR>
-  " nnoremap <silent> <LocalLeader>tf :ReplSendFileCmd<CR>
-"endif
-
 set noto
 set timeoutlen=50
 if has("nvim")
@@ -434,11 +424,49 @@ let g:tex_flavor = "latex"
 " vimcmdline {{{
 
 let g:cmdline_map_start = "<LocalLeader>tr"
-let g:cmdline_map_send = "<LocalLeader>ts"
+let g:cmdline_map_send = "<LocalLeader>tl"
+let g:cmdline_map_send_selection = "<LocalLeader>ts"
 let g:cmdline_map_source_fun = "<LocalLeader>tf"
 let g:cmdline_map_send_paragraph = "<LocalLeader>tp"
 let g:cmdline_map_send_block = "<LocalLeader>tb"
 let g:cmdline_map_quit = "<LocalLeader>tq"
+
+function! ReplGetSelection(curmode) range		
+  "		
+  " This function gets either the visually selected text,		or the current
+  " <cWORD>.		
+  "		
+  if (a:firstline == 1 && a:lastline == line('$')) || a:curmode == "n"		
+    return expand('<cWORD>')		
+  endif		
+  let [lnum1, col1] = getpos("'<")[1:2]		
+  let end_pos = getpos("'>")		
+  let [lnum2, col2] = end_pos[1:2]		
+  let lines = getline(lnum1, lnum2)		
+		
+  let mode_offset = 1		
+  if &selection == 'exclusive'		
+    let mode_offset = 2		
+  endif		
+		
+  let lines[-1] = lines[-1][:(col2 - mode_offset)]		
+  let lines[0] = lines[0][col1 - 1:]		
+		
+  " Sends the cursor to the beginning of the last visual select		
+  " line.  We probably want to leave the cursor at the end of the		
+  " visually selected region instead.		
+  "call cursor(lnum2, 1)		
+  execute "normal! gv\<Esc>"		
+  return lines
+endfunction
+
+command! -range -nargs=1 ReplSendSelectionCmd 
+      \call b:cmdline_source_fun(ReplGetSelection(<f-args>)) 
+
+exe 'nnoremap <silent><buffer> ' . g:cmdline_map_send_selection . 
+      \' :ReplSendSelectionCmd n<CR>'
+exe 'vnoremap <silent><buffer> '. g:cmdline_map_send_selection . 
+      \' :ReplSendSelectionCmd v<CR>'
 
 let g:cmdline_vsplit = 0
 let g:cmdline_esc_term = 1
