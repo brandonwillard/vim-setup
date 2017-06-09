@@ -541,8 +541,10 @@ let g:pymode_lint_cwindow = 0
 let g:pymode_breakpoint = 1 
 let g:pymode_breakpoint_bind = '<localleader>b'
 " let g:pymode_breakpoint_cmd = '%debug '
-let g:pymode_breakpoint_cmd = 'from IPython.core.debugger import Tracer; Tracer()()'
+let g:pymode_breakpoint_cmd = 'from IPython.core.debugger import set_trace; set_trace()'
 let g:pymode_options_colorcolumn = 0
+
+let g:pymode_motion = 0
 
 let g:pymode_folding = 0
 
