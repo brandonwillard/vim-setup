@@ -77,8 +77,7 @@ call plug#begin('~/.vim/bundle/')
   endif
 
   "# Terminal/REPL
-  "Plug 'brandonwillard/vimcmdline'
-  Plug '~/projects/code/vim-plugins/vimcmdline'
+  Plug 'brandonwillard/vimcmdline'
 
   "# Filesystem, Make, Git 
   Plug 'benekastah/neomake'
