@@ -231,11 +231,11 @@ set t_Co=256
 "set t_AB=^[[48;5;%dm
 "set t_AF=^[[38;5;%dmu
 
-"colorscheme solarized
-" let g:solarized_termcolors=256
-
-" colorscheme torte
-colorscheme primary
+try
+  colorscheme primary
+catch /.*/
+  "echo v:exception
+endtry
 
 set background=dark
 
@@ -260,8 +260,8 @@ set nolist
 " We should have separate pyenv virtualenvs for python 2 and 3.
 " The host progs should point to those.
 "
-let g:python_host_prog='/home/bwillar0/.pyenv/versions/neovim2/bin/python'
-let g:python3_host_prog='/home/bwillar0/.pyenv/versions/neovim3/bin/python'
+let g:python_host_prog=expand('~/.pyenv/versions/neovim2/bin/python')
+let g:python3_host_prog=expand('~/.pyenv/versions/neovim3/bin/python')
 let python_space_error_highlight = 1 
 
 ""
