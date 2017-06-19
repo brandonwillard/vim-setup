@@ -32,9 +32,10 @@ call plug#begin('~/.vim/bundle/')
   else
     " TODO: add neocomplete
   endif
-  Plug 'scrooloose/syntastic'
   Plug 'tpope/vim-commentary'
-  "Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
+  " Plug 'scrooloose/syntastic'
+  Plug 'w0rp/ale'
+  " Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
 
   "# Motion, Buffers, Windows
   Plug 'christoomey/vim-tmux-navigator'
@@ -112,8 +113,6 @@ call plug#end()
 
 " }}}
 filetype plugin indent on
-
-set pastetoggle=<F2>
 " }}}
 
 " Tabs and Indenting {{{
@@ -270,6 +269,7 @@ command PythonAutopep8 :!autopep8 --in-place %
 " }}}
 
 " Editing Text {{{
+set pastetoggle=<F2>
 set showmatch
 set backspace=indent,eol,start
 set completeopt=longest,menuone,preview,noinsert
@@ -610,15 +610,19 @@ let g:autopep8_disable_show_diff=1
 " }}}
 
 " syntastic {{{ 
-let g:syntastic_python_checkers = ['flake8'] 
-let g:syntastic_enable_highlighting = 1  
-let g:syntastic_style_error_symbol = "E>" 
-let g:syntastic_warning_symbol = "W>" 
-let g:syntastic_auto_jump = 0  
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 0
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
+" let g:syntastic_python_checkers = ['flake8'] 
+" let g:syntastic_enable_highlighting = 1  
+" let g:syntastic_style_error_symbol = "E>" 
+" let g:syntastic_warning_symbol = "W>" 
+" let g:syntastic_auto_jump = 0  
+" let g:syntastic_always_populate_loc_list = 1
+" let g:syntastic_auto_loc_list = 0
+" let g:syntastic_check_on_open = 1
+" let g:syntastic_check_on_wq = 0
+" }}}
+
+" ale {{{
+" let g:ale_lint_on_text_changed='never'
 " }}}
 
 " R-plugin {{{
