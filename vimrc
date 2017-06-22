@@ -17,6 +17,19 @@
 
 " Important {{{
 
+" See https://github.com/junegunn/vim-plug/issues/432
+function! s:on_load(name, exec)
+  if !has_key(g:plugs, a:name)
+    return
+  endif
+  " TODO: Automate the naming convention for a:exec setup functions.
+  if has_key(g:plugs[a:name], 'on') || has_key(g:plugs[a:name], 'for')
+    execute 'autocmd! User' a:name a:exec
+  else
+    execute 'autocmd VimEnter *' a:exec
+  endif
+endfunction
+
 " Plugins Config {{{
 call plug#begin('~/.vim/bundle/') 
 
@@ -38,7 +51,9 @@ call plug#begin('~/.vim/bundle/')
   " Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
 
   "# Motion, Buffers, Windows
-  Plug 'christoomey/vim-tmux-navigator'
+  if !has("nvim")
+    Plug 'christoomey/vim-tmux-navigator'
+  endif
   Plug 'Lokaltog/vim-easymotion'
   Plug 'qpkorr/vim-bufkill'
   Plug 'kana/vim-textobj-user'
@@ -92,6 +107,7 @@ call plug#begin('~/.vim/bundle/')
   Plug 'rbonvall/vim-textobj-latex', {'for': ['tex', 'noweb']}
 
   "# Vim Misc
+  Plug 'itchyny/vim-parenmatch'
   Plug 'rhysd/vim-grammarous'
   Plug 'kshenoy/vim-signature'
   Plug 'xolox/vim-misc'
@@ -102,6 +118,8 @@ call plug#begin('~/.vim/bundle/')
   Plug 'vim-scripts/genutils'
   Plug 'albfan/vim-breakpts' 
   " Plug 'Konfekt/FastFold'
+  Plug 'terryma/vim-multiple-cursors'
+	Plug 'Raimondi/delimitMate'
 
   "# Theming
   Plug 'bling/vim-airline'
@@ -174,11 +192,13 @@ autocmd BufEnter * :syn sync minlines=50
 syn spell default
 "set spelllang=en_us
 
+let g:loaded_matchparen = 1
+
 " }}}
 
 " Terminal {{{
 set ttyfast
-
+set scrollback=1000
 " }}}
 
 " Mapping {{{
@@ -277,7 +297,6 @@ set completeopt=longest,menuone,preview,noinsert
 " Displaying Text {{{
 set number
 set scrolloff=8
-" disable tex code->character conversion
 set conceallevel=0
 " }}}
 
@@ -421,237 +440,233 @@ let g:tex_flavor = "latex"
 "
 
 " vimcmdline {{{
+function! s:SetupVimcmdline()
+  let g:cmdline_map_start = "<LocalLeader>tr"
+  let g:cmdline_map_send = "<LocalLeader>tl"
+  let g:cmdline_map_send_selection = "<LocalLeader>ts"
+  let g:cmdline_map_source_fun = "<LocalLeader>tf"
+  let g:cmdline_map_send_paragraph = "<LocalLeader>tp"
+  let g:cmdline_map_send_block = "<LocalLeader>tb"
+  let g:cmdline_map_quit = "<LocalLeader>tq"
 
-let g:cmdline_map_start = "<LocalLeader>tr"
-let g:cmdline_map_send = "<LocalLeader>tl"
-let g:cmdline_map_send_selection = "<LocalLeader>ts"
-let g:cmdline_map_source_fun = "<LocalLeader>tf"
-let g:cmdline_map_send_paragraph = "<LocalLeader>tp"
-let g:cmdline_map_send_block = "<LocalLeader>tb"
-let g:cmdline_map_quit = "<LocalLeader>tq"
+  let g:cmdline_vsplit = 0
+  let g:cmdline_esc_term = 1
+  let g:cmdline_in_buffer = 1 
+  let g:cmdline_outhl = 0
+  " let g:cmdline_app = {}
 
-function! ReplGetSelection(curmode) range		
-  "		
-  " This function gets either the visually selected text,		or the current
-  " <cWORD>.		
-  "		
-  if (a:firstline == 1 && a:lastline == line('$')) || a:curmode == "n"		
-    return expand('<cWORD>')		
-  endif		
-  let [lnum1, col1] = getpos("'<")[1:2]		
-  let end_pos = getpos("'>")		
-  let [lnum2, col2] = end_pos[1:2]		
-  let lines = getline(lnum1, lnum2)		
-		
-  let mode_offset = 1		
-  if &selection == 'exclusive'		
-    let mode_offset = 2		
-  endif		
-		
-  let lines[-1] = lines[-1][:(col2 - mode_offset)]		
-  let lines[0] = lines[0][col1 - 1:]		
-		
-  " Sends the cursor to the beginning of the last visual select		
-  " line.  We probably want to leave the cursor at the end of the		
-  " visually selected region instead.		
-  "call cursor(lnum2, 1)		
-  execute "normal! gv\<Esc>"		
-  return lines
+  " Custom options
+  let g:cmdline_nolisted = 1
+  let g:cmdline_golinedown = 0
+
+	call VimCmdLineCreateMaps()
+
 endfunction
-
-command! -range -nargs=1 ReplSendSelectionCmd 
-      \call b:cmdline_source_fun(ReplGetSelection(<f-args>)) 
-
-exe 'nnoremap <silent><buffer> ' . g:cmdline_map_send_selection . 
-      \' :ReplSendSelectionCmd n<CR>'
-exe 'vnoremap <silent><buffer> '. g:cmdline_map_send_selection . 
-      \' :ReplSendSelectionCmd v<CR>'
-
-let g:cmdline_vsplit = 0
-let g:cmdline_esc_term = 1
-let g:cmdline_in_buffer = 1 
-let g:cmdline_outhl = 0
-let g:cmdline_app = {}
-
-" Custom options
-let g:cmdline_nolisted = 1
-let g:cmdline_golinedown = 0
-
+call s:on_load('vimcmdline', 'call s:SetupVimcmdline()')
 " }}}
 
 " vimtex {{{
-"let g:vimtex_complete_enabled=0
-let g:vimtex_latexmk_enabled=0
-let g:vimtex_latexmk_callback=0
-let g:vimtex_latexmk_continuous=0
-let g:vimtex_latexmk_build_dir = '../../output'
+function! s:SetupVimtex()
+  "let g:vimtex_complete_enabled=0
+  let g:vimtex_latexmk_enabled=0
+  let g:vimtex_latexmk_callback=0
+  let g:vimtex_latexmk_continuous=0
+  let g:vimtex_latexmk_build_dir = '../../output'
 
-let g:vimtex_view_enabled=0
-let g:vimtex_view_general_viewer = 'qpdfview'
-let g:vimtex_view_general_options
-  \ = '--unique @pdf\#src:@tex:@line:@col'
-let g:vimtex_view_general_options_latexmk = '--unique'
+  let g:vimtex_view_enabled=0
+  let g:vimtex_view_general_viewer = 'qpdfview'
+  let g:vimtex_view_general_options
+    \ = '--unique @pdf\#src:@tex:@line:@col'
+  let g:vimtex_view_general_options_latexmk = '--unique'
 
-let g:vimtex_indent_enabled=1
-let g:vimtex_indent_bib_enabled=0
-" let g:vimtex_fold_enabled = 1
-" let g:vimtex_delim_stopline = 300
+  let g:vimtex_indent_enabled=1
+  let g:vimtex_indent_bib_enabled=0
+  " let g:vimtex_fold_enabled = 1
+  " let g:vimtex_delim_stopline = 300
 
-let g:vimtex_syntax_minted = [
-      \{
-      \   'lang' : 'python',
-      \   'ignore' : [
-      \     'pythonEscape',
-      \     'pythonBEscape',
-      \     ],
-      \ }
-      \]
+  let g:vimtex_syntax_minted = [
+        \{
+        \   'lang' : 'python',
+        \   'ignore' : [
+        \     'pythonEscape',
+        \     'pythonBEscape',
+        \     ],
+        \ }
+        \]
+endfunction
+call s:on_load('vimtex', 'call s:SetupVimtex()')
 " }}}
 
 " neomake {{{
+function! s:SetupNeomake()
+  let g:neomake_serialize = 1
+  let g:neomake_open_list = 2
+  " let g:neomake_serialize_abort_on_error = 1
+  " let g:neomake_remove_invalid_entries = 1
 
-let g:neomake_serialize = 1
-let g:neomake_open_list = 2
-" let g:neomake_serialize_abort_on_error = 1
-" let g:neomake_remove_invalid_entries = 1
+  " FYI: See `after/ftplugin/tex.vim` for more neomake settings.
+  "
+  " TODO: Consider using latexrun
+  " let g:neomake_tex_enabled_makers = ['latexrun']
 
-" FYI: See `after/ftplugin/tex.vim` for more neomake settings.
-"
-" TODO: Consider using latexrun
-" let g:neomake_tex_enabled_makers = ['latexrun']
-
+endfunction
+call s:on_load('neomake', 'call s:SetupNeomake()')
 " }}}
 
 " surround {{{
-" TODO: how to delete/change?
-let g:surround_108 = "\\begin{\1\\begin{\1}\n\r\n\\end{\1\r}.*\r\1}" 
+function! s:SetupSurround()
+  " TODO: how to delete/change?
+  let g:surround_108 = "\\begin{\1\\begin{\1}\n\r\n\\end{\1\r}.*\r\1}" 
+endfunction
+call s:on_load('vim-surround', 'call s:SetupSurround()')
 " }}}
 
 " python-mode {{{
+function! s:SetupPymode()
+  " Don't let pymode set options; we should do this ourselves. 
+  let g:pymode_options=0
+  let g:pymode_debug = 1
+  let g:pymode_run = 1
 
-" Don't let pymode set options; we should do this ourselves. 
-let g:pymode_options=0
-let g:pymode_debug = 1
-let g:pymode_run = 1
+  let g:pymode_lint = 0
+  let g:pymode_lint_cwindow = 0
 
-let g:pymode_lint = 0
-let g:pymode_lint_cwindow = 0
+  let g:pymode_breakpoint = 1 
+  let g:pymode_breakpoint_bind = '<localleader>b'
+  " let g:pymode_breakpoint_cmd = '%debug '
+  let g:pymode_breakpoint_cmd = 'from IPython.core.debugger import set_trace; set_trace()'
+  let g:pymode_options_colorcolumn = 0
 
-let g:pymode_breakpoint = 1 
-let g:pymode_breakpoint_bind = '<localleader>b'
-" let g:pymode_breakpoint_cmd = '%debug '
-let g:pymode_breakpoint_cmd = 'from IPython.core.debugger import set_trace; set_trace()'
-let g:pymode_options_colorcolumn = 0
+  let g:pymode_motion = 0
 
-let g:pymode_motion = 0
+  let g:pymode_folding = 0
 
-let g:pymode_folding = 0
+  let g:pymode_syntax = 0
+  let g:pymode_syntax_all = 0
+  let g:pymode_syntax_slow_sync = 1
 
-let g:pymode_syntax = 0
-let g:pymode_syntax_all = 0
-let g:pymode_syntax_slow_sync = 1
+  let g:pymode_doc = 0
 
-let g:pymode_doc = 0
+  " XXX: enable only for pure python files; no mixed/noweb files!
+  let g:pymode_rope = 0
+  let g:pymode_rope_regenerate_on_write = 0
+  let g:pymode_rope_completion = 0
+  let g:pymode_rope_complete_on_dot = 0
+  let g:pymode_rope_completion_bind = '' "'<C-Space>' 
+  let g:pymode_rope_goto_definition_cmd = 'e'
+  let g:pymode_rope_goto_definition_bind = '<localleader>gd' 
+  let g:pymode_rope_lookup_project = 0
+  let g:pymode_rope_project_root = $VIRTUAL_ENV
+  let g:pymode_rope_show_doc_bind = '<localleader>K' 
 
-" XXX: enable only for pure python files; no mixed/noweb files!
-let g:pymode_rope = 0
-let g:pymode_rope_regenerate_on_write = 0
-let g:pymode_rope_completion = 0
-let g:pymode_rope_complete_on_dot = 0
-let g:pymode_rope_completion_bind = '' "'<C-Space>' 
-let g:pymode_rope_goto_definition_cmd = 'e'
-let g:pymode_rope_goto_definition_bind = '<localleader>gd' 
-let g:pymode_rope_lookup_project = 0
-let g:pymode_rope_project_root = $VIRTUAL_ENV
-let g:pymode_rope_show_doc_bind = '<localleader>K' 
+endfunction
+call s:on_load('python-mode', 'call s:SetupPymode()')
 " }}}
 
 " deoplete {{{
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#disable_auto_complete = 1
-"let g:deoplete#complete_method = 'omnifunc'
-"deoplete#sources#jedi#show_docstring
+function! s:SetupDeoplete()
 
-inoremap <silent><expr> <C-Space>
-    \ pumvisible() ? "\<C-n>" :
-    \ <SID>check_back_space() ? "\<C-Space>" :
-    \ deoplete#mappings#manual_complete()
+  let g:deoplete#enable_at_startup = 1
+  let g:deoplete#disable_auto_complete = 1
+  "let g:deoplete#complete_method = 'omnifunc'
+  "deoplete#sources#jedi#show_docstring
 
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
+  inoremap <silent><expr> <C-Space>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<C-Space>" :
+      \ deoplete#mappings#manual_complete()
+
+  function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+  endfunction
+
+  autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+
+  "let g:deoplete#omni_patterns = []
+
+  if !exists('g:deoplete#omni#input_patterns')
+      let g:deoplete#omni#input_patterns = {}
+  endif
+
+  " Settings for vimtex
+
+  let g:deoplete#omni#input_patterns.tex = '\\(?:'
+      \ .  '\w*cite\w*(?:\s*\[[^]]*\]){0,2}\s*{[^}]*'
+      \ . '|\w*ref(?:\s*\{[^}]*|range\s*\{[^,}]*(?:}{)?)'
+      \ . '|hyperref\s*\[[^]]*'
+      \ . '|includegraphics\*?(?:\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|(?:include(?:only)?|input)\s*\{[^}]*'
+      \ . '|\w*(gls|Gls|GLS)(pl)?\w*(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
+      \ . '|includepdf(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
+      \ .')'
+
 endfunction
-
-autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-
-"let g:deoplete#omni_patterns = []
-
-if !exists('g:deoplete#omni#input_patterns')
-    let g:deoplete#omni#input_patterns = {}
-endif
-
-" Settings for vimtex
-let g:deoplete#omni#input_patterns.tex = '\\(?:'
-    \ .  '\w*cite\w*(?:\s*\[[^]]*\]){0,2}\s*{[^}]*'
-    \ . '|\w*ref(?:\s*\{[^}]*|range\s*\{[^,}]*(?:}{)?)'
-    \ . '|hyperref\s*\[[^]]*'
-    \ . '|includegraphics\*?(?:\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-    \ . '|(?:include(?:only)?|input)\s*\{[^}]*'
-    \ . '|\w*(gls|Gls|GLS)(pl)?\w*(\s*\[[^]]*\]){0,2}\s*\{[^}]*'
-    \ . '|includepdf(\s*\[[^]]*\])?\s*\{[^}]*'
-    \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
-    \ .')'
-
+call s:on_load('deoplete.nvim', 'call s:SetupDeoplete()')
 " }}}
 
 " autopep8 {{{
-let g:autopep8_disable_show_diff=1 
+function! s:SetupAutopep8()
+  let g:autopep8_disable_show_diff=1 
+endfunction
+call s:on_load('autopep8', 'call s:SetupAutopep8()')
 " }}}
 
 " syntastic {{{ 
-" let g:syntastic_python_checkers = ['flake8'] 
-" let g:syntastic_enable_highlighting = 1  
-" let g:syntastic_style_error_symbol = "E>" 
-" let g:syntastic_warning_symbol = "W>" 
-" let g:syntastic_auto_jump = 0  
-" let g:syntastic_always_populate_loc_list = 1
-" let g:syntastic_auto_loc_list = 0
-" let g:syntastic_check_on_open = 1
-" let g:syntastic_check_on_wq = 0
+function! s:SetupSyntastic()
+  " let g:syntastic_python_checkers = ['flake8'] 
+  " let g:syntastic_enable_highlighting = 1  
+  " let g:syntastic_style_error_symbol = "E>" 
+  " let g:syntastic_warning_symbol = "W>" 
+  " let g:syntastic_auto_jump = 0  
+  " let g:syntastic_always_populate_loc_list = 1
+  " let g:syntastic_auto_loc_list = 0
+  " let g:syntastic_check_on_open = 1
+  " let g:syntastic_check_on_wq = 0
+endfunction
+call s:on_load('syntastic', 'call s:SetupSyntastic()')
 " }}}
 
 " ale {{{
-" let g:ale_lint_on_text_changed='never'
+function! s:SetupAle()
+  " let g:ale_lint_on_text_changed='never'
+  " XXX: Ignore plugin incompatibility warnings.
+  let g:ale_emit_conflict_warnings = 0
+endfunction
+call s:on_load('ale', 'call s:SetupAle()')
 " }}}
 
 " R-plugin {{{
-" don't select the first option that pops up.
-let R_user_maps_only = 1   
-let R_insert_mode_cmds = 0 
-let R_assign = 0
+function! s:SetupNvimR()
+  " don't select the first option that pops up.
+  let R_user_maps_only = 1   
+  let R_insert_mode_cmds = 0 
+  let R_assign = 0
 
-let R_pdfviewer = "qpdfview"
-let g:rplugin_has_wmctrl = 1
-let rmd_syn_hl_chunk = 1
+  let R_pdfviewer = "qpdfview"
+  let g:rplugin_has_wmctrl = 1
+  let rmd_syn_hl_chunk = 1
 
-"let vimrplugin_source_args = 'local = TRUE'
-let R_source_args = 'local=T, echo=T, print.eval=T'
+  "let vimrplugin_source_args = 'local = TRUE'
+  let R_source_args = 'local=T, echo=T, print.eval=T'
 
-let vimrplugin_by_vim_instance=1
-let vimrplugin_vimpager='vertical'
-let vimrplugin_assign = 0
-let vimrplugin_rnowebchunk = 0 
-let vimrplugin_term='xterm'
-let r_syntax_folding=0
+  let vimrplugin_by_vim_instance=1
+  let vimrplugin_vimpager='vertical'
+  let vimrplugin_assign = 0
+  let vimrplugin_rnowebchunk = 0 
+  let vimrplugin_term='xterm'
+  let r_syntax_folding=0
 
-let vimrplugin_applescript=0
-"let vimrplugin_screenplugin=0
+  let vimrplugin_applescript=0
+  "let vimrplugin_screenplugin=0
 
-let g:vimrplugin_insert_mode_cmds=0
-let g:vimrplugin_indent_commented=1
-let g:r_indent_align_args=1
+  let g:vimrplugin_insert_mode_cmds=0
+  let g:vimrplugin_indent_commented=1
+  let g:r_indent_align_args=1
 
-
+endfunction
+call s:on_load('Nvim-R', 'call s:SetupNvimR()')
 " }}}
 
 " Noweb {{{
@@ -660,85 +675,106 @@ let noweb_fold_code = 1
 " }}}
 
 " NERDCommenter {{{
-let g:NERDAllowAnyVisualDelims=1
-let g:NERDCommentWholeLinesInVMode=1
-let g:NERDRemoveAltComs=1
-let g:NERDRemoveExtraSpaces=1
-let g:NERDDefaultNesting=1
+function! s:SetupNERDCommenter()
+  let g:NERDAllowAnyVisualDelims=1
+  let g:NERDCommentWholeLinesInVMode=1
+  let g:NERDRemoveAltComs=1
+  let g:NERDRemoveExtraSpaces=1
+  let g:NERDDefaultNesting=1
+endfunction
+call s:on_load('NERDCommenter', 'call s:SetupNERDCommenter()')
 " }}}
 
 " YouCompleteMe {{{
-" let g:ycm_auto_trigger = 0
-" "let g:ycm_python_binary_path = ''
-" "let g:ycm_key_invoke_completion = '<Nop>' "'<C-Space>' 
-" let g:ycm_autoclose_preview_window_after_completion = 1 
-" let g:ycm_autoclose_preview_window_after_insertion = 1
-" let g:ycm_key_list_select_completion = ['<C-N>']
-" let g:ycm_key_list_select_previous_completion = ['<C-P>']
-" let g:ycm_cache_omnifunc = 1 
-" let g:ycm_use_ultisnips_completer = 1
-" let g:ycm_goto_buffer_command = 'horizontal-split'
+function! s:SetupYouCompleteMe()
+  " let g:ycm_auto_trigger = 0
+  " "let g:ycm_python_binary_path = ''
+  " "let g:ycm_key_invoke_completion = '<Nop>' "'<C-Space>' 
+  " let g:ycm_autoclose_preview_window_after_completion = 1 
+  " let g:ycm_autoclose_preview_window_after_insertion = 1
+  " let g:ycm_key_list_select_completion = ['<C-N>']
+  " let g:ycm_key_list_select_previous_completion = ['<C-P>']
+  " let g:ycm_cache_omnifunc = 1 
+  " let g:ycm_use_ultisnips_completer = 1
+  " let g:ycm_goto_buffer_command = 'horizontal-split'
+  let g:ycm_auto_trigger=0
+  let g:ycm_key_invoke_completion = '<C-space>'
+  let g:ycm_key_list_select_completion = ['<C-tab>', '<down>']
+  let g:ycm_key_list_select_previous_completion = ['<C-s-tab>', '<up>']
+endfunction
+call s:on_load('YouCompleteMe', 'call s:SetupYouCompleteMe()')
 " }}}
 
 " jedi {{{
-let g:jedi#completions_enabled = 0
-let g:jedi#auto_vim_configuration = 0
-let g:jedi#use_tabs_not_buffers = 0
-let g:jedi#rename_command = '<localleader>gR'
-let g:jedi#usages_command = '<localleader>gu'
-let g:jedi#smart_auto_mappings = 1
-let g:jedi#auto_close_doc = 1
-"let g:jedi#documentation_command = "K"
-"let g:jedi#use_splits_not_buffers = "left"
-"let g:jedi#popup_on_dot = 0
-"let g:jedi#popup_select_first = 0
-"let g:jedi#show_call_signatures = "2"
-"let g:jedi#goto_command = "<leader>d"
-"let g:jedi#goto_assignments_command = "<leader>g"
-"let g:jedi#goto_definitions_command = ""
-"let g:jedi#usages_command = "<leader>n"
-"let g:jedi#completions_command = "<C-N>"
-"let g:jedi#rename_command = "<leader>r"
+function! s:SetupJedi()
+  let g:jedi#completions_enabled = 0
+  let g:jedi#auto_vim_configuration = 0
+  let g:jedi#use_tabs_not_buffers = 0
+  let g:jedi#rename_command = '<localleader>gR'
+  let g:jedi#usages_command = '<localleader>gu'
+  let g:jedi#smart_auto_mappings = 1
+  let g:jedi#auto_close_doc = 1
+  "let g:jedi#documentation_command = "K"
+  "let g:jedi#use_splits_not_buffers = "left"
+  "let g:jedi#popup_on_dot = 0
+  "let g:jedi#popup_select_first = 0
+  "let g:jedi#show_call_signatures = "2"
+  "let g:jedi#goto_command = "<leader>d"
+  "let g:jedi#goto_assignments_command = "<leader>g"
+  "let g:jedi#goto_definitions_command = ""
+  "let g:jedi#usages_command = "<leader>n"
+  "let g:jedi#completions_command = "<C-N>"
+  "let g:jedi#rename_command = "<leader>r"
 
-nnoremap <localleader>gd :<C-u>call jedi#goto()<CR>zv
-autocmd BufWinEnter '__doc__' setlocal bufhidden=delete
+  nnoremap <buffer> <localleader>gd :<C-u>call jedi#goto()<CR>zv
+  autocmd BufWinEnter '__doc__' setlocal bufhidden=delete
+endfunction
+call s:on_load('jedi-vim', 'call s:SetupJedi()')
 " }}}
 
 " Ultisnips {{{
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<C-j>"
-let g:UltiSnipsJumpBackwardTrigger="<C-k>"
-let g:UltiSnipsEditSplit="vertical"
-let g:UltiSnipsListSnippets="<F3>"
+function! s:SetupUltisnips()
+  let g:UltiSnipsExpandTrigger="<tab>"
+  let g:UltiSnipsJumpForwardTrigger="<C-j>"
+  let g:UltiSnipsJumpBackwardTrigger="<C-k>"
+  let g:UltiSnipsEditSplit="vertical"
+  let g:UltiSnipsListSnippets="<F3>"
+endfunction
+call s:on_load('ultisnips', 'call s:SetupUltisnips()')
 " }}}
 
 " Airline {{{
-let g:airline#extensions#branch#enabled = 1
-"let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tmuxline#enabled = 1
-let g:airline#extensions#syntastic#enabled = 1
-let g:airline#extensions#virtualenv#enabled = 1 
+function! s:SetupAirline()
+  let g:airline#extensions#branch#enabled = 1
+  "let g:airline_powerline_fonts = 1
+  let g:airline#extensions#tabline#enabled = 1
+  let g:airline#extensions#tmuxline#enabled = 1
+  let g:airline#extensions#syntastic#enabled = 1
+  let g:airline#extensions#virtualenv#enabled = 1 
+endfunction
+call s:on_load('vim-airline', 'call s:SetupAirline()')
 " }}}
 
 " Eclim {{{
-let g:EclimMakeLCD=1
-let g:EclimDtdValidate=0
-"set cot-=preview
+function! s:SetupEclim()
+  let g:EclimMakeLCD=1
+  let g:EclimDtdValidate=0
+  "set cot-=preview
 
-let g:EclimProjectTreeActions = [
-   \ {'pattern': '.*', 'name': 'Edit', 'action': 'edit'},
-   \ {'pattern': '.*', 'name': 'Tab', 'action': 'tabnew'},
-   \ {'pattern': '.*', 'name': 'Split', 'action': 'split'},
- \ ]
-let g:EclimProjectTreeAutoOpen=1
-let g:EclimProjectTreeSharedInstance=1
-let g:EclimLocateFileDefaultAction='tab'
-let g:EclimLocateFileScope='workspace'
-let g:EclimLocateFileFuzzy=1
-let g:EclimBuffersDefaultAction='tab'
-let g:EclimDefaultFileOpenAction='tab'
-
+  let g:EclimProjectTreeActions = [
+     \ {'pattern': '.*', 'name': 'Edit', 'action': 'edit'},
+     \ {'pattern': '.*', 'name': 'Tab', 'action': 'tabnew'},
+     \ {'pattern': '.*', 'name': 'Split', 'action': 'split'},
+   \ ]
+  let g:EclimProjectTreeAutoOpen=1
+  let g:EclimProjectTreeSharedInstance=1
+  let g:EclimLocateFileDefaultAction='tab'
+  let g:EclimLocateFileScope='workspace'
+  let g:EclimLocateFileFuzzy=1
+  let g:EclimBuffersDefaultAction='tab'
+  let g:EclimDefaultFileOpenAction='tab'
+endfunction
+call s:on_load('eclim', 'call s:SetupEclim()')
 " }}}
 
 " NetrwPlugin {{{
@@ -761,20 +797,26 @@ let g:netrw_altv = 1
 " }}}
 
 " pandoc {{{
-let g:pandoc#modules#disabled = ['chdir']
-let g:pandoc#syntax#conceal#use = 0
+function! s:SetupPandoc()
+  let g:pandoc#modules#disabled = ['chdir']
+  let g:pandoc#syntax#conceal#use = 0
+endfunction
+call s:on_load('pandoc', 'call s:SetupPandoc()')
 " }}}
 
 " vim-notes {{{
-let g:notes_directories = ['~/projects/notes']
-let g:notes_markdown_program = 'pandoc' "'pandoc -f markdown_github -t html'
-let g:notes_conceal_code = 0
-let g:notes_suffix = '.vmd'
+function! s:SetupVimnotes()
+  let g:notes_directories = ['~/projects/notes']
+  let g:notes_markdown_program = 'pandoc' "'pandoc -f markdown_github -t html'
+  let g:notes_conceal_code = 0
+  let g:notes_suffix = '.vmd'
+endfunction
+call s:on_load('vim-notes', 'call s:SetupVimnotes()')
 " }}}
 
 " tmux_navigator {{{
-let g:tmux_navigator_no_mappings = 1
-if !has("nvim")
+function! s:SetupTmuxnavigator()
+  let g:tmux_navigator_no_mappings = 1
   silent! nunmap <C-h>
   silent! nunmap <C-j>
   silent! nunmap <C-k>
@@ -785,66 +827,68 @@ if !has("nvim")
   nnoremap <silent> <C-W>k :TmuxNavigateUp<cr>
   nnoremap <silent> <C-W>l :TmuxNavigateRight<cr>
   nnoremap <silent> <C-W>\ :TmuxNavigatePrevious<cr>
-endif
-" }}}
-
-" youcompleteme {{{
-let g:ycm_auto_trigger=0
-let g:ycm_key_invoke_completion = '<C-space>'
-let g:ycm_key_list_select_completion = ['<C-tab>', '<down>']
-let g:ycm_key_list_select_previous_completion = ['<C-s-tab>', '<up>']
+endfunction
+call s:on_load('tmux-navigator', 'call s:SetupTmuxnavigator()')
 " }}}
 
 " easymotion {{{
-" These `n` & `N` mappings are optional. You do not have to map `n` & `N` to EasyMotion.
-" Without these mappings, `n` & `N` works fine. (These mappings just provide
-" different highlight method and have some other features )
-"map  n <Plug>(easymotion-next)
-"map  N <Plug>(easymotion-prev)
-map / <Plug>(easymotion-sn)
-omap / <Plug>(easymotion-tn)
+function! s:SetupEasymotion()
+  " These `n` & `N` mappings are optional. You do not have to map `n` & `N` to EasyMotion.
+  " Without these mappings, `n` & `N` works fine. (These mappings just provide
+  " different highlight method and have some other features )
+  "map  n <Plug>(easymotion-next)
+  "map  N <Plug>(easymotion-prev)
+  map / <Plug>(easymotion-sn)
+  omap / <Plug>(easymotion-tn)
+endfunction
+call s:on_load('vim-easymotion', 'call s:SetupEasymotion()')
 " }}}
 
 " riv {{{
-let g:riv_python_rst_hl=1
-let g:vim_markdown_math = 1
-let g:vim_markdown_frontmatter = 1
+function! s:SetupRiv()
+  let g:riv_python_rst_hl=1
+  let g:vim_markdown_math = 1
+  let g:vim_markdown_frontmatter = 1
+endfunction
+call s:on_load('riv.vim', 'call s:SetupRiv()')
 " }}}
 
 " vim-grammarous {{{
-
-" https://stackoverflow.com/questions/43574426/how-to-resolve-java-lang-noclassdeffounderror-javax-xml-bind-jaxbexception-in-j
-" let g:grammarous#java_cmd = "java --add-modules java.se.ee"
-let g:grammarous#use_vim_spelllang = 0
-let g:grammarous#enable_spell_check = 1
-
+function! s:SetupGrammarous()
+  " https://stackoverflow.com/questions/43574426/how-to-resolve-java-lang-noclassdeffounderror-javax-xml-bind-jaxbexception-in-j
+  " let g:grammarous#java_cmd = "java --add-modules java.se.ee"
+  let g:grammarous#use_vim_spelllang = 0
+  let g:grammarous#enable_spell_check = 1
+endfunction
+call s:on_load('vim-grammarous', 'call s:SetupGrammarous()')
 " }}}
 
 " vim-projectionist {{{
-
-"""
-" Create a projection named 'let' that lets a variable using the given
-" pair of values.
-" E.g.
-"
-" let g:projectionist_heuristics = {"src/tex/&output/": {
-"       \"*.tex": {
-"       \"let": ["b:tex_blah", '"bloh"']
-"       \}}
-"       \}
-"
-autocmd User ProjectionistActivate call s:proj_activate()
-function! s:proj_activate() abort
-  for [root, value] in projectionist#query('let')
-    for l:let_var in value
-      let l:exec_str = "let ".let_var[0]."=".let_var[1]
-      call xolox#misc#msg#debug("proj_activate:".l:exec_str)
-      execute(l:exec_str) 
+function! s:SetupProjectionist()
+  """
+  " Create a projection named 'let' that lets a variable using the given
+  " pair of values.
+  " E.g.
+  "
+  " let g:projectionist_heuristics = {"src/tex/&output/": {
+  "       \"*.tex": {
+  "       \"let": ["b:tex_blah", '"bloh"']
+  "       \}}
+  "       \}
+  "
+  autocmd User ProjectionistActivate call s:proj_activate()
+  function! s:proj_activate() abort
+    for [root, value] in projectionist#query('let')
+      for l:let_var in value
+        let l:exec_str = "let ".let_var[0]."=".let_var[1]
+        call xolox#misc#msg#debug("proj_activate:".l:exec_str)
+        execute(l:exec_str) 
+      endfor
+      break
     endfor
-    break
-  endfor
+  endfunction
 endfunction
-
+call s:on_load('vim-projectionist', 'call s:SetupProjectionist()')
 " }}}
 
-" vim:foldmethod=marker:foldlevel=0
+" vim:foldmethod=marker:foldlevel=0:ts=2:sts=2:sw=2

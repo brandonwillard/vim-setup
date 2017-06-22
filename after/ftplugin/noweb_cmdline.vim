@@ -1,6 +1,23 @@
-if !exists("g:cmdline_job")
-    runtime plugin/vimcmdline.vim
+if exists("b:noweb_cmdline_loaded")
+  finish
 endif
+
+let b:noweb_cmdline_loaded = 1
+
+if !exists("g:cmdline_job")
+  runtime plugin/vimcmdline.vim
+endif
+
+"
+" Wrap an existing source function with a code chunk test.
+" XXX: Doesn't work for vimcmdline's send-line commands, since that calls
+" nvim's `jobsend` directly.
+"
+if !exists("b:cmdline_source_fun_backend")
+  " echom "noweb cmdline_source_fun=".string(b:cmdline_source_fun)
+  let b:cmdline_source_fun_backend = b:cmdline_source_fun
+endif
+
 
 function! NowebSendChunk(...)
     " Function that REPLs code chunks.
@@ -34,7 +51,7 @@ function! NowebSendChunk(...)
       let docline = search("^@", "ncW") - 1
       let codelines = getline(chunkline, docline)
   endif
-  call b:cmdline_source_fun(codelines)
+  call b:cmdline_source_fun_backend(codelines)
   if a:1 == "down"
       call NowebNextChunk()
   endif
@@ -65,10 +82,18 @@ function! NowebSendFHChunk()
         endif
     endwhile
 
-    call b:cmdline_source_fun(codelines)
+    call b:cmdline_source_fun_backend(codelines)
 
 endfunction
 
+function! ReplSendString_noweb(lines)
+  if NowebIsInCode(0) == 0
+      echomsg "Not inside a code chunk."
+      return
+  else
+      return b:cmdline_source_fun_backend(a:lines) 
+  endif
+endfunction
 
 
 command! NowebSendChunkCmd call NowebSendChunk("stay") 
@@ -86,12 +111,17 @@ nmap <buffer> <LocalLeader>tC <Plug>(noweb-send-fh-chunk)
 " variables are exposed to the session).
 nmap <buffer> <LocalLeader>tw :<C-U>call NowebSendChunk("stay", "pweave_code")<CR> 
 
+let b:cmdline_source_fun = function("ReplSendString_noweb")
+
 " TODO: Do we need to source the corresponding noweb language?
 " E.g.
-"   exe 'runtime! **/'.b:noweb_language.'_cmdline.vim'
+" exe 'runtime! **/'.b:noweb_language.'_cmdline.vim'
 " or
 "   let b:cmdline_app = b:noweb_language
 "   ...
 "   call VimCmdLineSetApp(...)
+
+" reset vimcmdline settings for this filetype
+"call VimCmdLineSetApp(b:noweb_language)
 
 " vim:foldmethod=marker:foldlevel=0

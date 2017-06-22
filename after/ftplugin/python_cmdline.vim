@@ -1,3 +1,9 @@
+" if exists("b:python_cmdline_loaded")
+"   finish
+" endif
+
+" let b:python_cmdline_loaded = 1
+
 if !exists("g:cmdline_job")
     runtime plugin/vimcmdline.vim
 endif
@@ -15,7 +21,11 @@ function! s:StartJupyterString()
 endfunction
 
 if executable("jupyter-console")
-  let g:cmdline_app["python"] = s:StartJupyterString()
+  if exists("g:cmdline_app")
+    let g:cmdline_app["python"] = s:StartJupyterString()
+  else
+    let g:cmdline_app = {"python": s:StartJupyterString()}
+  endif
 endif
 
 function! ReplSendString_ipy(lines)
@@ -45,14 +55,14 @@ let &t_te .= "\<Esc>[?2004l"
 let g:bps = "\x1b[200~"
 let g:bpe = "\x1b[201~"
 
-" command! PythonSendIPythonDebugLine :call VimCmdLineSendCmd('%debug -b ' . expand('%') . ':' . line('.'))
-
 let b:cmdline_app = "python"
 let b:cmdline_quit_cmd = "quit()"
 let b:cmdline_nl = "\n"
 let b:cmdline_source_fun = function("ReplSendString_ipy")
 let b:cmdline_send_empty = 0
 let b:cmdline_filetype = "python"
+
+command! -buffer PythonSendIPythonDebugLine :call b:cmdline_source_fun('%debug -b ' . expand('%') . ':' . line('.'))
 
 exe 'nmap <buffer><silent> ' . g:cmdline_map_start . ' :call VimCmdLineStartApp()<CR>'
 

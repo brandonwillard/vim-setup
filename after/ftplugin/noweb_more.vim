@@ -182,7 +182,7 @@ autocmd User SyntaxNowebCodeEnterA unsilent call SetCodeSettings(b:noweb_languag
 autocmd User SyntaxNowebCodeLeaveA unsilent call SetCodeSettings(b:noweb_backend) 
 
 let b:noweb_options_list = ["formatexpr", "includeexpr", "comments", "formatprg",
-      \"commentstring", "formatoptions", "iskeyword", "cinkeys", "define", 
+      \"commentstring", "formatoptions", "iskeyword", "cinkeys", "define", "conceallevel", 
       \"omnifunc", "keywordprg", "wildignore", "include", "textwidth", "cinoptions"]
 
 " Append these option subsets
@@ -213,47 +213,32 @@ endfunction
 " This might be a way to determine/automate the following:
 " http://vim.wikia.com/wiki/Edit_configuration_files_for_a_filetype
 "
-" FYI: Using tpope's `:Runtime` to load these, so we no longer
-" need the surrounding `let/unlet` statements.
-"
 for vlang in [b:noweb_backend, b:noweb_language]
-    "let s:old_ft_ignore_pat = g:ft_ignore_pat
-    "let g:ft_ignore_pat = '\.\(Z\|gz\|bz2\|zip\|tgz\|'.&ft.'\|'.vlang.'\.'.&ft.'\)$' 
+  " try
+    " Unset values:
+    " NOTE: Could just do `:set all&`.
+    for topt in b:noweb_options_list
+      " echom "unsetting noweb_".vlang."_".topt."=".eval("&l:" . topt) 
+      try
+        execute(":set ".topt."&") 
+      catch
+        echoerr v:exception . ', topt=' . topt
+      endtry
+    endfor
 
-    "unlet! did_load_filetypes
-    "unlet! b:did_indent
-    "unlet! b:did_ftplugin
-    try
-      " let b:lang_runtimes = globpath(&rtp, "**/ftplugin/".vlang."*.vim", 0, 1, 0) 
-      " let b:lang_runtimes += globpath(&rtp, "**/indent/".vlang."*.vim", 0, 1, 0) 
-      " let b:lang_runtimes = uniq(sort(b:lang_runtimes))
-      " let s:lang_runtimes = ["ftplugin/".vlang.".vim", 
-      "             \" after/ftplugin/".vlang.".vim", 
-      "             \" after/ftplugin/".vlang."_*.vim",
-      "             \" after/ftplugin/".vlang."/*.vim",
-      "             \" indent/".vlang.".vim", 
-      "             \" indent/".vlang."/*.vim"]
-      " let &filetype='none'
-      " execute "Runtime ".join(b:lang_runtimes, ' ')
+    let &filetype=vlang
 
-      " Unset values:
-      for topt in b:noweb_options_list
-          " echom "unsetting noweb_".vlang."_".topt."=".eval("&l:" . topt) 
-          execute(":set ".topt."&") 
-      endfor
-
-      let &filetype=vlang
-
-      for topt in b:noweb_options_list
-          " echom "setting noweb_".vlang."_".topt."=".eval("&l:" . topt) 
-          let b:noweb_{vlang}_{topt} = eval("&l:" . topt)
-      endfor
-    catch
-      echoerr v:exception
-    endtry
-    "unlet! did_load_filetypes
-    "unlet! b:did_indent
-    "unlet! b:did_ftplugin
+    for topt in b:noweb_options_list
+      " echom "setting noweb_".vlang."_".topt."=".eval("&l:" . topt) 
+      try
+        let b:noweb_{vlang}_{topt} = eval("&l:" . topt)
+      catch
+        echoerr v:exception . ', topt=' . topt
+      endtry
+    endfor
+  " catch
+  "   echoerr v:exception
+  " endtry
 endfor
 let &filetype='noweb'
 
