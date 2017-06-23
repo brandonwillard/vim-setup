@@ -567,30 +567,26 @@ call s:on_load('python-mode', 'call s:SetupPymode()')
 function! s:SetupDeoplete()
 
   let g:deoplete#enable_at_startup = 1
-  let g:deoplete#disable_auto_complete = 1
-  "let g:deoplete#complete_method = 'omnifunc'
-  "deoplete#sources#jedi#show_docstring
+  " let g:deoplete#disable_auto_complete = 1
+  let g:deoplete#enable_refresh_always = 1
+  " let g:deoplete#complete_method = 'omnifunc'
+  
+  call deoplete#custom#set('_', 'min_pattern_length', 2)
 
-  inoremap <silent><expr> <C-Space>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<C-Space>" :
-      \ deoplete#mappings#manual_complete()
+  let g:deoplete#sources = get(g:, 'deoplete#sources', {})
+	let g:deoplete#sources._ = ['buffer'] ", 'ultisnips']
+	" let g:deoplete#sources.cpp = ['buffer', 'tag']
 
-  function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
-  endfunction
+  let g:deoplete#omni#functions = get(g:, 'deoplete#omni#functions', {})
+  " let g:deoplete#omni#functions.python = ['pythoncomplete#Complete']
+  " let g:deoplete#omni#functions.tex = ['vimtex#complete#omnifunc']
 
-  autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+	" Vim regexp versions
+	let g:deoplete#omni_patterns = get(g:, 'deoplete#omni_patterns', {})
 
-  "let g:deoplete#omni_patterns = []
-
-  if !exists('g:deoplete#omni#input_patterns')
-      let g:deoplete#omni#input_patterns = {}
-  endif
-
-  " Settings for vimtex
-
+  " Python3 regexp versions
+	let g:deoplete#omni#input_patterns = get(g:, 'deoplete#omni#input_patterns', {})
+	" let g:deoplete#omni#input_patterns.python = ''
   let g:deoplete#omni#input_patterns.tex = '\\(?:'
       \ .  '\w*cite\w*(?:\s*\[[^]]*\]){0,2}\s*{[^}]*'
       \ . '|\w*ref(?:\s*\{[^}]*|range\s*\{[^,}]*(?:}{)?)'
@@ -602,8 +598,35 @@ function! s:SetupDeoplete()
       \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
       \ .')'
 
+  function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~? '\s'
+  endfunction
+
+  inoremap <silent><expr><C-Space>
+      \ pumvisible() ? "\<C-n>" : (
+      \ <SID>check_back_space() ? "\<C-Space>" :
+      \ deoplete#manual_complete())
+
+  snoremap <silent><expr><C-Space>
+      \ pumvisible() ? "\<C-n>" : (
+      \ <SID>check_back_space() ? "\<C-Space>" :
+      \ deoplete#manual_complete())
+
+  autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
+
 endfunction
 call s:on_load('deoplete.nvim', 'call s:SetupDeoplete()')
+" }}}
+
+" deoplete-jedi {{{
+function! s:SetupDeopleteJedi()
+  " https://github.com/rafi/vim-config/blob/master/config/plugins/deoplete.vim
+  let g:deoplete#sources#jedi#statement_length = 30
+  let g:deoplete#sources#jedi#show_docstring = 1
+  let g:deoplete#sources#jedi#short_types = 1
+endfunction
+call s:on_load('deoplete-jedi', 'call s:SetupDeopleteJedi()')
 " }}}
 
 " autopep8 {{{
@@ -707,24 +730,29 @@ call s:on_load('YouCompleteMe', 'call s:SetupYouCompleteMe()')
 
 " jedi {{{
 function! s:SetupJedi()
-  let g:jedi#completions_enabled = 0
+  " XXX: This sets `omnifunc` 
+  let g:jedi#auto_initialization = 0
   let g:jedi#auto_vim_configuration = 0
+
+  let g:jedi#completions_enabled = 0
   let g:jedi#use_tabs_not_buffers = 0
+
   let g:jedi#rename_command = '<localleader>gR'
   let g:jedi#usages_command = '<localleader>gu'
-  let g:jedi#smart_auto_mappings = 1
-  let g:jedi#auto_close_doc = 1
   "let g:jedi#documentation_command = "K"
-  "let g:jedi#use_splits_not_buffers = "left"
-  "let g:jedi#popup_on_dot = 0
-  "let g:jedi#popup_select_first = 0
-  "let g:jedi#show_call_signatures = "2"
   "let g:jedi#goto_command = "<leader>d"
   "let g:jedi#goto_assignments_command = "<leader>g"
   "let g:jedi#goto_definitions_command = ""
   "let g:jedi#usages_command = "<leader>n"
   "let g:jedi#completions_command = "<C-N>"
   "let g:jedi#rename_command = "<leader>r"
+
+  let g:jedi#smart_auto_mappings = 1
+  let g:jedi#auto_close_doc = 1
+  "let g:jedi#use_splits_not_buffers = "left"
+  let g:jedi#popup_on_dot = 0
+  "let g:jedi#popup_select_first = 0
+  let g:jedi#show_call_signatures = 1
 
   nnoremap <buffer> <localleader>gd :<C-u>call jedi#goto()<CR>zv
   autocmd BufWinEnter '__doc__' setlocal bufhidden=delete
