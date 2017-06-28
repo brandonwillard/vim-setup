@@ -54,7 +54,9 @@ call plug#begin('~/.vim/bundle/')
   if !has("nvim")
     Plug 'christoomey/vim-tmux-navigator'
   endif
-  Plug 'Lokaltog/vim-easymotion'
+  " XXX: Breaks `undolevel` when using terminal buffers.
+  " Plug 'Lokaltog/vim-easymotion'
+  Plug 'justinmk/vim-sneak'
   Plug 'qpkorr/vim-bufkill'
   Plug 'kana/vim-textobj-user'
   Plug 'kana/vim-textobj-line'
@@ -870,6 +872,13 @@ function! s:SetupEasymotion()
   omap / <Plug>(easymotion-tn)
 endfunction
 call s:on_load('vim-easymotion', 'call s:SetupEasymotion()')
+" }}}
+
+" vim-sneak {{{
+function! s:SetupVimSneak()
+  let g:sneak#label = 1
+endfunction
+call s:on_load('vim-sneak', 'call s:SetupVimSneak()')
 " }}}
 
 " riv {{{
