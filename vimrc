@@ -94,7 +94,7 @@ call plug#begin('~/.vim/bundle/')
   endif
 
   "# Terminal/REPL
-  Plug 'brandonwillard/vimcmdline'
+  Plug 'brandonwillard/vimcmdline', { 'for': ['python', 'noweb']}
 
   "# Filesystem, Make, Git 
   Plug 'benekastah/neomake'
@@ -662,33 +662,32 @@ endfunction
 call s:on_load('ale', 'call s:SetupAle()')
 " }}}
 
-" R-plugin {{{
+" Nvim-R {{{
 function! s:SetupNvimR()
   " don't select the first option that pops up.
-  let R_user_maps_only = 1   
-  let R_insert_mode_cmds = 0 
-  let R_assign = 0
+  let g:R_user_maps_only = 1   
+  let g:R_insert_mode_cmds = 0 
+  let g:R_assign = 0
 
-  let R_pdfviewer = "qpdfview"
-  let g:rplugin_has_wmctrl = 1
-  let rmd_syn_hl_chunk = 1
+  let g:R_pdfviewer = "qpdfview"
 
-  "let vimrplugin_source_args = 'local = TRUE'
-  let R_source_args = 'local=T, echo=T, print.eval=T'
+  let g:R_source_args = 'local=T, echo=T, print.eval=T'
 
-  let vimrplugin_by_vim_instance=1
-  let vimrplugin_vimpager='vertical'
-  let vimrplugin_assign = 0
-  let vimrplugin_rnowebchunk = 0 
-  let vimrplugin_term='xterm'
-  let r_syntax_folding=0
+  " FIXME: nvim-plugin needs these before it creates maps; otherwise
+  " it won't create the endpoint <Plug>'s.  we're gonna force it to 
+  " load them now, but this isn't really an extensible approach.
+  vmap <buffer> <LocalLeader>th <Plug>RHelp
+  nmap <buffer> <LocalLeader>th <Plug>RHelp
+   
+  vmap <buffer> <LocalLeader>to <Plug>RObjectStr
+  nmap <buffer> <LocalLeader>to <Plug>RObjectStr
 
-  let vimrplugin_applescript=0
-  "let vimrplugin_screenplugin=0
-
-  let g:vimrplugin_insert_mode_cmds=0
-  let g:vimrplugin_indent_commented=1
-  let g:r_indent_align_args=1
+  vmap <buffer> <LocalLeader>ts <Plug>RSendSelection
+  nmap <buffer> <LocalLeader>tl <Plug>RSendLine
+  nmap <buffer> <LocalLeader>tr <Plug>RStart
+  vmap <buffer> <LocalLeader>tr <Plug>RStart
+  nmap <buffer> <LocalLeader>tq <Plug>RClose
+  vmap <buffer> <LocalLeader>tq <Plug>RClose
 
 endfunction
 call s:on_load('Nvim-R', 'call s:SetupNvimR()')
