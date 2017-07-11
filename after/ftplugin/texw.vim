@@ -11,16 +11,6 @@ let b:loaded_texw_ftplugin = 1
 let b:noweb_backend="tex"
 let b:noweb_language="python"
 
-if exists('*textobj#user#plugin')
-  call textobj#user#plugin('noweb', {
-  \   'code': {
-  \     'pattern': ['^<<.*>>=', '^@'],
-  \     'select-a': 'aP',
-  \     'select-i': 'iP',
-  \   },
-  \ })
-endif
-
 " TODO: Determine if a multi-filetype is better (i.e. `ft=texw.noweb`).
 runtime after/ftplugin/noweb_more.vim
 

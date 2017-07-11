@@ -3,6 +3,16 @@ if exists("b:loaded_noweb_ftplugin")
 endif
 let b:loaded_noweb_ftplugin=1
 
+if exists('*textobj#user#plugin')
+  call textobj#user#plugin('noweb', {
+  \   'code': {
+  \     'pattern': ['^<<.*>>=', '^@'],
+  \     'select-a': 'aC',
+  \     'select-i': 'iC',
+  \   },
+  \ })
+endif
+
 ""
 " These Noweb* functions are adapted from the vim-r-plugin.
 " 
@@ -226,6 +236,7 @@ for vlang in [b:noweb_backend, b:noweb_language]
       endtry
     endfor
 
+    " :hi clear
     let &filetype=vlang
 
     for topt in b:noweb_options_list

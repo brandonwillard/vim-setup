@@ -682,12 +682,24 @@ function! s:SetupNvimR()
   vmap <buffer> <LocalLeader>to <Plug>RObjectStr
   nmap <buffer> <LocalLeader>to <Plug>RObjectStr
 
-  vmap <buffer> <LocalLeader>ts <Plug>RSendSelection
+  vmap <buffer> <LocalLeader>ts <Plug>RESendSelection
   nmap <buffer> <LocalLeader>tl <Plug>RSendLine
+  nmap <buffer> <LocalLeader>tc <Plug>RSendChunk
+  nmap <buffer> <LocalLeader>tC <Plug>RSendChunkFH
+
+  nmap <buffer> <LocalLeader>gn <Plug>RNextRChunk
+  nmap <buffer> <LocalLeader>gN <Plug>RPreviousRChunk
+
   nmap <buffer> <LocalLeader>tr <Plug>RStart
   vmap <buffer> <LocalLeader>tr <Plug>RStart
   nmap <buffer> <LocalLeader>tq <Plug>RClose
   vmap <buffer> <LocalLeader>tq <Plug>RClose
+
+  nmap <buffer> <LocalLeader>tk <Plug>RKnit
+  vmap <buffer> <LocalLeader>tk <Plug>RKnit
+
+  nmap <buffer> <LocalLeader>tm <Plug>RMakeRmd
+  vmap <buffer> <LocalLeader>tm <Plug>RMakeRmd
 
 endfunction
 call s:on_load('Nvim-R', 'call s:SetupNvimR()')
