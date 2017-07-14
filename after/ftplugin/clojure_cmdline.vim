@@ -1,14 +1,6 @@
-if !exists("g:cmdline_job")
-    runtime plugin/vimcmdline.vim
-endif
-
 function! s:StartJupyterString()
   return "nocorrect jupyter-console --kernel clojure \|\| clojure"
 endfunction
-
-if executable("jupyter-console")
-  let g:cmdline_app["clojure"] = s:StartJupyterString()
-endif
 
 function! ReplSendString_jup(lines)
   " TODO: Should provide generics for Jupyter.
@@ -26,14 +18,15 @@ function! ReplSendString_jup(lines)
 
 endfunction
 
-let b:cmdline_app = "clojure"
+if executable("jupyter-console")
+  let b:cmdline_app = s:StartJupyterString()
+else
+  let b:cmdline_app = "clojure"
+endif
+
 let b:cmdline_quit_cmd = "quit()"
 let b:cmdline_nl = "\n"
 let b:cmdline_source_fun = function("ReplSendString_jup")
 let b:cmdline_send_empty = 0
 let b:cmdline_filetype = "clojure"
 
-exe 'nmap <buffer><silent> ' . g:cmdline_map_start . ' :call VimCmdLineStartApp()<CR>'
-
-" reset vimcmdline settings for this filetype
-call VimCmdLineSetApp("clojure")

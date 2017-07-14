@@ -4,9 +4,9 @@ endif
 
 let b:noweb_cmdline_loaded = 1
 
-if !exists("g:cmdline_job")
-  runtime plugin/vimcmdline.vim
-endif
+" if !exists("g:cmdline_job")
+"   runtime plugin/vimcmdline.vim
+" endif
 
 "
 " Wrap an existing source function with a code chunk test.

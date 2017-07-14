@@ -14,7 +14,6 @@
 " -brandonwillard
 "
 
-
 " Important {{{
 
 " See https://github.com/junegunn/vim-plug/issues/432
@@ -94,7 +93,11 @@ call plug#begin('~/.vim/bundle/')
   endif
 
   "# Terminal/REPL
-  Plug 'brandonwillard/vimcmdline', { 'for': ['python', 'noweb']}
+  if !empty(glob("~/projects/code/vim-plugins/vimcmdline"))
+    Plug '~/projects/code/vim-plugins/vimcmdline', { 'for': ['python', 'noweb']}
+  else
+    Plug 'brandonwillard/vimcmdline', { 'for': ['python', 'noweb']}
+  endif
 
   "# Filesystem, Make, Git 
   Plug 'benekastah/neomake'
@@ -450,6 +453,9 @@ function! s:SetupVimcmdline()
   let g:cmdline_map_send_paragraph = "<LocalLeader>tp"
   let g:cmdline_map_send_block = "<LocalLeader>tb"
   let g:cmdline_map_quit = "<LocalLeader>tq"
+
+  let g:cmdline_term_height = -1
+  let g:cmdline_term_width = -1
 
   let g:cmdline_vsplit = 0
   let g:cmdline_esc_term = 1
