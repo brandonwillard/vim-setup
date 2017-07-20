@@ -69,6 +69,7 @@ call plug#begin('~/.vim/bundle/')
   Plug 'python-mode/python-mode', {'for': '*python*'}
   Plug 'davidhalter/jedi-vim'
   Plug 'tmhedberg/SimpylFold'
+  Plug 'Chiel92/vim-autoformat'
   "Plug 'jmcantrell/vim-virtualenv'
   "Plug 'tell-k/vim-autopep8'
   "Plug 'jimf/vim-pep8-text-width'

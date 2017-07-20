@@ -11,12 +11,6 @@ setl shiftround
 setl cino+=(0
 setl cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 setl formatoptions=croqljt
-setl formatprg=autopep8\ -a\ -
-" Can't get this to work, yet.  Looks like the shell script
-" doesn't really handle stdin pipes.
-" Could probably write a wrapper that adds the functionality:
-" http://stackoverflow.com/a/11111088/3006474
-"setl formatprg=yapf\ -
 
 if exists("g:pymode_options_max_line_length")
   exe "setlocal textwidth=" . g:pymode_options_max_line_length
@@ -46,11 +40,33 @@ EOF
 
 endif
 
-" Only run certain pymode/rope features for pure python files.
-" E.g. definition lookup won't work (because it doesn't parse only
-" the code chunks, yet).
-" if !(exists("b:noweb_backend") || exists("b:noweb_language"))
-"   let g:pymode_rope = 1 
+" python << EOF
+" def has_yapf():
+"   import pkgutil
+"   return pkgutil.find_loader('yapf') is not None
+" EOF
+
+" if pyeval("has_yapf()")
+
+"   function! YAPF() range
+"     " Determine range to format.
+"     let l:line_ranges = a:firstline . '-' . a:lastline
+"     let l:cmd = 'yapf --lines=' . l:line_ranges
+
+"     " Call YAPF with the current buffer
+"     let l:formatted_text = system(l:cmd, join(getline(1, '$'), "\n") . "\n")
+
+"     " Update the buffer.
+"     execute '1,' . string(line('$')) . 'delete'
+"     call setline(1, split(l:formatted_text, "\n"))
+
+"     " Reset cursor to first line of the formatted range.
+"     call cursor(a:firstline, 1)
+"   endfunction
+
+"   command! -range=% YAPF <line1>,<line2>call YAPF()
+
+"   setl formatexpr=YAPF
 " else
-"   let g:pymode_rope = 0 
+"   setl formatprg=autopep8\ -a\ -
 " endif

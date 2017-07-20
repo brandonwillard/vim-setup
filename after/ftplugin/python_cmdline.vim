@@ -3,11 +3,23 @@ function! s:StartJupyterString()
   let python_version = system('python -V')
   " Remove nocorrect if you're not using zshell (it stops the input
   if python_version =~ '^Python 3\.\?'
-    return "nocorrect jupyter-console --kernel python3 \|\| python"
+    if get(g:, "cmdline_jupyter", 0)
+      return "nocorrect jupyter-console --kernel python3 \|\| python"
+    else
+      return "nocorrect ipython3 \|\| python"
+    endif
   elseif python_version =~ '^Python 2\.\?'
-    return "nocorrect jupyter-console --kernel python2 \|\| python"
+    if get(g:, "cmdline_jupyter", 0)
+      return "nocorrect jupyter-console --kernel python2 \|\| python"
+    else
+      return "nocorrect ipython2 \|\| python"
+    endif 
   else
-    return "nocorrect jupyter-console \|\| python"
+    if get(g:, "cmdline_jupyter", 0)
+      return "nocorrect jupyter-console \|\| python"
+    else
+      return "nocorrect ipython \|\| python"
+    endif 
   endif
 endfunction
 
