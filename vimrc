@@ -678,7 +678,7 @@ function! s:SetupNvimR()
 
   let g:R_pdfviewer = "qpdfview"
 
-  let g:R_source_args = 'local=T, echo=T, print.eval=T'
+  let g:R_source_args = 'local=TRUE, print.eval=TRUE'
 
   " FIXME: nvim-plugin needs these before it creates maps; otherwise
   " it won't create the endpoint <Plug>'s.  we're gonna force it to 
@@ -707,6 +707,12 @@ function! s:SetupNvimR()
 
   nmap <buffer> <LocalLeader>tm <Plug>RMakeRmd
   vmap <buffer> <LocalLeader>tm <Plug>RMakeRmd
+
+  nmap <buffer> <LocalLeader>tk <Plug>RKnit
+  vmap <buffer> <LocalLeader>tk <Plug>RKnit
+
+  nmap <buffer> <LocalLeader>tm <Plug>RMakePDFK
+  vmap <buffer> <LocalLeader>tm <Plug>RMakePDFK
 
 endfunction
 call s:on_load('Nvim-R', 'call s:SetupNvimR()')

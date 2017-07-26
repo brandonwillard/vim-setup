@@ -4,9 +4,7 @@ endif
 
 let b:noweb_cmdline_loaded = 1
 
-" if !exists("g:cmdline_job")
-"   runtime plugin/vimcmdline.vim
-" endif
+let b:noweb_chunk_enabled_opts = {'evaluate': v:true, 'fig': v:false}
 
 "
 " Wrap an existing source function with a code chunk test.
@@ -69,7 +67,7 @@ function! NowebSendFHChunk()
     let curbuf = getline(1, "$")
     let idx = 0
     while idx < here
-        let enabled = pyeval("is_noweb_chunk_enabled('".escape(curbuf[idx], "\\\"'")."')") 
+        let enabled = pyeval("chunk_enabled('".escape(curbuf[idx], "\\\"'")."', vim.current.buffer.vars.get('noweb_chunk_enabled_opts', {}))") 
         "if curbuf[idx] =~ begchk
         if enabled == 1
             let idx += 1
@@ -124,4 +122,4 @@ let b:cmdline_source_fun = function("ReplSendString_noweb")
 " reset vimcmdline settings for this filetype
 "call VimCmdLineSetApp(b:noweb_language)
 
-" vim:foldmethod=marker:foldlevel=0
+" vim:foldmethod=marker:foldlevel=0:ts=2:sts=2:sw=2

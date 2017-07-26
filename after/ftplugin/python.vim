@@ -18,9 +18,6 @@ else
   setl textwidth=79
 endif
 
-" Add python paths to vim search (so you can open source files with gf, etc)
-" from: http://vim.wikia.com/wiki/VimTip1546 .
-
 if exists("b:loaded_python_after")
   finish
 else
@@ -28,14 +25,19 @@ else
   let b:loaded_python_after = 1
 
 python << EOF
+
+#
+# Add python paths to vim search (so you can open source files with gf, etc)
+# from: http://vim.wikia.com/wiki/VimTip1546 .
+#
+
 import os
 import sys
 import vim
-for p in sys.path:
-    # Add each directory in sys.path, if it exists.
-    if os.path.isdir(p):
-        # Command 'set' needs backslash before each space.
-        vim.command(r"set path+=%s" % (p.replace(" ", r"\ ")))
+
+sys_paths = ",".join(filter(os.path.isdir, sys.path))
+vim.command("set path+={}".format(sys_paths.replace(" ", r"\ ")))
+
 EOF
 
 endif

@@ -19,6 +19,10 @@ endif
 " Chunk functions {{{
 python << EOL
 
+import distutils.util
+import collections
+from itertools import cycle
+
 def parse_noweb_args(line):
     """ Parses a line for a noweb code chunk header
     and extracts the chunk keyword options.
@@ -58,42 +62,42 @@ def parse_noweb_args(line):
     return dict_res
 
 
-def is_noweb_chunk_enabled(line, missing_true=True):
-    """ Check if a noweb code chunk header is enabled
-    for evaluate during the weaving phase.
+def default_is_enabled(x, default):
+    try:
+        return distutils.util.strtobool(x)
+    except ValueError:
+        return default
 
-    Keywords must start with 'eval' (case insensitive)
-    and have values of 't', 'true' or '1' (case insensitive).
+
+def chunk_enabled(line, options, is_enabled=default_is_enabled):
+    r""" Check if a noweb code chunk header is enabled for evaluate during the
+    weaving phase.
 
     Parameters
     ==========
     line: str
         The noweb document line.
-    missing_true: boolean
-        If `True`, then chunks without a matching eval option
-        are evalued.
+    options: dict
+        The option names determining whether or not a chunk is enabled
+        and their default values.
+    is_enabled: list of lambdas or functions
+        Function(s) used to evaluate whether or not an option is considered
+        enabled.
 
     Returns
     =======
     `True` if the line is a code chunk header that is enabled.
+
     """
-    options_res = parse_noweb_args(line)
+    chunk_opts = parse_noweb_args(line)
 
-    if options_res is None:
-      return False
+    if chunk_opts is None:
+        return False
 
-    eval_options = filter(
-        lambda x: x[0].lower().startswith('eval'),
-        options_res.items())
+    chunk_enabled = any(is_enabled(chunk_opts.get(opt_name, ''), opt_default)
+                        for opt_name, opt_default in options.items())
 
-    if len(eval_options) == 0:
-      return missing_true
-
-    eval_true = filter(
-        lambda x: x[1].lower() in (
-            't', 'true', '1'), eval_options)
-
-    return any(eval_true)
+    return chunk_enabled
 
 EOL
 
@@ -210,7 +214,6 @@ function! SetCodeSettings(lang)
     try
       for topt in b:noweb_options_list
         let l:exec_str = "let &l:".topt." = b:noweb_".a:lang."_".topt
-        "echom l:exec_str
         execute(l:exec_str) 
       endfor
     catch
@@ -256,4 +259,4 @@ let &filetype='noweb'
 "let g:ft_ignore_pat = s:old_ft_ignore_pat
 "let did_load_filetypes = 1
 
-" vim:foldmethod=marker:foldlevel=0
+" vim:foldmethod=marker:foldlevel=0:ts=2:sts=2:sw=2:et
