@@ -48,6 +48,7 @@ call plug#begin('~/.vim/bundle/')
   " Plug 'scrooloose/syntastic'
   Plug 'w0rp/ale'
   " Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
+  Plug 'lifepillar/pgsql.vim'
 
   "# Motion, Buffers, Windows
   if !has("nvim")
@@ -58,6 +59,7 @@ call plug#begin('~/.vim/bundle/')
   Plug 'justinmk/vim-sneak'
   Plug 'qpkorr/vim-bufkill'
   Plug 'kana/vim-textobj-user'
+  Plug 'kana/vim-textobj-function'
   Plug 'kana/vim-textobj-line'
   Plug 'sgur/vim-textobj-parameter'
   Plug 'tpope/vim-surround'
@@ -95,10 +97,11 @@ call plug#begin('~/.vim/bundle/')
 
   "# Terminal/REPL
   if !empty(glob("~/projects/code/vim-plugins/vimcmdline"))
-    Plug '~/projects/code/vim-plugins/vimcmdline', { 'for': ['python', 'noweb']}
+    let vimcmdline_loc = '~/projects/code/vim-plugins/vimcmdline'
   else
-    Plug 'brandonwillard/vimcmdline', { 'for': ['python', 'noweb']}
+    let vimcmdline_loc = 'brandonwillard/vimcmdline'
   endif
+  Plug vimcmdline_loc, { 'for': ['python', 'noweb', 'sql', 'clojure', 'javascript'] } 
 
   "# Filesystem, Make, Git 
   Plug 'benekastah/neomake'
@@ -288,9 +291,14 @@ let g:python_host_prog=expand('~/.pyenv/versions/neovim2/bin/python')
 let g:python3_host_prog=expand('~/.pyenv/versions/neovim3/bin/python')
 let python_space_error_highlight = 1 
 
+if $VIRTUAL_ENV != ""
+  let &tags = $VIRTUAL_ENV.'/tags,' . &tags
+endif
+
 ""
 " Run `autopep8` on the current buffer in-place.
-command PythonAutopep8 :!autopep8 --in-place %
+" command PythonAutopep8 :!autopep8 --in-place %
+
 " }}}
 
 " Editing Text {{{
@@ -336,9 +344,8 @@ set clipboard+=unnamedplus
 set virtualedit=insert,block,onemore
 set nocursorline
 
-if $VIRTUAL_ENV != ""
-  let &tags = $VIRTUAL_ENV.'/tags,' . &tags
-endif
+let g:sql_type_default = 'pgsql'
+
 " }}}
 
 " Messages and Info {{{
@@ -469,6 +476,37 @@ function! s:SetupVimcmdline()
   let g:cmdline_golinedown = 0
 
 	call VimCmdLineCreateMaps()
+
+  " Enable (and likewise disable) bracketed paste mode in the terminal.
+  let &t_ti .= "\<Esc>[?2004h"
+  let &t_te .= "\<Esc>[?2004l"
+
+  if !exists("g:cmdline_bps")
+    let g:cmdline_bps = "\x1b[200~"
+  endif
+  if !exists("g:cmdline_bpe")
+    let g:cmdline_bpe = "\x1b[201~"
+  endif
+
+  function! g:ReplSendMultiline(lines)
+    " Just for some background, you might see control/escape
+    " sequences like `\x1b[200~` printed as `^[[200~`.  The
+    " first part is, of course, the ESC control character
+    " (ASCII: `^[`).  These exact control sequences are bracketed
+    " paste modes in an xterm setting 
+    "
+    " References:
+    " https://cirw.in/blog/bracketed-paste
+    " http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html
+    " http://www.xfree86.org/current/ctlseqs.html
+    let expr_str = g:cmdline_bps
+    let expr_str .= join(add(a:lines, ''), b:cmdline_nl)
+    let expr_str .= g:cmdline_bpe
+    let expr_str .= b:cmdline_nl
+
+    call VimCmdLineSendCmd(expr_str)
+
+  endfunction
 
 endfunction
 call s:on_load('vimcmdline', 'call s:SetupVimcmdline()')
@@ -950,6 +988,14 @@ function! s:SetupProjectionist()
   endfunction
 endfunction
 call s:on_load('vim-projectionist', 'call s:SetupProjectionist()')
+" }}}
+
+" pgsql.vim {{{
+let g:pgsql_pl = ['python', 'javascript']
+" function! s:SetupPgsqlVim()
+"   " noop
+" endfunction
+" call s:on_load('pgsql.vim', 'call s:SetupPgsqlVim()')
 " }}}
 
 " vim:foldmethod=marker:foldlevel=0:ts=2:sts=2:sw=2

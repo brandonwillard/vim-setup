@@ -110,6 +110,7 @@ nmap <buffer> <LocalLeader>tC <Plug>(noweb-send-fh-chunk)
 nmap <buffer> <LocalLeader>tw :<C-U>call NowebSendChunk("stay", "pweave_code")<CR> 
 
 let b:cmdline_source_fun = function("ReplSendString_noweb")
+" let b:cmdline_source_fun = {arg -> function("ReplSendMultiline")(arg)}
 
 " TODO: Do we need to source the corresponding noweb language?
 " E.g.
