@@ -46,7 +46,6 @@ call plug#begin('~/.vim/bundle/')
   endif
   Plug 'tpope/vim-commentary'
   " Plug 'scrooloose/syntastic'
-  Plug 'w0rp/ale'
   " Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
   Plug 'lifepillar/pgsql.vim'
 
@@ -110,6 +109,8 @@ call plug#begin('~/.vim/bundle/')
   Plug 'tpope/vim-eunuch'
   Plug 'tpope/vim-scriptease'
   Plug 'tpope/vim-projectionist'
+  Plug 'w0rp/ale'
+  Plug 'editorconfig/editorconfig-vim'
 
   "# TeX 
   Plug 'lervag/vimtex', {'for': ['tex', 'noweb']}
@@ -185,6 +186,8 @@ nnoremap <c-l> <c-l>:noh<cr>
 set hid
 set ls=2
 set switchbuf=useopen
+set splitbelow
+set splitright
 " }}}
 
 " Syntax, Highlighting and Spelling {{{
@@ -306,6 +309,7 @@ set pastetoggle=<F2>
 set showmatch
 set backspace=indent,eol,start
 set completeopt=longest,menuone,preview,noinsert
+set whichwrap=b,s,h,l,<,>,[,]
 " }}}
 
 " Displaying Text {{{
@@ -507,6 +511,26 @@ function! s:SetupVimcmdline()
     call VimCmdLineSendCmd(expr_str)
 
   endfunction
+
+  function! g:StartJupyterString(kernel)
+    if !executable("jupyter-console")
+      return ""
+    endif
+
+    let kernels_info = json_decode(system("jupyter-kernelspec list --json"))
+    if !has_key(kernels_info['kernelspecs'], a:kernel)
+      return ""
+    endif
+
+    let jupyter_opts = get(b:, "cmdline_jupyter_opts", get(g:, "cmdline_jupyter_opts", ""))
+    let cmd_str = printf("jupyter-console --kernel %s %s", a:kernel, jupyter_opts)
+    return cmd_str
+  endfunction
+
+	" Use this to set a connection string (e.g. "--existing kernel.json --ssh jupyterhub")
+  let g:cmdline_jupyter_opts = ""
+	" Don't use jupyter console app by default.
+	let g:cmdline_jupyter = 0
 
 endfunction
 call s:on_load('vimcmdline', 'call s:SetupVimcmdline()')
@@ -816,7 +840,7 @@ function! s:SetupJedi()
   "let g:jedi#use_splits_not_buffers = "left"
   let g:jedi#popup_on_dot = 0
   "let g:jedi#popup_select_first = 0
-  let g:jedi#show_call_signatures = 1
+  let g:jedi#show_call_signatures = 0
 
   nnoremap <buffer> <localleader>gd :<C-u>call jedi#goto()<CR>zv
   autocmd BufWinEnter '__doc__' setlocal bufhidden=delete
@@ -963,31 +987,34 @@ call s:on_load('vim-grammarous', 'call s:SetupGrammarous()')
 " }}}
 
 " vim-projectionist {{{
-function! s:SetupProjectionist()
-  """
-  " Create a projection named 'let' that lets a variable using the given
-  " pair of values.
-  " E.g.
-  "
-  " let g:projectionist_heuristics = {"src/tex/&output/": {
-  "       \"*.tex": {
-  "       \"let": ["b:tex_blah", '"bloh"']
-  "       \}}
-  "       \}
-  "
-  autocmd User ProjectionistActivate call s:proj_activate()
-  function! s:proj_activate() abort
-    for [root, value] in projectionist#query('let')
-      for l:let_var in value
-        let l:exec_str = "let ".let_var[0]."=".let_var[1]
-        call xolox#misc#msg#debug("proj_activate:".l:exec_str)
-        execute(l:exec_str) 
-      endfor
-      break
+
+"""
+" Create a projection named 'let' that lets a variable using the given
+" pair of values.
+" E.g.
+"
+" let g:projectionist_heuristics = {"src/tex/&output/": {
+"       \"*.tex": {
+"       \"let": ["b:tex_blah", '"bloh"']
+"       \}}
+"       \}
+"
+autocmd User ProjectionistActivate call s:proj_activate()
+function! s:proj_activate() abort
+  for [root, value] in projectionist#query('let')
+    for l:let_var in value
+      let l:exec_str = "let ".let_var[0]."=".let_var[1]
+      call xolox#misc#msg#debug("proj_activate:".l:exec_str)
+      execute(l:exec_str) 
     endfor
-  endfunction
+    break
+  endfor
 endfunction
-call s:on_load('vim-projectionist', 'call s:SetupProjectionist()')
+
+" function! s:SetupProjectionist()
+" endfunction
+
+" call s:on_load('vim-projectionist', 'call s:SetupProjectionist()')
 " }}}
 
 " pgsql.vim {{{
@@ -997,5 +1024,30 @@ let g:pgsql_pl = ['python', 'javascript']
 " endfunction
 " call s:on_load('pgsql.vim', 'call s:SetupPgsqlVim()')
 " }}}
+
+" editorconfig-vim {{{
+" let g:EditorConfig_verbose = 1
+
+function! CmdlineHook(config)
+
+	" echom string(a:config)
+
+	for [key, value] in items(a:config)
+		if key =~ "cmdline_jupyter"
+			let b:{key} = value
+		endif
+	endfor
+
+	return 0   
+endfunction
+
+call editorconfig#AddNewHook(function('CmdlineHook'))
+
+" function! s:SetupEditorconfig()
+" 	" ...
+" endfunction
+" call s:on_load('editorconfig-vim', 'call s:SetupEditorconfig()')
+" }}}
+
 
 " vim:foldmethod=marker:foldlevel=0:ts=2:sts=2:sw=2

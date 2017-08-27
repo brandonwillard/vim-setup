@@ -69,17 +69,19 @@ def default_is_enabled(x, default):
         return default
 
 
-def chunk_enabled(line, options, is_enabled=default_is_enabled):
-    r""" Check if a noweb code chunk header is enabled for evaluate during the
+def chunk_enabled(line, pos_options, neg_options, is_enabled=default_is_enabled):
+    r""" Check if a noweb code chunk header is enabled for evaluation during the
     weaving phase.
 
     Parameters
     ==========
     line: str
         The noweb document line.
-    options: dict
+    pos_options: dict
         The option names determining whether or not a chunk is enabled
         and their default values.
+    neg_options: dict
+        When these options are enabled, the chunk *shouldn't* be evaluated.
     is_enabled: list of lambdas or functions
         Function(s) used to evaluate whether or not an option is considered
         enabled.
@@ -94,10 +96,12 @@ def chunk_enabled(line, options, is_enabled=default_is_enabled):
     if chunk_opts is None:
         return False
 
-    chunk_enabled = any(is_enabled(chunk_opts.get(opt_name, ''), opt_default)
-                        for opt_name, opt_default in options.items())
+    res = any(is_enabled(chunk_opts.get(opt_name, ''), opt_default) 
+              for opt_name, opt_default in pos_options.items())
 
-    return chunk_enabled
+    res &= not any(is_enabled(chunk_opts.get(opt_name, ''), opt_default) 
+                  for opt_name, opt_default in neg_options.items())
+    return res
 
 EOL
 

@@ -18,7 +18,9 @@ function! TexJump2Section(cnt, dir)
   let @/ = pat
 endfunction
 
+" TODO: Figures (and output) dir could be discovered from contents of TeX and/or Makefile, no?
 let b:latex_project_let_vars = [ 
+      \   ["b:latex_figures_dir", '"{project}/figures"'],
       \   ["b:latex_build_dir", '"{project}/output"'],
       \   ["b:latex_pdf_file", '"{project}/output/{basename}.pdf"'],
       \   ["g:vimtex_latexmk_build_dir", '"{project}/output"']

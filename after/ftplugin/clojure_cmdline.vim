@@ -1,10 +1,9 @@
-function! s:StartJupyterString()
-  return "nocorrect jupyter-console --kernel clojure \|\| clojure"
-endfunction
+let b:cmdline_app = ""
+if get(b:, "cmdline_jupyter", get(g:, "cmdline_jupyter", 0))
+  let b:cmdline_app = g:StartJupyterString("clojure")
+endif
 
-if executable("jupyter-console")
-  let b:cmdline_app = s:StartJupyterString()
-else
+if b:cmdline_app == ""
   let b:cmdline_app = "clojure"
 endif
 
