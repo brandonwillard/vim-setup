@@ -16,6 +16,9 @@
 
 " Important {{{
 
+" XXX FIXME: Just choose a better combination of plugins.
+let g:ale_emit_conflict_warnings = 0
+
 " See https://github.com/junegunn/vim-plug/issues/432
 function! s:on_load(name, exec)
   if !has_key(g:plugs, a:name)
@@ -31,6 +34,28 @@ endfunction
 
 " Plugins Config {{{
 call plug#begin('~/.vim/bundle/') 
+
+  "# Vim Functionality
+  Plug 'tpope/vim-sensible'
+  Plug 'itchyny/vim-parenmatch'
+  Plug 'rhysd/vim-grammarous'
+  Plug 'kshenoy/vim-signature'
+  Plug 'xolox/vim-misc'
+  "Plug 'xolox/vim-easytags'
+  Plug 'xolox/vim-notes'
+  Plug 'vim-scripts/OnSyntaxChange'
+  "Plug 'ktonga/vim-follow-my-lead'
+  Plug 'vim-scripts/genutils'
+  Plug 'albfan/vim-breakpts' 
+  " Plug 'Konfekt/FastFold'
+  Plug 'terryma/vim-multiple-cursors'
+	Plug 'Raimondi/delimitMate'
+
+  "# Theming
+  Plug 'bling/vim-airline'
+  " Plug 'altercation/vim-colors-solarized'
+  Plug 'google/vim-colorscheme-primary'
+
 
   "## Syntax, Markdown
   Plug 'godlygeek/tabular'
@@ -71,6 +96,7 @@ call plug#begin('~/.vim/bundle/')
   Plug 'davidhalter/jedi-vim'
   Plug 'tmhedberg/SimpylFold'
   Plug 'Chiel92/vim-autoformat'
+  Plug 'Integralist/vim-mypy'
   "Plug 'jmcantrell/vim-virtualenv'
   "Plug 'tell-k/vim-autopep8'
   "Plug 'jimf/vim-pep8-text-width'
@@ -116,26 +142,6 @@ call plug#begin('~/.vim/bundle/')
   Plug 'lervag/vimtex', {'for': ['tex', 'noweb']}
   Plug 'rbonvall/vim-textobj-latex', {'for': ['tex', 'noweb']}
 
-  "# Vim Misc
-  Plug 'itchyny/vim-parenmatch'
-  Plug 'rhysd/vim-grammarous'
-  Plug 'kshenoy/vim-signature'
-  Plug 'xolox/vim-misc'
-  "Plug 'xolox/vim-easytags'
-  Plug 'xolox/vim-notes'
-  Plug 'vim-scripts/OnSyntaxChange'
-  "Plug 'ktonga/vim-follow-my-lead'
-  Plug 'vim-scripts/genutils'
-  Plug 'albfan/vim-breakpts' 
-  " Plug 'Konfekt/FastFold'
-  Plug 'terryma/vim-multiple-cursors'
-	Plug 'Raimondi/delimitMate'
-
-  "# Theming
-  Plug 'bling/vim-airline'
-  " Plug 'altercation/vim-colors-solarized'
-  Plug 'google/vim-colorscheme-primary'
-
 call plug#end() 
 
 " }}}
@@ -145,14 +151,12 @@ filetype plugin indent on
 " Tabs and Indenting {{{
 set copyindent
 set pi
-set autoindent
+" NOTE: Covered by vim-sensible
+" set autoindent
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
 set expandtab
-"set smartindent
-"set cindent
-"set smarttab
 set cinkeys-=0#
 set indentkeys-=0#
 
@@ -165,7 +169,8 @@ set indentkeys-=0#
 
 " Command Line Editing {{{
 set wildmode=longest:full
-set wildmenu
+" NOTE: Covered by vim-sensible
+" set wildmenu
 " }}}
 
 " Reading and Writing Files {{{
@@ -178,13 +183,15 @@ set modelines=1
 set nostartofline
 set nows
 
+" NOTE: Covered by vim-sensible
 " Clear highlighting with <C-l>, too
-nnoremap <c-l> <c-l>:noh<cr>
+" nnoremap <c-l> <c-l>:noh<cr>
 " }}}
 
 " Multiple Windows {{{
 set hid
-set ls=2
+" NOTE: Covered by vim-sensible
+" set ls=2
 set switchbuf=useopen
 set splitbelow
 set splitright
@@ -307,14 +314,16 @@ endif
 " Editing Text {{{
 set pastetoggle=<F2>
 set showmatch
-set backspace=indent,eol,start
+" NOTE: Covered by vim-sensible
+" set backspace=indent,eol,start
 set completeopt=longest,menuone,preview,noinsert
 set whichwrap=b,s,h,l,<,>,[,]
 " }}}
 
 " Displaying Text {{{
 set number
-set scrolloff=8
+" NOTE: Covered by vim-sensible
+" set scrolloff=8
 set conceallevel=0
 " }}}
 
