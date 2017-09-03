@@ -16,9 +16,6 @@
 
 " Important {{{
 
-" XXX FIXME: Just choose a better combination of plugins.
-let g:ale_emit_conflict_warnings = 0
-
 " See https://github.com/junegunn/vim-plug/issues/432
 function! s:on_load(name, exec)
   if !has_key(g:plugs, a:name)
@@ -36,6 +33,7 @@ endfunction
 call plug#begin('~/.vim/bundle/') 
 
   "# Vim Functionality
+  Plug 'Shougo/echodoc.vim'
   Plug 'tpope/vim-sensible'
   Plug 'itchyny/vim-parenmatch'
   Plug 'rhysd/vim-grammarous'
@@ -50,12 +48,15 @@ call plug#begin('~/.vim/bundle/')
   " Plug 'Konfekt/FastFold'
   Plug 'terryma/vim-multiple-cursors'
 	Plug 'Raimondi/delimitMate'
+  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+  if has('nvim')
+    " Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'}
+  endif
 
   "# Theming
   Plug 'bling/vim-airline'
   " Plug 'altercation/vim-colors-solarized'
   Plug 'google/vim-colorscheme-primary'
-
 
   "## Syntax, Markdown
   Plug 'godlygeek/tabular'
@@ -63,16 +64,17 @@ call plug#begin('~/.vim/bundle/')
   " XXX: Broken python rope 
   "Plug 'SirVer/ultisnips', {'do': ':UpdateRemotePlugins'} 
   Plug 'honza/vim-snippets'
-  "Plug 'valloric/YouCompleteMe'
-  if has('nvim')
-    Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
-  else
-    " TODO: add neocomplete
-  endif
   Plug 'tpope/vim-commentary'
   " Plug 'scrooloose/syntastic'
   " Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
   Plug 'lifepillar/pgsql.vim'
+  if has('nvim')
+    Plug 'autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}
+    Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
+  else
+    " TODO: add neocomplete
+    "Plug 'valloric/YouCompleteMe'
+  endif
 
   "# Motion, Buffers, Windows
   if !has("nvim")
@@ -93,7 +95,7 @@ call plug#begin('~/.vim/bundle/')
   "# Python
   Plug 'bps/vim-textobj-python', {'for': '*python*'}
   Plug 'python-mode/python-mode', {'for': '*python*'}
-  Plug 'davidhalter/jedi-vim'
+  " Plug 'davidhalter/jedi-vim'
   Plug 'tmhedberg/SimpylFold'
   Plug 'Chiel92/vim-autoformat'
   Plug 'Integralist/vim-mypy'
@@ -104,20 +106,25 @@ call plug#begin('~/.vim/bundle/')
   "Plug 'hdima/python-syntax'
   "Plug 'ivanov/vim-ipython', {'for': '*python*'} 
   if has('nvim')
-    Plug 'zchee/deoplete-jedi', { 'for': '*python*'} 
+    " Plug 'zchee/deoplete-jedi', { 'for': '*python*'} 
     "Plug 'bfredl/nvim-ipy', {'do': ':UpdateRemotePlugins', 'for': '*python*'} 
     "Plug '~/.vim/dev/nvim-ipy', {'do': ':UpdateRemotePlugins', 'for': '*python*'} 
     "Plug '~/.vim/dev/nvim-jupyter', {'do': ':UpdateRemotePlugins', 'for': '*python*'} 
     "Plug '~/.vim/dev/nvim-example-python-plugin', {'do': ':UpdateRemotePlugins'} 
-  else
+  endif
+
+  "# C++
+  if has('nvim')
+    Plug 'zchee/deoplete-clang', { 'for': ['cpp', 'c'] }
   endif
 
   "# R
+  let r_ftypes = ['r', 'rnoweb', 'rmd']
   if has('nvim')
-    Plug 'jalvesaq/Nvim-R', { 'for': ['r', 'rnoweb', 'rmd']} 
+    Plug 'jalvesaq/Nvim-R', { 'for': r_ftypes} 
   else
-    Plug 'jalvesaq/R-Vim-runtime', { 'for': ['r', 'rnoweb', 'rmd']}
-    Plug 'jcfaria/Vim-R-plugin', { 'for': ['r', 'rnoweb', 'rmd']}
+    Plug 'jalvesaq/R-Vim-runtime', { 'for': r_ftypes}
+    Plug 'jcfaria/Vim-R-plugin', { 'for': r_ftypes}
   endif
 
   "# Terminal/REPL
@@ -129,7 +136,6 @@ call plug#begin('~/.vim/bundle/')
   Plug vimcmdline_loc, { 'for': ['python', 'noweb', 'sql', 'clojure', 'javascript'] } 
 
   "# Filesystem, Make, Git 
-  Plug 'benekastah/neomake'
   Plug 'tpope/vim-fugitive'
   Plug 'vim-scripts/LargeFile'
   Plug 'tpope/vim-eunuch'
@@ -137,10 +143,14 @@ call plug#begin('~/.vim/bundle/')
   Plug 'tpope/vim-projectionist'
   Plug 'w0rp/ale'
   Plug 'editorconfig/editorconfig-vim'
+  if has('nvim')
+    Plug 'benekastah/neomake'
+  endif
 
   "# TeX 
-  Plug 'lervag/vimtex', {'for': ['tex', 'noweb']}
-  Plug 'rbonvall/vim-textobj-latex', {'for': ['tex', 'noweb']}
+  let tex_ftypes = ['tex', 'noweb']
+  Plug 'lervag/vimtex', {'for': tex_ftypes}
+  Plug 'rbonvall/vim-textobj-latex', {'for': tex_ftypes}
 
 call plug#end() 
 
@@ -177,6 +187,9 @@ set wildmode=longest:full
 let g:LargeFile=1024/2 " in MB
 set modeline
 set modelines=1
+
+" Allow local init files:
+" set exrc
 " }}}
 
 " Moving Around, Searching and Patterns {{{
@@ -195,24 +208,6 @@ set hid
 set switchbuf=useopen
 set splitbelow
 set splitright
-" }}}
-
-" Syntax, Highlighting and Spelling {{{
-set hls
-
-" When it's really slow, try something like this:
-" set synmaxcol=200
-
-syntax enable
-
-autocmd BufEnter * :syn sync maxlines=200
-autocmd BufEnter * :syn sync minlines=50
-
-syn spell default
-"set spelllang=en_us
-
-let g:loaded_matchparen = 1
-
 " }}}
 
 " Terminal {{{
@@ -276,21 +271,41 @@ endtry
 
 set background=dark
 
-highlight clear comment
-highlight comment ctermfg=blue
+set wrap
+set linebreak
+set nolist
+
+set cmdheight=2
+" }}}
+
+" Syntax, Highlighting and Spelling {{{
+" XXX: The following must come *after* the colorscheme is set.
+set hls
+
+" When it's really slow, try something like this:
+" set synmaxcol=200
+
+syntax enable
+
+autocmd BufEnter * :syn sync maxlines=200
+autocmd BufEnter * :syn sync minlines=50
+
+syn spell default
+"set spelllang=en_us
+
+highlight clear Comment
+highlight Comment cterm=italic ctermfg=blue
 highlight clear SpellBad
 highlight SpellBad cterm=undercurl ctermfg=red
 " Clear Search?
 highlight Search cterm=NONE ctermbg=yellow
 
-" Stop matchparen from making it look like the cursor has jumped
-" to the match.
+" Stop matchparen from making it look like the cursor has jumped to the match.
 " Clear MatchParen?
 highlight MatchParen ctermbg=NONE ctermfg=blue guibg=NONE guifg=lightblue
 
-set wrap
-set linebreak
-set nolist
+let g:loaded_matchparen = 1
+
 " }}}
 
 " Python {{{
@@ -298,7 +313,8 @@ set nolist
 " The host progs should point to those.
 "
 let g:python_host_prog=expand('~/.pyenv/versions/neovim2/bin/python')
-let g:python3_host_prog=expand('~/.pyenv/versions/neovim3/bin/python')
+" let g:python3_host_prog=expand('~/.pyenv/versions/neovim3/bin/python')
+let g:python3_host_prog=expand('~/.pyenv/versions/neovim36/bin/python')
 let python_space_error_highlight = 1 
 
 if $VIRTUAL_ENV != ""
@@ -331,6 +347,21 @@ set conceallevel=0
 set foldmethod=syntax
 "set foldnestmax=1tte
 set foldopen=block,insert,jump,mark,percent,quickfix,search,tag,undo
+
+""
+" Don't screw up folds when inserting text that might affect them, until
+" leaving insert mode. `Foldmethod` is local to the window. Protect against
+" screwing up folding when switching between windows.  These two `autocmd`s do
+" just that.
+" (https://stackoverflow.com/a/42287519)
+augroup fix_folds
+	au!
+  " autocmd InsertLeave,WinEnter * let &l:foldmethod=g:oldfoldmethod
+  " autocmd InsertEnter,WinLeave * let g:oldfoldmethod=&l:foldmethod | setlocal foldmethod=manual
+	au InsertEnter * if !exists('w:last_fdm') | let w:last_fdm=&foldmethod | setlocal foldmethod=manual | endif
+	au InsertLeave,WinEnter, * if exists('w:last_fdm') | let &l:foldmethod=w:last_fdm | unlet w:last_fdm | endif
+  au InsertLeave,BufWritePost,TextYankPost * normal! zv
+augroup END
 " }}}
 
 " Diff Mode {{{
@@ -362,8 +393,8 @@ let g:sql_type_default = 'pgsql'
 " }}}
 
 " Messages and Info {{{
-set showcmd
-set showmode
+set noshowcmd
+set noshowmode
 " }}}
 
 " Functions {{{
@@ -427,17 +458,6 @@ command! -nargs=+ -complete=command Output call OutputSplitWindow(<f-args>)
 "autocmd BufNew,BufReadPre * :runtime! repl.vim 
 
 ""
-" Don't screw up folds when inserting text that might affect them, until
-" leaving insert mode. `Foldmethod` is local to the window. Protect against
-" screwing up folding when switching between windows.
-" These two `autocmd`s do just that.
-augroup fix_folds
-	au!
-	au InsertEnter * if !exists('w:last_fdm') | let w:last_fdm=&foldmethod | setlocal foldmethod=manual | endif
-	au InsertLeave,WinLeave * if exists('w:last_fdm') | let &l:foldmethod=w:last_fdm | unlet w:last_fdm | endif
-augroup END
-
-""
 " Restore cursor position on file open (see :help restore-cursor).
 autocmd BufReadPost *
 	\ if line("'\"") > 1 && line("'\"") <= line("$") |
@@ -466,7 +486,11 @@ let g:tex_flavor = "latex"
 "
 
 " vimcmdline {{{
-function! s:SetupVimcmdline()
+function! s:PreSetupVimcmdline()
+  "no-op
+endfunction
+
+function! s:PostSetupVimcmdline()
   let g:cmdline_map_start = "<LocalLeader>tr"
   let g:cmdline_map_send = "<LocalLeader>tl"
   let g:cmdline_map_send_selection = "<LocalLeader>ts"
@@ -542,11 +566,16 @@ function! s:SetupVimcmdline()
 	let g:cmdline_jupyter = 0
 
 endfunction
-call s:on_load('vimcmdline', 'call s:SetupVimcmdline()')
+
+if has_key(g:plugs, 'vimcmdline')
+  call s:PreSetupVimcmdline()
+endif
+
+call s:on_load('vimcmdline', 'call s:PostSetupVimcmdline()')
 " }}}
 
 " vimtex {{{
-function! s:SetupVimtex()
+function! s:PreSetupVimtex()
   "let g:vimtex_complete_enabled=0
   let g:vimtex_latexmk_enabled=0
   let g:vimtex_latexmk_callback=0
@@ -574,11 +603,20 @@ function! s:SetupVimtex()
         \ }
         \]
 endfunction
-call s:on_load('vimtex', 'call s:SetupVimtex()')
+
+function! s:PostSetupVimtex()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'vimtex')
+  call s:PreSetupVimtex()
+endif
+
+call s:on_load('vimtex', 'call s:PostSetupVimtex()')
 " }}}
 
 " neomake {{{
-function! s:SetupNeomake()
+function! s:PreSetupNeomake()
   let g:neomake_serialize = 1
   let g:neomake_open_list = 2
   " let g:neomake_serialize_abort_on_error = 1
@@ -590,19 +628,37 @@ function! s:SetupNeomake()
   " let g:neomake_tex_enabled_makers = ['latexrun']
 
 endfunction
-call s:on_load('neomake', 'call s:SetupNeomake()')
+
+function! s:PostSetupNeomake()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'neomake')
+  call s:PreSetupNeomake()
+endif
+
+call s:on_load('neomake', 'call s:PostSetupNeomake()')
 " }}}
 
 " surround {{{
-function! s:SetupSurround()
+function! s:PreSetupSurround()
   " TODO: how to delete/change?
   let g:surround_108 = "\\begin{\1\\begin{\1}\n\r\n\\end{\1\r}.*\r\1}" 
 endfunction
-call s:on_load('vim-surround', 'call s:SetupSurround()')
+
+function! s:PostSetupSurround()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'vim-surround')
+  call s:PreSetupSurround()
+endif
+
+call s:on_load('vim-surround', 'call s:PostSetupSurround()')
 " }}}
 
 " python-mode {{{
-function! s:SetupPymode()
+function! s:PreSetupPymode()
   " Don't let pymode set options; we should do this ourselves. 
   let g:pymode_options=0
   let g:pymode_debug = 1
@@ -640,11 +696,20 @@ function! s:SetupPymode()
   let g:pymode_rope_show_doc_bind = '<localleader>K' 
 
 endfunction
-call s:on_load('python-mode', 'call s:SetupPymode()')
+
+function! s:PostSetupPymode()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'python-mode')
+  call s:PreSetupPymode()
+endif
+
+call s:on_load('python-mode', 'call s:PostSetupPymode()')
 " }}}
 
 " deoplete {{{
-function! s:SetupDeoplete()
+function! s:PreSetupDeoplete()
 
   let g:deoplete#enable_at_startup = 1
   " let g:deoplete#disable_auto_complete = 1
@@ -654,18 +719,20 @@ function! s:SetupDeoplete()
   call deoplete#custom#set('_', 'min_pattern_length', 2)
 
   let g:deoplete#sources = get(g:, 'deoplete#sources', {})
-	let g:deoplete#sources._ = ['buffer'] ", 'ultisnips']
-	" let g:deoplete#sources.cpp = ['buffer', 'tag']
+	let g:deoplete#sources._ = ['LanguageClient', 'omni', 'buffer'] ", 'ultisnips']
+	let g:deoplete#sources.python = ['LanguageClient', 'omni']
+	let g:deoplete#sources.cpp = ['LanguageClient', 'clang']
 
   let g:deoplete#omni#functions = get(g:, 'deoplete#omni#functions', {})
-  " let g:deoplete#omni#functions.python = ['pythoncomplete#Complete']
+  let g:deoplete#omni#functions.python = ['pythoncomplete#Complete']
   " let g:deoplete#omni#functions.tex = ['vimtex#complete#omnifunc']
 
 	" Vim regexp versions
-	let g:deoplete#omni_patterns = get(g:, 'deoplete#omni_patterns', {})
+	" let g:deoplete#omni_patterns = get(g:, 'deoplete#omni_patterns', {})
 
   " Python3 regexp versions
 	let g:deoplete#omni#input_patterns = get(g:, 'deoplete#omni#input_patterns', {})
+  " let g:deoplete#omni#input_patterns.javascript = '[^. *\t]\.\w*'
 	" let g:deoplete#omni#input_patterns.python = ''
   let g:deoplete#omni#input_patterns.tex = '\\(?:'
       \ .  '\w*cite\w*(?:\s*\[[^]]*\]){0,2}\s*{[^}]*'
@@ -678,46 +745,74 @@ function! s:SetupDeoplete()
       \ . '|includestandalone(\s*\[[^]]*\])?\s*\{[^}]*'
       \ .')'
 
+endfunction
+
+function! s:PostSetupDeoplete()
+
   function! s:check_back_space() abort
     let col = col('.') - 1
     return !col || getline('.')[col - 1]  =~? '\s'
   endfunction
 
-  inoremap <silent><expr><C-Space>
+  inoremap <silent><expr> <C-Space>
       \ pumvisible() ? "\<C-n>" : (
       \ <SID>check_back_space() ? "\<C-Space>" :
-      \ deoplete#manual_complete())
+      \ execute(":call deoplete#mappings#manual_complete()"))
 
-  snoremap <silent><expr><C-Space>
+  snoremap <silent><expr> <C-Space>
       \ pumvisible() ? "\<C-n>" : (
       \ <SID>check_back_space() ? "\<C-Space>" :
-      \ deoplete#manual_complete())
+      \ deoplete#mappings#manual_complete())
 
   autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 
 endfunction
-call s:on_load('deoplete.nvim', 'call s:SetupDeoplete()')
+
+if has_key(g:plugs, 'deoplete.nvim')
+  call s:PreSetupDeoplete()
+endif
+
+call s:on_load('deoplete.nvim', 'call s:PostSetupDeoplete()')
 " }}}
 
 " deoplete-jedi {{{
-function! s:SetupDeopleteJedi()
+function! s:PreSetupDeopleteJedi()
   " https://github.com/rafi/vim-config/blob/master/config/plugins/deoplete.vim
+  let g:deoplete#sources#jedi#python_path = expand('~/.pyenv/versions/neovim36/bin/python')
   let g:deoplete#sources#jedi#statement_length = 30
   let g:deoplete#sources#jedi#show_docstring = 1
   let g:deoplete#sources#jedi#short_types = 1
 endfunction
-call s:on_load('deoplete-jedi', 'call s:SetupDeopleteJedi()')
+
+function! s:PostSetupDeopleteJedi()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'deoplete-jedi')
+  call s:PreSetupDeopleteJedi()
+endif
+
+call s:on_load('deoplete-jedi', 'call s:PostSetupDeopleteJedi()')
 " }}}
 
 " autopep8 {{{
-function! s:SetupAutopep8()
+function! s:PreSetupAutopep8()
   let g:autopep8_disable_show_diff=1 
 endfunction
-call s:on_load('autopep8', 'call s:SetupAutopep8()')
+
+function! s:PostSetupAutopep8()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'autopep8')
+  call s:PreSetupAutopep8()
+endif
+
+call s:on_load('autopep8', 'call s:PostSetupAutopep8()')
 " }}}
 
 " syntastic {{{ 
-function! s:SetupSyntastic()
+function! s:PreSetupSyntastic()
   " let g:syntastic_python_checkers = ['flake8'] 
   " let g:syntastic_enable_highlighting = 1  
   " let g:syntastic_style_error_symbol = "E>" 
@@ -728,20 +823,38 @@ function! s:SetupSyntastic()
   " let g:syntastic_check_on_open = 1
   " let g:syntastic_check_on_wq = 0
 endfunction
-call s:on_load('syntastic', 'call s:SetupSyntastic()')
+
+function! s:PostSetupSyntastic()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'syntastic')
+  call s:PreSetupSyntastic()
+endif
+
+call s:on_load('syntastic', 'call s:PostSetupSyntastic()')
 " }}}
 
 " ale {{{
-function! s:SetupAle()
+function! s:PreSetupAle()
   " let g:ale_lint_on_text_changed='never'
   " XXX: Ignore plugin incompatibility warnings.
   let g:ale_emit_conflict_warnings = 0
 endfunction
-call s:on_load('ale', 'call s:SetupAle()')
+
+function! s:PostSetupAle()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'ale')
+  call s:PreSetupAle()
+endif
+
+call s:on_load('ale', 'call s:PostSetupAle()')
 " }}}
 
 " Nvim-R {{{
-function! s:SetupNvimR()
+function! s:PreSetupNvimR()
   " don't select the first option that pops up.
   let g:R_user_maps_only = 1   
   let g:R_insert_mode_cmds = 0 
@@ -786,27 +899,57 @@ function! s:SetupNvimR()
   vmap <buffer> <LocalLeader>tm <Plug>RMakePDFK
 
 endfunction
-call s:on_load('Nvim-R', 'call s:SetupNvimR()')
+
+function! s:PostSetupNvimR()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'Nvim-R')
+  call s:PreSetupNvimR()
+endif
+
+call s:on_load('Nvim-R', 'call s:PostSetupNvimR()')
 " }}}
 
 " Noweb {{{
 " rmd/noweb chunk highlighting and folding
-let noweb_fold_code = 1
+function! s:PreSetupNoweb()
+  let noweb_fold_code = 1
+endfunction
+
+function! s:PostSetupNoweb()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'Noweb')
+  call s:PreSetupNoweb()
+endif
+
+call s:on_load('Noweb', 'call s:PostSetupNoweb()')
 " }}}
 
 " NERDCommenter {{{
-function! s:SetupNERDCommenter()
+function! s:PreSetupNERDCommenter()
   let g:NERDAllowAnyVisualDelims=1
   let g:NERDCommentWholeLinesInVMode=1
   let g:NERDRemoveAltComs=1
   let g:NERDRemoveExtraSpaces=1
   let g:NERDDefaultNesting=1
 endfunction
-call s:on_load('NERDCommenter', 'call s:SetupNERDCommenter()')
+
+function! s:PostSetupNERDCommenter()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'NERDCommenter')
+  call s:PreSetupNERDCommenter()
+endif
+
+" call s:on_load('NERDCommenter', 'call s:PostSetupNERDCommenter()')
 " }}}
 
 " YouCompleteMe {{{
-function! s:SetupYouCompleteMe()
+function! s:PreSetupYouCompleteMe()
   " let g:ycm_auto_trigger = 0
   " "let g:ycm_python_binary_path = ''
   " "let g:ycm_key_invoke_completion = '<Nop>' "'<C-Space>' 
@@ -822,11 +965,20 @@ function! s:SetupYouCompleteMe()
   let g:ycm_key_list_select_completion = ['<C-tab>', '<down>']
   let g:ycm_key_list_select_previous_completion = ['<C-s-tab>', '<up>']
 endfunction
-call s:on_load('YouCompleteMe', 'call s:SetupYouCompleteMe()')
+
+function! s:PostSetupYouCompleteMe()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'YouCompleteMe')
+  call s:PreSetupYouCompleteMe()
+endif
+
+call s:on_load('YouCompleteMe', 'call s:PostSetupYouCompleteMe()')
 " }}}
 
 " jedi {{{
-function! s:SetupJedi()
+function! s:PreSetupJedi()
   " XXX: This sets `omnifunc` 
   let g:jedi#auto_initialization = 0
   let g:jedi#auto_vim_configuration = 0
@@ -837,7 +989,7 @@ function! s:SetupJedi()
   let g:jedi#rename_command = '<localleader>gR'
   let g:jedi#usages_command = '<localleader>gu'
   "let g:jedi#documentation_command = "K"
-  "let g:jedi#goto_command = "<leader>d"
+  "let g:jedi#goto_command = "<localleader>gd"
   "let g:jedi#goto_assignments_command = "<leader>g"
   "let g:jedi#goto_definitions_command = ""
   "let g:jedi#usages_command = "<leader>n"
@@ -851,25 +1003,49 @@ function! s:SetupJedi()
   "let g:jedi#popup_select_first = 0
   let g:jedi#show_call_signatures = 0
 
-  nnoremap <buffer> <localleader>gd :<C-u>call jedi#goto()<CR>zv
-  autocmd BufWinEnter '__doc__' setlocal bufhidden=delete
+  augroup jedi_settings
+	  autocmd!
+	  " XXX FIXME: Broken for first file loaded.
+	  " autocmd BufNewFile,BufRead * if &ft == "python" | nmap <buffer> <localleader>gd :<C-u>call jedi#goto()<CR>zv | endif
+	  autocmd FileType python nmap <buffer> <localleader>gd :<C-u>call jedi#goto()<CR>zv
+	  " autocmd FileType python nmap <buffer> <localleader>gd :<C-u>call jedi#goto() | normal zv
+    autocmd BufWinEnter '__doc__' setlocal bufhidden=delete
+  augroup END
 endfunction
-call s:on_load('jedi-vim', 'call s:SetupJedi()')
+
+function! s:PostSetupJedi()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'jedi-vim')
+  call s:PreSetupJedi()
+endif
+
+call s:on_load('jedi-vim', 'call s:PostSetupJedi()')
 " }}}
 
 " Ultisnips {{{
-function! s:SetupUltisnips()
+function! s:PreSetupUltisnips()
   let g:UltiSnipsExpandTrigger="<tab>"
   let g:UltiSnipsJumpForwardTrigger="<C-j>"
   let g:UltiSnipsJumpBackwardTrigger="<C-k>"
   let g:UltiSnipsEditSplit="vertical"
   let g:UltiSnipsListSnippets="<F3>"
 endfunction
-call s:on_load('ultisnips', 'call s:SetupUltisnips()')
+
+function! s:PostSetupUltisnips()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'ultisnips')
+  call s:PreSetupUltisnips()
+endif
+
+call s:on_load('ultisnips', 'call s:PostSetupUltisnips()')
 " }}}
 
 " Airline {{{
-function! s:SetupAirline()
+function! s:PreSetupAirline()
   let g:airline#extensions#branch#enabled = 1
   "let g:airline_powerline_fonts = 1
   let g:airline#extensions#tabline#enabled = 1
@@ -877,11 +1053,20 @@ function! s:SetupAirline()
   let g:airline#extensions#syntastic#enabled = 1
   let g:airline#extensions#virtualenv#enabled = 1 
 endfunction
-call s:on_load('vim-airline', 'call s:SetupAirline()')
+
+function! s:PostSetupAirline()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'vim-airline')
+  call s:PreSetupAirline()
+endif
+
+call s:on_load('vim-airline', 'call s:PostSetupAirline()')
 " }}}
 
 " Eclim {{{
-function! s:SetupEclim()
+function! s:PreSetupEclim()
   let g:EclimMakeLCD=1
   let g:EclimDtdValidate=0
   "set cot-=preview
@@ -899,7 +1084,16 @@ function! s:SetupEclim()
   let g:EclimBuffersDefaultAction='tab'
   let g:EclimDefaultFileOpenAction='tab'
 endfunction
-call s:on_load('eclim', 'call s:SetupEclim()')
+
+function! s:PostSetupEclim()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'eclim')
+  call s:PreSetupEclim()
+endif
+
+call s:on_load('eclim', 'call s:PostSetupEclim()')
 " }}}
 
 " NetrwPlugin {{{
@@ -922,26 +1116,47 @@ let g:netrw_altv = 1
 " }}}
 
 " pandoc {{{
-function! s:SetupPandoc()
+function! s:PreSetupPandoc()
   let g:pandoc#modules#disabled = ['chdir']
   let g:pandoc#syntax#conceal#use = 0
 endfunction
-call s:on_load('pandoc', 'call s:SetupPandoc()')
+
+function! s:PostSetupPandoc()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'pandoc')
+  call s:PreSetupPandoc()
+endif
+
+call s:on_load('pandoc', 'call s:PostSetupPandoc()')
 " }}}
 
 " vim-notes {{{
-function! s:SetupVimnotes()
+function! s:PreSetupVimnotes()
   let g:notes_directories = ['~/projects/notes']
   let g:notes_markdown_program = 'pandoc' "'pandoc -f markdown_github -t html'
   let g:notes_conceal_code = 0
   let g:notes_suffix = '.vmd'
 endfunction
-call s:on_load('vim-notes', 'call s:SetupVimnotes()')
+
+function! s:PostSetupVimnotes()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'vim-notes')
+  call s:PreSetupVimnotes()
+endif
+
+call s:on_load('vim-notes', 'call s:PostSetupVimnotes()')
 " }}}
 
 " tmux_navigator {{{
-function! s:SetupTmuxnavigator()
+function! s:PreSetupTmuxnavigator()
   let g:tmux_navigator_no_mappings = 1
+endfunction
+
+function! s:PostSetupTmuxnavigator()
   silent! nunmap <C-h>
   silent! nunmap <C-j>
   silent! nunmap <C-k>
@@ -953,11 +1168,20 @@ function! s:SetupTmuxnavigator()
   nnoremap <silent> <C-W>l :TmuxNavigateRight<cr>
   nnoremap <silent> <C-W>\ :TmuxNavigatePrevious<cr>
 endfunction
-call s:on_load('tmux-navigator', 'call s:SetupTmuxnavigator()')
+
+if has_key(g:plugs, 'tmux-navigator')
+  call s:PreSetupTmuxnavigator()
+endif
+
+call s:on_load('tmux-navigator', 'call s:PostSetupTmuxnavigator()')
 " }}}
 
 " easymotion {{{
-function! s:SetupEasymotion()
+function! s:PreSetupEasymotion()
+  "no-op
+endfunction
+
+function! s:PostSetupEasymotion()
   " These `n` & `N` mappings are optional. You do not have to map `n` & `N` to EasyMotion.
   " Without these mappings, `n` & `N` works fine. (These mappings just provide
   " different highlight method and have some other features )
@@ -966,97 +1190,244 @@ function! s:SetupEasymotion()
   map / <Plug>(easymotion-sn)
   omap / <Plug>(easymotion-tn)
 endfunction
-call s:on_load('vim-easymotion', 'call s:SetupEasymotion()')
+
+if has_key(g:plugs, 'vim-easymotion')
+  call s:PreSetupEasyMotion()
+endif
+
+call s:on_load('vim-easymotion', 'call s:PostSetupEasymotion()')
 " }}}
 
 " vim-sneak {{{
-function! s:SetupVimSneak()
+function! s:PreSetupVimSneak()
   let g:sneak#label = 1
 endfunction
-call s:on_load('vim-sneak', 'call s:SetupVimSneak()')
+
+function! s:PostSetupVimSneak()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'vim-sneak')
+  call s:PreSetupVimSneak()
+endif
+
+call s:on_load('vim-sneak', 'call s:PostSetupVimSneak()')
 " }}}
 
 " riv {{{
-function! s:SetupRiv()
+function! s:PreSetupRiv()
   let g:riv_python_rst_hl=1
   let g:vim_markdown_math = 1
   let g:vim_markdown_frontmatter = 1
 endfunction
-call s:on_load('riv.vim', 'call s:SetupRiv()')
+
+function! s:PostSetupRiv()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'riv.vim')
+  call s:PreSetupRiv()
+endif
+
+call s:on_load('riv.vim', 'call s:PostSetupRiv()')
 " }}}
 
 " vim-grammarous {{{
-function! s:SetupGrammarous()
+function! s:PreSetupGrammarous()
   " https://stackoverflow.com/questions/43574426/how-to-resolve-java-lang-noclassdeffounderror-javax-xml-bind-jaxbexception-in-j
   " let g:grammarous#java_cmd = "java --add-modules java.se.ee"
   let g:grammarous#use_vim_spelllang = 0
   let g:grammarous#enable_spell_check = 1
 endfunction
-call s:on_load('vim-grammarous', 'call s:SetupGrammarous()')
+
+function! s:PostSetupGrammarous()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'vim-grammarous')
+  call s:PreSetupGrammarous()
+endif
+
+call s:on_load('vim-grammarous', 'call s:PostSetupGrammarous()')
 " }}}
 
 " vim-projectionist {{{
 
-"""
-" Create a projection named 'let' that lets a variable using the given
-" pair of values.
-" E.g.
-"
-" let g:projectionist_heuristics = {"src/tex/&output/": {
-"       \"*.tex": {
-"       \"let": ["b:tex_blah", '"bloh"']
-"       \}}
-"       \}
-"
-autocmd User ProjectionistActivate call s:proj_activate()
-function! s:proj_activate() abort
-  for [root, value] in projectionist#query('let')
-    for l:let_var in value
-      let l:exec_str = "let ".let_var[0]."=".let_var[1]
-      call xolox#misc#msg#debug("proj_activate:".l:exec_str)
-      execute(l:exec_str) 
+function! s:PreSetupProjectionist()
+  """
+  " Create a projection named 'let' that lets a variable using the given
+  " pair of values.
+  " E.g.
+  "
+  " let g:projectionist_heuristics = {"src/tex/&output/": {
+  "       \"*.tex": {
+  "       \"let": ["b:tex_blah", '"bloh"']
+  "       \}}
+  "       \}
+  "
+  function! s:proj_activate() abort
+    for [root, value] in projectionist#query('let')
+      for l:let_var in value
+        let l:exec_str = "let ".let_var[0]."=".let_var[1]
+        call xolox#misc#msg#debug("proj_activate:".l:exec_str)
+        execute(l:exec_str) 
+      endfor
+      break
     endfor
-    break
-  endfor
+  endfunction
+
+  autocmd User ProjectionistActivate call s:proj_activate()
+
 endfunction
 
-" function! s:SetupProjectionist()
-" endfunction
+function! s:PostSetupProjectionist()
+  "no-op
+endfunction
 
-" call s:on_load('vim-projectionist', 'call s:SetupProjectionist()')
+if has_key(g:plugs, 'vim-projectionist')
+  call s:PreSetupProjectionist()
+endif
+
+call s:on_load('vim-projectionist', 'call s:PostSetupProjectionist()')
 " }}}
 
 " pgsql.vim {{{
-let g:pgsql_pl = ['python', 'javascript']
-" function! s:SetupPgsqlVim()
-"   " noop
-" endfunction
-" call s:on_load('pgsql.vim', 'call s:SetupPgsqlVim()')
+function! s:PreSetupPgsqlVim()
+  let g:pgsql_pl = ['python', 'javascript']
+endfunction
+
+function! s:PostSetupPgsqlVim()
+ "no-op
+endfunction
+
+if has_key(g:plugs, 'pgsql.vim')
+  call s:PreSetupPgsqlVim()
+endif
+
+call s:on_load('pgsql.vim', 'call s:PostSetupPgsqlVim()')
 " }}}
 
 " editorconfig-vim {{{
-" let g:EditorConfig_verbose = 1
 
-function! CmdlineHook(config)
+function! s:PreSetupEditorconfig()
+  " let g:EditorConfig_verbose = 1
 
-	" echom string(a:config)
+  function! CmdlineHook(config)
+	  " echom string(a:config)
+	  for [key, value] in items(a:config)
+		  if key =~ "cmdline_jupyter"
+			  let b:{key} = value
+		  endif
+	  endfor
 
-	for [key, value] in items(a:config)
-		if key =~ "cmdline_jupyter"
-			let b:{key} = value
-		endif
-	endfor
+	  return 0   
+  endfunction
 
-	return 0   
+  call editorconfig#AddNewHook(function('CmdlineHook'))
 endfunction
 
-call editorconfig#AddNewHook(function('CmdlineHook'))
+function! s:PostSetupEditorconfig()
+  "no-op
+endfunction
 
-" function! s:SetupEditorconfig()
-" 	" ...
-" endfunction
-" call s:on_load('editorconfig-vim', 'call s:SetupEditorconfig()')
+if has_key(g:plugs, 'editorconfig-vim')
+  call s:PreSetupEditorconfig()
+endif
+
+call s:on_load('editorconfig-vim', 'call s:PostSetupEditorconfig()')
 " }}}
 
+" LanguageClient-neovim {{{
+function! s:PreSetupLanguageClient()
+
+  let g:LanguageClient_serverCommands = {
+        \ 'cpp': ['/home/bwillard/apps/clangd/bin/clangd'],
+        \ 'c': ['/home/bwillard/apps/clangd/bin/clangd'],
+        \ 'python': ['/home/bwillard/.pyenv/versions/neovim36/bin/pyls']
+        \ }
+        " \ 'python': ['/home/bwillard/.pyenv/shims/pyls']
+  let g:LanguageClient_autoStart = 1
+  " let g:LanguageClient_trace = 'verbose'
+  
+endfunction
+
+function! s:PostSetupLanguageClient()
+  nnoremap <silent> <localleader>K :call LanguageClient_textDocument_hover()<CR>
+  nnoremap <silent> <localleader>gd :call LanguageClient_textDocument_definition()<CR>
+  nnoremap <silent> <localleader>R :call LanguageClient_textDocument_rename()<CR>
+
+  " TODO: Check that formatting is supported by the language?
+  set formatexpr=LanguageClient_textDocument_rangeFormatting()
+
+  set omnifunc=LanguageClient#complete
+  " set completefunc=LanguageClient#complete
+
+endfunction
+
+if has_key(g:plugs, 'LanguageClient-neovim')
+  call s:PreSetupLanguageClient()
+endif
+
+call s:on_load('LanguageClient-neovim', 'call s:PostSetupLanguageClient()')
+"}}}
+
+" fzf {{{
+function! s:PreSetupFzf()
+  "no-op
+endfunction
+
+function! s:PostSetupFzf()
+  function! s:line_handler(l)
+    let keys = split(a:l, ':\t')
+    exec 'buf' keys[0]
+    exec keys[1]
+    normal! ^zz
+  endfunction
+
+  function! s:buffer_lines()
+    let res = []
+    for b in filter(range(1, bufnr('$')), 'buflisted(v:val)')
+      call extend(res, map(getbufline(b,0,"$"), 'b . ":\t" . (v:key + 1) . ":\t" . v:val '))
+    endfor
+    return res
+  endfunction
+
+  command! FZFLines call fzf#run({
+  \   'source':  <sid>buffer_lines(),
+  \   'sink':    function('<sid>line_handler'),
+  \   'options': '--extended --nth=3..',
+  \   'down':    '60%'
+  \})
+endfunction
+
+if has_key(g:plugs, 'fzf')
+  call s:PreSetupFzf()
+endif
+
+call s:on_load('fzf', 'call s:PostSetupFzf()')
+" }}}
+
+" deoplete-clang {{{
+function! s:PreSetupDeopleteClang()
+
+  let g:deoplete#sources#clang#libclang_path='/usr/lib/x86_64-linux-gnu/libclang-4.0.so.1'
+  let g:deoplete#sources#clang#clang_header='/usr/include/clang/4.0/include'
+
+  let g:clang_complete_auto = 0
+  let g:clang_auto_select = 0
+  let g:clang_omnicppcomplete_compliance = 0
+  let g:clang_make_default_keymappings = 0
+endfunction
+
+function! s:PostSetupDeopleteClang()
+  "no-op
+endfunction
+
+if has_key(g:plugs, 'deoplete-clang')
+  call s:PreSetupDeopleteClang()
+endif
+
+call s:on_load('deoplete-clang', 'call s:PostSetupDeopleteClang()')
+" }}}
 
 " vim:foldmethod=marker:foldlevel=0:ts=2:sts=2:sw=2
