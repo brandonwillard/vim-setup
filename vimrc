@@ -1,6 +1,6 @@
 "
-" Check the folds below for settings.
-" Otherwise, see the after/ ftplugins/ and other directories.
+" Check the folds below for settings.  Otherwise, see the after/ ftplugins/
+" and other directories.
 "
 " Some content inspired by the following:
 " * https://github.com/justinmk/config/blob/7b97ae50b5377b35d37128fe1225c47e5fcba7d0/.vimrc#L1021
@@ -10,6 +10,7 @@
 " * http://vim.wikia.com/wiki/Capture_ex_command_output
 " * http://vim.wikia.com/wiki/Make_Vim_completion_popup_menu_work_just_like_in_an_IDE
 " * https://github.com/blueyed/dotfiles/blob/master/vimrc
+" * https://github.com/junegunn/dotfiles/blob/master/vimrc
 "
 " -brandonwillard
 "
@@ -32,7 +33,8 @@ endfunction
 " Plugins Config {{{
 call plug#begin('~/.vim/bundle/') 
 
-  "# Vim Functionality
+  " Vim Functionality
+  Plug 'junegunn/vim-peekaboo'
   Plug 'Shougo/echodoc.vim'
   Plug 'tpope/vim-sensible'
   Plug 'itchyny/vim-parenmatch'
@@ -49,6 +51,7 @@ call plug#begin('~/.vim/bundle/')
   Plug 'terryma/vim-multiple-cursors'
 	Plug 'Raimondi/delimitMate'
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+  Plug 'junegunn/fzf.vim'
   if has('nvim')
     " Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins'}
   endif
@@ -69,7 +72,8 @@ call plug#begin('~/.vim/bundle/')
   " Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
   Plug 'lifepillar/pgsql.vim'
   if has('nvim')
-    Plug 'autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins'}
+    Plug 'autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins',
+          \ 'for': ['python', 'c', 'cpp']}
     Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins'}
   else
     " TODO: add neocomplete
@@ -91,6 +95,7 @@ call plug#begin('~/.vim/bundle/')
   Plug 'tpope/vim-surround'
   " -- Make `.` work for maps and `<Plug>`s:
   Plug 'tpope/vim-repeat'
+  Plug 'junegunn/vim-slash'
 
   "# Python
   Plug 'bps/vim-textobj-python', {'for': '*python*'}
@@ -115,7 +120,8 @@ call plug#begin('~/.vim/bundle/')
 
   "# C++
   if has('nvim')
-    Plug 'zchee/deoplete-clang', { 'for': ['cpp', 'c'] }
+    " NOTE: Using LanguageServer now.
+    " Plug 'zchee/deoplete-clang', { 'for': ['cpp', 'c'] }
   endif
 
   "# R
@@ -252,16 +258,17 @@ noremap k gk
 noremap gj j
 noremap gk k
 
-" helper for debugging syntax code:
-"map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
-
-
 " }}}
 
-" Appearance {{{
+" Syntax, Highlighting and Spelling {{{
+
+syntax enable
+
 set t_Co=256
 "set t_AB=^[[48;5;%dm
 "set t_AF=^[[38;5;%dmu
+
+set background=dark
 
 try
   colorscheme primary
@@ -269,26 +276,18 @@ catch /.*/
   "echo v:exception
 endtry
 
-set background=dark
+" XXX: The following must come *after* the colorscheme is set.
+set hlsearch
 
 set wrap
 set linebreak
 set nolist
 
-set cmdheight=2
-" }}}
-
-" Syntax, Highlighting and Spelling {{{
-" XXX: The following must come *after* the colorscheme is set.
-set hls
-
+set cmdheight=1
+" autocmd BufEnter * :syn sync maxlines=200
+" autocmd BufEnter * :syn sync minlines=50
 " When it's really slow, try something like this:
 " set synmaxcol=200
-
-syntax enable
-
-autocmd BufEnter * :syn sync maxlines=200
-autocmd BufEnter * :syn sync minlines=50
 
 syn spell default
 "set spelllang=en_us
@@ -341,12 +340,24 @@ set number
 " NOTE: Covered by vim-sensible
 " set scrolloff=8
 set conceallevel=0
+set shortmess=aIT
+
+set list
+set listchars=tab:\|\ ,
+
+if has('patch-7.4.338')
+  let &showbreak = '↳ '
+  set breakindent
+  set breakindentopt=sbr
+endif
+
 " }}}
 
 " Folding {{{
 set foldmethod=syntax
 "set foldnestmax=1tte
 set foldopen=block,insert,jump,mark,percent,quickfix,search,tag,undo
+set foldclose=""
 
 ""
 " Don't screw up folds when inserting text that might affect them, until
@@ -355,11 +366,11 @@ set foldopen=block,insert,jump,mark,percent,quickfix,search,tag,undo
 " just that.
 " (https://stackoverflow.com/a/42287519)
 augroup fix_folds
-	au!
+  au!
   " autocmd InsertLeave,WinEnter * let &l:foldmethod=g:oldfoldmethod
   " autocmd InsertEnter,WinLeave * let g:oldfoldmethod=&l:foldmethod | setlocal foldmethod=manual
-	au InsertEnter * if !exists('w:last_fdm') | let w:last_fdm=&foldmethod | setlocal foldmethod=manual | endif
-	au InsertLeave,WinEnter, * if exists('w:last_fdm') | let &l:foldmethod=w:last_fdm | unlet w:last_fdm | endif
+  au InsertEnter * if !exists('w:last_fdm') | let w:last_fdm=&foldmethod | setlocal foldmethod=manual | endif
+  au InsertLeave,WinEnter, * if exists('w:last_fdm') | let &l:foldmethod=w:last_fdm | unlet w:last_fdm | endif
   au InsertLeave,BufWritePost,TextYankPost * normal! zv
 augroup END
 " }}}
@@ -387,9 +398,8 @@ set clipboard+=unnamedplus
 " Various {{{
 set virtualedit=insert,block,onemore
 set nocursorline
-
+set autoread
 let g:sql_type_default = 'pgsql'
-
 " }}}
 
 " Messages and Info {{{
@@ -712,7 +722,7 @@ call s:on_load('python-mode', 'call s:PostSetupPymode()')
 function! s:PreSetupDeoplete()
 
   let g:deoplete#enable_at_startup = 1
-  " let g:deoplete#disable_auto_complete = 1
+  let g:deoplete#disable_auto_complete = 1
   let g:deoplete#enable_refresh_always = 1
   " let g:deoplete#complete_method = 'omnifunc'
   
@@ -1371,40 +1381,20 @@ endif
 call s:on_load('LanguageClient-neovim', 'call s:PostSetupLanguageClient()')
 "}}}
 
-" fzf {{{
-function! s:PreSetupFzf()
+" fzf.vim {{{
+function! s:PreSetupFzfVim()
   "no-op
 endfunction
 
-function! s:PostSetupFzf()
-  function! s:line_handler(l)
-    let keys = split(a:l, ':\t')
-    exec 'buf' keys[0]
-    exec keys[1]
-    normal! ^zz
-  endfunction
-
-  function! s:buffer_lines()
-    let res = []
-    for b in filter(range(1, bufnr('$')), 'buflisted(v:val)')
-      call extend(res, map(getbufline(b,0,"$"), 'b . ":\t" . (v:key + 1) . ":\t" . v:val '))
-    endfor
-    return res
-  endfunction
-
-  command! FZFLines call fzf#run({
-  \   'source':  <sid>buffer_lines(),
-  \   'sink':    function('<sid>line_handler'),
-  \   'options': '--extended --nth=3..',
-  \   'down':    '60%'
-  \})
+function! s:PostSetupFzfVim()
+  "no-op
 endfunction
 
-if has_key(g:plugs, 'fzf')
-  call s:PreSetupFzf()
+if has_key(g:plugs, 'fzf.vim')
+  call s:PreSetupFzfVim()
 endif
 
-call s:on_load('fzf', 'call s:PostSetupFzf()')
+call s:on_load('fzf.vim', 'call s:PostSetupFzfVim()')
 " }}}
 
 " deoplete-clang {{{

@@ -72,14 +72,14 @@ if exists("noweb_fold_code") && noweb_fold_code == 1
   setl foldmethod=syntax
 
   syn region nowebChunk matchgroup=nowebDelimiter
-        \ start="^<<.\{-}>>=" end="^@"
+        \ start="^<<\_.\{-}>>=" end="^@"
         \ matchgroup=nowebDelimiter
         \ contains=@nowebCode,nowebChunkReference,nowebChunk
         \ containedin=ALL
         \ fold keepend
 
 else
-  syn region nowebChunk matchgroup=nowebDelimiter start="^<<.\{-}>>="
+  syn region nowebChunk matchgroup=nowebDelimiter start="^<<\_.\{-}>>="
         \ matchgroup=nowebDelimiter end="^@"
         \ contains=@nowebCode,nowebChunkReference,nowebChunk
         \ containedin=ALL
@@ -87,7 +87,7 @@ else
 
 endif
 
-syn match nowebChunkReference "^<<.\{-}>>=$" contained
+syn match nowebChunkReference "^<<\_.\{-}>>=$" contained
 
 syn region nowebSexpr matchgroup=Delimiter start="\\Sexpr{"
       \ matchgroup=Delimiter end="}" contains=@nowebCode
@@ -106,6 +106,9 @@ syn region nowebSweaveOpts matchgroup=Delimiter
 syn cluster noweb
       \ contains=nowebChunk,nowebChunkReference,nowebDelimiter,
       \nowebSexpr,nowebSexprPweave,nowebSweaveOpts
+
+" NOTE: This seems to help with syncing.
+syn sync match SyncNowebChunk grouphere nowebChunk "^<<\_.\{-}>>="
 
 hi def link nowebDelimiter Delimiter
 hi def link nowebSweaveOpts Statement
