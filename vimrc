@@ -49,7 +49,7 @@ call plug#begin('~/.vim/bundle/')
   Plug 'albfan/vim-breakpts' 
   " Plug 'Konfekt/FastFold'
   Plug 'terryma/vim-multiple-cursors'
-	Plug 'Raimondi/delimitMate'
+  Plug 'Raimondi/delimitMate'
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
   Plug 'junegunn/fzf.vim'
   if has('nvim')
@@ -58,6 +58,7 @@ call plug#begin('~/.vim/bundle/')
 
   "# Theming
   Plug 'bling/vim-airline'
+  Plug 'guns/xterm-color-table.vim'
   " Plug 'altercation/vim-colors-solarized'
   Plug 'google/vim-colorscheme-primary'
 
@@ -70,7 +71,7 @@ call plug#begin('~/.vim/bundle/')
   Plug 'tpope/vim-commentary'
   " Plug 'scrooloose/syntastic'
   " Plug 'Rykka/riv.vim', { 'for': ['python', 'rst']}
-  Plug 'lifepillar/pgsql.vim'
+  Plug 'lifepillar/pgsql.vim', { 'for': ['sql']}
   if has('nvim')
     Plug 'autozimu/LanguageClient-neovim', {'do': ':UpdateRemotePlugins',
           \ 'for': ['python', 'c', 'cpp']}
@@ -100,22 +101,22 @@ call plug#begin('~/.vim/bundle/')
   "# Python
   Plug 'bps/vim-textobj-python', {'for': '*python*'}
   Plug 'python-mode/python-mode', {'for': '*python*'}
-  " Plug 'davidhalter/jedi-vim'
-  Plug 'tmhedberg/SimpylFold'
-  Plug 'Chiel92/vim-autoformat'
-  Plug 'Integralist/vim-mypy'
-  "Plug 'jmcantrell/vim-virtualenv'
-  "Plug 'tell-k/vim-autopep8'
-  "Plug 'jimf/vim-pep8-text-width'
-  "Plug 'hynek/vim-python-pep8-indent'
-  "Plug 'hdima/python-syntax'
+  " Plug 'davidhalter/jedi-vim', {'for': '*python*'}
+  Plug 'tmhedberg/SimpylFold', {'for': '*python*'}
+  Plug 'Chiel92/vim-autoformat', {'for': '*python*'}
+  Plug 'Integralist/vim-mypy', {'for': '*python*'}
+  "Plug 'jmcantrell/vim-virtualenv', {'for': '*python*'}
+  "Plug 'tell-k/vim-autopep8', {'for': '*python*'}
+  "Plug 'jimf/vim-pep8-text-width', {'for': '*python*'}
+  "Plug 'hynek/vim-python-pep8-indent', {'for': '*python*'}
+  "Plug 'hdima/python-syntax', {'for': '*python*'}
   "Plug 'ivanov/vim-ipython', {'for': '*python*'} 
   if has('nvim')
     " Plug 'zchee/deoplete-jedi', { 'for': '*python*'} 
     "Plug 'bfredl/nvim-ipy', {'do': ':UpdateRemotePlugins', 'for': '*python*'} 
     "Plug '~/.vim/dev/nvim-ipy', {'do': ':UpdateRemotePlugins', 'for': '*python*'} 
     "Plug '~/.vim/dev/nvim-jupyter', {'do': ':UpdateRemotePlugins', 'for': '*python*'} 
-    "Plug '~/.vim/dev/nvim-example-python-plugin', {'do': ':UpdateRemotePlugins'} 
+    "Plug '~/.vim/dev/nvim-example-python-plugin', {'do': ':UpdateRemotePlugins', 'for': '*python*'} 
   endif
 
   "# C++
@@ -123,6 +124,7 @@ call plug#begin('~/.vim/bundle/')
     " NOTE: Using LanguageServer now.
     " Plug 'zchee/deoplete-clang', { 'for': ['cpp', 'c'] }
   endif
+  Plug 'vhdirk/vim-cmake', { 'for': ['cpp', 'c'] }
 
   "# R
   let r_ftypes = ['r', 'rnoweb', 'rmd']
@@ -252,6 +254,9 @@ map ]] j0[[%/{<CR>
 map [] k$][%?}<CR>
 map <F7> :syn sync fromstart<CR>
 
+" Debug syntax highlighting.
+map <F10> :echo printf("hi<%s> trans<%s> lo<%s>", synIDattr(synID(line("."),col("."),1),"name"), synIDattr(synID(line("."),col("."),0),"name"), synIDattr(synIDtrans(synID(line("."),col("."),1)),"name"))<CR>
+
 " -- Basic motions aren't affected by line wrapping:
 noremap j gj
 noremap k gk
@@ -272,8 +277,9 @@ set background=dark
 
 try
   colorscheme primary
+  set background=dark
 catch /.*/
-  "echo v:exception
+  echom v:exception
 endtry
 
 " XXX: The following must come *after* the colorscheme is set.
@@ -292,10 +298,12 @@ set cmdheight=1
 syn spell default
 "set spelllang=en_us
 
+" FYI: Use `:XtermColorTable` to see numeric mappings.
 highlight clear Comment
 highlight Comment cterm=italic ctermfg=blue
 highlight clear SpellBad
 highlight SpellBad cterm=undercurl ctermfg=red
+highlight SpellCap ctermbg=18
 " Clear Search?
 highlight Search cterm=NONE ctermbg=yellow
 
@@ -470,16 +478,16 @@ command! -nargs=+ -complete=command Output call OutputSplitWindow(<f-args>)
 ""
 " Restore cursor position on file open (see :help restore-cursor).
 autocmd BufReadPost *
-	\ if line("'\"") > 1 && line("'\"") <= line("$") |
-	\   exe "normal! g`\"" |
-	\ endif
+  \ if line("'\"") > 1 && line("'\"") <= line("$") |
+  \   exe "normal! g`\"" |
+  \ endif
 
 " Omni/popup settings from here:
 " if has("autocmd") && exists("+omnifunc")
 "   autocmd Filetype *
-"         \	if &omnifunc == "" |
-"         \		setlocal omnifunc=syntaxcomplete#Complete |
-"         \	endif
+"         \ if &omnifunc == "" |
+"         \   setlocal omnifunc=syntaxcomplete#Complete |
+"         \ endif
 " endif  
 "
 " }}}
@@ -497,10 +505,6 @@ let g:tex_flavor = "latex"
 
 " vimcmdline {{{
 function! s:PreSetupVimcmdline()
-  "no-op
-endfunction
-
-function! s:PostSetupVimcmdline()
   let g:cmdline_map_start = "<LocalLeader>tr"
   let g:cmdline_map_send = "<LocalLeader>tl"
   let g:cmdline_map_send_selection = "<LocalLeader>ts"
@@ -517,12 +521,10 @@ function! s:PostSetupVimcmdline()
   let g:cmdline_in_buffer = 1 
   let g:cmdline_outhl = 0
   " let g:cmdline_app = {}
-
+  
   " Custom options
   let g:cmdline_nolisted = 1
   let g:cmdline_golinedown = 0
-
-	call VimCmdLineCreateMaps()
 
   " Enable (and likewise disable) bracketed paste mode in the terminal.
   let &t_ti .= "\<Esc>[?2004h"
@@ -531,9 +533,33 @@ function! s:PostSetupVimcmdline()
   if !exists("g:cmdline_bps")
     let g:cmdline_bps = "\x1b[200~"
   endif
+
   if !exists("g:cmdline_bpe")
     let g:cmdline_bpe = "\x1b[201~"
   endif
+
+  " Use this to set a connection string (e.g. "--existing kernel.json --ssh jupyterhub")
+  let g:cmdline_jupyter_opts = ""
+  " Don't use jupyter console app by default.
+  let g:cmdline_jupyter = 0
+
+endfunction
+
+function! s:PostSetupVimcmdline()
+  
+  exe 'nmap <silent> ' . g:cmdline_map_send . ' <Plug>(cmdline-send-line)'
+  exe 'vmap <silent> ' . g:cmdline_map_send_selection . ' <Plug>(cmdline-send-selection)'
+  exe 'nmap <silent> ' . g:cmdline_map_send_selection . ' <Plug>(cmdline-send-selection)'
+  exe 'vmap <silent> ' . g:cmdline_map_send . ' <Plug>(cmdline-send-lines)'
+  exe 'nmap <silent> ' . g:cmdline_map_source_fun . ' <Plug>(cmdline-send-file)'
+  exe 'nmap <silent> ' . g:cmdline_map_send_paragraph . ' <Plug>(cmdline-send-paragraph)'
+  exe 'nmap <silent> ' . g:cmdline_map_send_block . ' <Plug>(cmdline-send-mblock)'
+  exe 'nmap <silent> ' . g:cmdline_map_quit . ' <Plug>(cmdline-send-quit)'
+  exe 'nmap <silent> ' . g:cmdline_map_start . ' <Plug>(cmdline-send-start)'
+
+  " XXX: This post setup only loads *once*, so buffer local settings aren't
+  " reasonable.  That's what the following function does.
+  " call VimCmdLineCreateMaps()
 
   function! g:ReplSendMultiline(lines)
     " Just for some background, you might see control/escape
@@ -569,11 +595,6 @@ function! s:PostSetupVimcmdline()
     let cmd_str = printf("jupyter-console --kernel %s %s", a:kernel, jupyter_opts)
     return cmd_str
   endfunction
-
-	" Use this to set a connection string (e.g. "--existing kernel.json --ssh jupyterhub")
-  let g:cmdline_jupyter_opts = ""
-	" Don't use jupyter console app by default.
-	let g:cmdline_jupyter = 0
 
 endfunction
 
@@ -637,6 +658,11 @@ function! s:PreSetupNeomake()
   " TODO: Consider using latexrun
   " let g:neomake_tex_enabled_makers = ['latexrun']
 
+  " Replace the builtin `make`:
+  " See: http://vim.wikia.com/wiki/Replace_a_builtin_command_using_cabbrev
+  if v:version >= 7
+    cabbrev <expr> make ((getcmdtype() == ':' && getcmdpos() >= 5)? 'Neomake' : 'make')
+  endif
 endfunction
 
 function! s:PostSetupNeomake()
@@ -722,28 +748,28 @@ call s:on_load('python-mode', 'call s:PostSetupPymode()')
 function! s:PreSetupDeoplete()
 
   let g:deoplete#enable_at_startup = 1
-  let g:deoplete#disable_auto_complete = 1
+  " let g:deoplete#disable_auto_complete = 1
   let g:deoplete#enable_refresh_always = 1
   " let g:deoplete#complete_method = 'omnifunc'
   
   call deoplete#custom#set('_', 'min_pattern_length', 2)
 
   let g:deoplete#sources = get(g:, 'deoplete#sources', {})
-	let g:deoplete#sources._ = ['LanguageClient', 'omni', 'buffer'] ", 'ultisnips']
-	let g:deoplete#sources.python = ['LanguageClient', 'omni']
-	let g:deoplete#sources.cpp = ['LanguageClient', 'clang']
+  let g:deoplete#sources._ = ['LanguageClient', 'omni', 'buffer'] ", 'ultisnips']
+  let g:deoplete#sources.python = ['LanguageClient', 'omni']
+  let g:deoplete#sources.cpp = ['LanguageClient', 'clang']
 
   let g:deoplete#omni#functions = get(g:, 'deoplete#omni#functions', {})
   let g:deoplete#omni#functions.python = ['pythoncomplete#Complete']
   " let g:deoplete#omni#functions.tex = ['vimtex#complete#omnifunc']
 
-	" Vim regexp versions
-	" let g:deoplete#omni_patterns = get(g:, 'deoplete#omni_patterns', {})
+  " Vim regexp versions
+  " let g:deoplete#omni_patterns = get(g:, 'deoplete#omni_patterns', {})
 
   " Python3 regexp versions
-	let g:deoplete#omni#input_patterns = get(g:, 'deoplete#omni#input_patterns', {})
+  let g:deoplete#omni#input_patterns = get(g:, 'deoplete#omni#input_patterns', {})
   " let g:deoplete#omni#input_patterns.javascript = '[^. *\t]\.\w*'
-	" let g:deoplete#omni#input_patterns.python = ''
+  " let g:deoplete#omni#input_patterns.python = ''
   let g:deoplete#omni#input_patterns.tex = '\\(?:'
       \ .  '\w*cite\w*(?:\s*\[[^]]*\]){0,2}\s*{[^}]*'
       \ . '|\w*ref(?:\s*\{[^}]*|range\s*\{[^,}]*(?:}{)?)'
@@ -869,10 +895,12 @@ function! s:PreSetupNvimR()
   let g:R_user_maps_only = 1   
   let g:R_insert_mode_cmds = 0 
   let g:R_assign = 0
-
   let g:R_pdfviewer = "qpdfview"
-
   let g:R_source_args = 'local=TRUE, print.eval=TRUE'
+
+endfunction
+
+function! s:PostSetupNvimR()
 
   " FIXME: nvim-plugin needs these before it creates maps; otherwise
   " it won't create the endpoint <Plug>'s.  we're gonna force it to 
@@ -908,10 +936,6 @@ function! s:PreSetupNvimR()
   nmap <buffer> <LocalLeader>tm <Plug>RMakePDFK
   vmap <buffer> <LocalLeader>tm <Plug>RMakePDFK
 
-endfunction
-
-function! s:PostSetupNvimR()
-  "no-op
 endfunction
 
 if has_key(g:plugs, 'Nvim-R')
@@ -1014,11 +1038,11 @@ function! s:PreSetupJedi()
   let g:jedi#show_call_signatures = 0
 
   augroup jedi_settings
-	  autocmd!
-	  " XXX FIXME: Broken for first file loaded.
-	  " autocmd BufNewFile,BufRead * if &ft == "python" | nmap <buffer> <localleader>gd :<C-u>call jedi#goto()<CR>zv | endif
-	  autocmd FileType python nmap <buffer> <localleader>gd :<C-u>call jedi#goto()<CR>zv
-	  " autocmd FileType python nmap <buffer> <localleader>gd :<C-u>call jedi#goto() | normal zv
+    autocmd!
+    " XXX FIXME: Broken for first file loaded.
+    " autocmd BufNewFile,BufRead * if &ft == "python" | nmap <buffer> <localleader>gd :<C-u>call jedi#goto()<CR>zv | endif
+    autocmd FileType python nmap <buffer> <localleader>gd :<C-u>call jedi#goto()<CR>zv
+    " autocmd FileType python nmap <buffer> <localleader>gd :<C-u>call jedi#goto() | normal zv
     autocmd BufWinEnter '__doc__' setlocal bufhidden=delete
   augroup END
 endfunction
@@ -1079,7 +1103,7 @@ call s:on_load('vim-airline', 'call s:PostSetupAirline()')
 function! s:PreSetupEclim()
   let g:EclimMakeLCD=1
   let g:EclimDtdValidate=0
-  "set cot-=preview
+  "setl cot-=preview
 
   let g:EclimProjectTreeActions = [
      \ {'pattern': '.*', 'name': 'Edit', 'action': 'edit'},
@@ -1114,7 +1138,7 @@ call s:on_load('eclim', 'call s:PostSetupEclim()')
 let g:netrw_liststyle=3
 
 " Change directory to the current buffer when opening files.
-" set autochdir
+" setl autochdir
 
 let g:netrw_list_hide= '.*\.swp$,.*\.swp\s,.*/$,.*/\s'
 
@@ -1320,17 +1344,17 @@ call s:on_load('pgsql.vim', 'call s:PostSetupPgsqlVim()')
 " editorconfig-vim {{{
 
 function! s:PreSetupEditorconfig()
-  " let g:EditorConfig_verbose = 1
+  let g:EditorConfig_verbose = 1
 
   function! CmdlineHook(config)
-	  " echom string(a:config)
-	  for [key, value] in items(a:config)
-		  if key =~ "cmdline_jupyter"
-			  let b:{key} = value
-		  endif
-	  endfor
+    " echom string(a:config)
+    for [key, value] in items(a:config)
+      if key =~ "cmdline_jupyter"
+        let b:{key} = value
+      endif
+    endfor
 
-	  return 0   
+    return 0   
   endfunction
 
   call editorconfig#AddNewHook(function('CmdlineHook'))
@@ -1362,15 +1386,32 @@ function! s:PreSetupLanguageClient()
 endfunction
 
 function! s:PostSetupLanguageClient()
-  nnoremap <silent> <localleader>K :call LanguageClient_textDocument_hover()<CR>
-  nnoremap <silent> <localleader>gd :call LanguageClient_textDocument_definition()<CR>
-  nnoremap <silent> <localleader>R :call LanguageClient_textDocument_rename()<CR>
 
-  " TODO: Check that formatting is supported by the language?
-  set formatexpr=LanguageClient_textDocument_rangeFormatting()
+  function! s:LocalLanguageClientSettings()
+    if index(keys(get(g:, 'LanguageClient_serverCommands', {})), &filetype) > 0 
+      nnoremap <silent><buffer> <localleader>K :call LanguageClient_textDocument_hover()<CR>
+      nnoremap <silent><buffer> <localleader>gd :call LanguageClient_textDocument_definition()<CR>
+      nnoremap <silent><buffer> <localleader>R :call LanguageClient_textDocument_rename()<CR>
+      nnoremap <silent><buffer> <localleader>gS :call LanguageClient_textDocument_documentSymbol()<CR>
+      nnoremap <silent><buffer> <localleader>gr :call LanguageClient_textDocument_references()<CR>
+      nnoremap <silent><buffer> <localleader>gF :call LanguageClient_textDocument_formatting()<CR>
+      setlocal formatexpr=LanguageClient_textDocument_rangeFormatting() |
+      setlocal omnifunc=LanguageClient#complete
+    endif
+  endfunction
 
-  set omnifunc=LanguageClient#complete
-  " set completefunc=LanguageClient#complete
+  " To send test messages to a server:
+  " :call LanguageClient_notify(method, params) 
+  " E.g.
+  " :call LanguageClient_notify('workspace/didChangeConfiguration', {'settings': 'blah'}) 
+  " See https://github.com/Microsoft/language-server-protocol/blob/master/protocol.md
+
+  augroup languageclient
+    autocmd!
+    " TODO: Check that formatting is supported by the language?
+    autocmd User LanguageClientStarted call s:LocalLanguageClientSettings()
+    " setl completefunc=LanguageClient#complete
+  augroup END
 
 endfunction
 
@@ -1383,11 +1424,12 @@ call s:on_load('LanguageClient-neovim', 'call s:PostSetupLanguageClient()')
 
 " fzf.vim {{{
 function! s:PreSetupFzfVim()
-  "no-op
+  let g:fzf_command_prefix = 'Fzf'
 endfunction
 
 function! s:PostSetupFzfVim()
-  "no-op
+  " Add filename completion to :Ag
+  command! -bang -nargs=+ -complete=dir Ag call fzf#vim#ag_raw(<q-args>, <bang>0)
 endfunction
 
 if has_key(g:plugs, 'fzf.vim')
@@ -1420,4 +1462,4 @@ endif
 call s:on_load('deoplete-clang', 'call s:PostSetupDeopleteClang()')
 " }}}
 
-" vim:foldmethod=marker:foldlevel=0:ts=2:sts=2:sw=2
+" vim:foldmethod=marker:ts=2:sts=2:sw=2
