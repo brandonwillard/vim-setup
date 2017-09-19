@@ -114,10 +114,10 @@ call plug#begin('~/.vim/bundle/')
   "# Python
   Plug 'bps/vim-textobj-python', {'for': '*python*'}
   Plug 'python-mode/python-mode', {'for': '*python*'}
-  " Plug 'davidhalter/jedi-vim', {'for': '*python*'}
   Plug 'tmhedberg/SimpylFold', {'for': '*python*'}
   Plug 'Chiel92/vim-autoformat', {'for': '*python*'}
   Plug 'Integralist/vim-mypy', {'for': '*python*'}
+  " Plug 'davidhalter/jedi-vim', {'for': '*python*'}
   "Plug 'jmcantrell/vim-virtualenv', {'for': '*python*'}
   "Plug 'tell-k/vim-autopep8', {'for': '*python*'}
   "Plug 'jimf/vim-pep8-text-width', {'for': '*python*'}
@@ -752,7 +752,7 @@ call s:on_load('vim-surround', 'call s:PostSetupSurround()')
 function! s:PreSetupPymode()
   " Don't let pymode set options; we should do this ourselves. 
   let g:pymode_options=0
-  let g:pymode_debug = 1
+  let g:pymode_debug = 0
   let g:pymode_run = 1
 
   let g:pymode_lint = 0
