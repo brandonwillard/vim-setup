@@ -46,6 +46,7 @@ let g:local_plugins_path = '~/projects/code/vim-plugins'
 call plug#begin('~/.vim/bundle/') 
 
   " Vim Functionality
+  Plug 'tpope/vim-projectionist'
   Plug 'junegunn/vim-peekaboo'
   Plug 'Shougo/echodoc.vim'
   Plug 'tpope/vim-sensible'
@@ -157,7 +158,6 @@ call plug#begin('~/.vim/bundle/')
   Plug 'vim-scripts/LargeFile'
   Plug 'tpope/vim-eunuch'
   Plug 'tpope/vim-scriptease'
-  Plug 'tpope/vim-projectionist'
   Plug 'w0rp/ale'
   Plug 'editorconfig/editorconfig-vim'
   if has('nvim')
@@ -652,7 +652,7 @@ function! s:PreSetupVimtex()
   let g:vimtex_latexmk_enabled=0
   let g:vimtex_latexmk_callback=0
   let g:vimtex_latexmk_continuous=0
-  let g:vimtex_latexmk_build_dir = '../../output'
+  " let g:vimtex_latexmk_build_dir = '../../output'
 
   let g:vimtex_view_enabled=0
   let g:vimtex_view_general_viewer = 'qpdfview'
@@ -707,7 +707,21 @@ function! s:PreSetupNeomake()
 endfunction
 
 function! s:PostSetupNeomake()
-  "no-op
+  " if has_key(g:plugs, 'neomake')
+  "   " NOTE: This plugin variable is referencing a variable initialized by
+  "   " projectionist (another plugin) and we're better off assuming that the
+  "   " plugin evaluation orders aren't always certain/clear.
+  "   " let l:Maker_val = {-> exists('b:neomake_tex_rubberinfo_maker') ? 
+  "   "       \ extend(b:neomake_tex_rubberinfo_maker, {'args': ['--into', '{project}/output']}) :
+  "   "       \ {}
+  "   "       \}
+  "   " let g:latex_project_let_vars['b:neomake_tex_rubberinfo_maker'] = l:Maker_val
+  " endif
+  
+  if exists('b:latex_build_dir')
+    let b:neomake_tex_rubberinfo_maker['args'] = ['--into', b:latex_build_dir]
+  endif
+
 endfunction
 
 if has_key(g:plugs, 'neomake')
@@ -1350,10 +1364,20 @@ function! s:PreSetupProjectionist()
   "
   function! s:proj_activate() abort
     for [root, value] in projectionist#query('let')
-      for let_var in value
-        let l:exec_str = 'let ' . let_var[0] . '=' . let_var[1]
-        call xolox#misc#msg#debug('proj_activate: ' . l:exec_str)
-        execute(l:exec_str) 
+      for [var_name, var_val] in items(value)
+        call xolox#misc#msg#debug(printf('proj_activate: %s, %s', var_name, string(var_val)))
+        let l:Rval = var_val
+        " XXX: Can't use projectionist#query if we want to evaluate functions,
+        " since it attempts to resolve placeholders (e.g. '{var}').
+        " Use a modified version if you must do this.
+        
+        " if type(l:Rval) == v:t_func
+        "   let l:Rval = var_val()
+        " endif
+        " call xolox#misc#msg#debug('proj_activate: ' . string(l:Rval))
+        
+        let {var_name} = l:Rval
+
       endfor
       break
     endfor
@@ -1366,25 +1390,16 @@ function! s:PreSetupProjectionist()
 
   let g:projectionist_heuristics = {}
 
-  let g:latex_project_let_vars = [ 
-        \   ['b:latex_figures_dir', '"{project}/figures"'],
-        \   ['b:latex_src_dir', '"{project}/tex"'],
-        \   ['b:latex_build_dir', '"{project}/output"'],
-        \   ['b:latex_pdf_file', '"{project}/output/{basename}.pdf"'],
-        \ ]
+  let g:latex_project_let_vars = { 
+        \   'b:latex_figures_dir': '{project}/figures',
+        \   'b:latex_src_dir': '{project}/tex',
+        \   'b:latex_build_dir': '{project}/output',
+        \   'b:latex_pdf_file': '{project}/output/{basename}.pdf',
+        \ }
 
   if has_key(g:plugs, 'vimtex')
     " XXX: Lame that this is a global variable.
-    let g:latex_project_let_vars += [ 
-        \   ['g:vimtex_latexmk_build_dir', '"{project}/output"'],
-        \ ]
-  endif
-
-  if has_key(g:plugs, 'neomake')
-    " NOTE: We're referencing a buffer variable initialized by projectionist
-    let g:latex_project_let_vars += [ 
-          \   ['b:neomake_tex_rubberinfo_maker.args', '["--into", b:latex_build_dir]']
-          \ ]
+    let g:latex_project_let_vars['g:vimtex_latexmk_build_dir'] = '{project}/output'
   endif
 
   " FYI: `g:projectionist_heuristics` are set in after/ftplugins. 
