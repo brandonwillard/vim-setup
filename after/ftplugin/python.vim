@@ -8,17 +8,17 @@ setl tabstop=4
 setl softtabstop=4
 setl expandtab
 setl shiftround
-setl cino+=(0
+setl cinoptions+=(0
 setl cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 setl formatoptions=croqljt
 
-if exists("g:pymode_options_max_line_length")
-  exe "setlocal textwidth=" . g:pymode_options_max_line_length
+if exists('g:pymode_options_max_line_length')
+  exe 'setlocal textwidth=' . g:pymode_options_max_line_length
 else
   setl textwidth=79
 endif
 
-if exists("b:loaded_python_after")
+if exists('b:loaded_python_after')
   finish
 else
 

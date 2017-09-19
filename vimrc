@@ -30,6 +30,18 @@ function! s:on_load(name, exec)
   endif
 endfunction
 
+function! PlugLocal(plugin, local_path, remote_path, opts)
+  let l:local_plugin_path = a:local_path . '/' . a:plugin
+  if !empty(glob(l:local_plugin_path))
+    let l:plugin_loc = l:local_plugin_path
+  else
+    let l:plugin_loc = a:remote_path . '/' . a:plugin
+  endif
+  Plug l:plugin_loc, a:opts
+endfunction
+
+let g:local_plugins_path = '~/projects/code/vim-plugins' 
+
 " Plugins Config {{{
 call plug#begin('~/.vim/bundle/') 
 
@@ -136,12 +148,9 @@ call plug#begin('~/.vim/bundle/')
   endif
 
   "# Terminal/REPL
-  if !empty(glob("~/projects/code/vim-plugins/vimcmdline"))
-    let vimcmdline_loc = '~/projects/code/vim-plugins/vimcmdline'
-  else
-    let vimcmdline_loc = 'brandonwillard/vimcmdline'
-  endif
-  Plug vimcmdline_loc, { 'for': ['python', 'noweb', 'sql', 'clojure', 'javascript'] } 
+  call PlugLocal('vimcmdline', g:local_plugins_path,
+        \ 'brandonwillard',
+        \ { 'for': ['python', 'noweb', 'sql', 'clojure', 'javascript'] })
 
   "# Filesystem, Make, Git 
   Plug 'tpope/vim-fugitive'
@@ -159,6 +168,10 @@ call plug#begin('~/.vim/bundle/')
   let tex_ftypes = ['tex', 'noweb']
   Plug 'lervag/vimtex', {'for': tex_ftypes}
   Plug 'rbonvall/vim-textobj-latex', {'for': tex_ftypes}
+
+  "# Noweb
+  call PlugLocal('vim-noweb', g:local_plugins_path,
+        \ 'brandonwillard', { 'for': ['*noweb*'] } )
 
 call plug#end() 
 
@@ -407,6 +420,8 @@ set clipboard+=unnamedplus
 set virtualedit=insert,block,onemore
 set nocursorline
 set autoread
+set path+=.
+
 let g:sql_type_default = 'pgsql'
 " }}}
 
@@ -463,6 +478,26 @@ function! OutputSplitWindow(...)
     put! =output
     setl nomodifiable 
   endif
+endfunction
+
+""
+" Get the Python version in a Jupyter kernel string format
+" (e.g. 'python', 'python2', 'python3').
+"
+function! GetPythonVersion()
+
+  let l:python_version = system('python -V')
+
+  if l:python_version =~? '^Python 3\.\?'
+    let l:python_version = '3'
+  elseif l:python_version =~? '^Python 2\.\?'
+    let l:python_version = '2'
+  else
+    let l:python_version = ''
+  endif
+
+  return printf('python%s', l:python_version)
+
 endfunction
 
 ""
@@ -539,7 +574,7 @@ function! s:PreSetupVimcmdline()
   endif
 
   " Use this to set a connection string (e.g. "--existing kernel.json --ssh jupyterhub")
-  let g:cmdline_jupyter_opts = ""
+  let g:cmdline_jupyter_opts = ''
   " Don't use jupyter console app by default.
   let g:cmdline_jupyter = 0
 
@@ -572,28 +607,34 @@ function! s:PostSetupVimcmdline()
     " https://cirw.in/blog/bracketed-paste
     " http://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html
     " http://www.xfree86.org/current/ctlseqs.html
-    let expr_str = g:cmdline_bps
-    let expr_str .= join(add(a:lines, ''), b:cmdline_nl)
-    let expr_str .= g:cmdline_bpe
-    let expr_str .= b:cmdline_nl
+    let l:expr_str = g:cmdline_bps
+    let l:expr_str .= join(add(a:lines, ''), b:cmdline_nl)
+    let l:expr_str .= g:cmdline_bpe
+    let l:expr_str .= b:cmdline_nl
 
-    call VimCmdLineSendCmd(expr_str)
+    call VimCmdLineSendCmd(l:expr_str)
 
   endfunction
 
+  ""
+  " Checks if `jupyter-console` command exists, then if a kernel
+  " exists for the given kernel name, and returns a command string 
+  " to start the console with the discovered kernel; otherwise,
+  " an empty string.
   function! g:StartJupyterString(kernel)
-    if !executable("jupyter-console")
-      return ""
+    if !executable('jupyter-console')
+      return ''
     endif
 
-    let kernels_info = json_decode(system("jupyter-kernelspec list --json"))
-    if !has_key(kernels_info['kernelspecs'], a:kernel)
-      return ""
+    let l:kernels_info = json_decode(system('jupyter-kernelspec list --json'))
+    if !has_key(l:kernels_info['kernelspecs'], a:kernel)
+      return ''
     endif
 
-    let jupyter_opts = get(b:, "cmdline_jupyter_opts", get(g:, "cmdline_jupyter_opts", ""))
-    let cmd_str = printf("jupyter-console --kernel %s %s", a:kernel, jupyter_opts)
-    return cmd_str
+    let l:jupyter_opts = get(b:, 'cmdline_jupyter_opts', get(g:, 'cmdline_jupyter_opts', ''))
+    let l:cmd_str = printf('jupyter-console --kernel %s %s', a:kernel, l:jupyter_opts)
+
+    return l:cmd_str
   endfunction
 
 endfunction
@@ -879,7 +920,15 @@ function! s:PreSetupAle()
 endfunction
 
 function! s:PostSetupAle()
-  "no-op
+
+  " TODO: Rewrite neomake functionality in ale?
+  " call ale#linter#Define('tex', {
+  " \   'name': 'rubberinfo',
+  " \   'executable': 'rubber-info',
+  " \   'command': 'rubber-info %t',
+  " \   'callback': 'ale#handlers#unix#HandleAsWarning'
+  " \})
+
 endfunction
 
 if has_key(g:plugs, 'ale')
@@ -1301,21 +1350,49 @@ function! s:PreSetupProjectionist()
   "
   function! s:proj_activate() abort
     for [root, value] in projectionist#query('let')
-      for l:let_var in value
-        let l:exec_str = "let ".let_var[0]."=".let_var[1]
-        call xolox#misc#msg#debug("proj_activate:".l:exec_str)
+      for let_var in value
+        let l:exec_str = 'let ' . let_var[0] . '=' . let_var[1]
+        call xolox#misc#msg#debug('proj_activate: ' . l:exec_str)
         execute(l:exec_str) 
       endfor
       break
     endfor
   endfunction
 
-  autocmd User ProjectionistActivate call s:proj_activate()
+  augroup projectionist_vimrc
+    autocmd!
+    autocmd User ProjectionistActivate call s:proj_activate()
+  augroup END
+
+  let g:projectionist_heuristics = {}
+
+  let g:latex_project_let_vars = [ 
+        \   ['b:latex_figures_dir', '"{project}/figures"'],
+        \   ['b:latex_src_dir', '"{project}/tex"'],
+        \   ['b:latex_build_dir', '"{project}/output"'],
+        \   ['b:latex_pdf_file', '"{project}/output/{basename}.pdf"'],
+        \ ]
+
+  if has_key(g:plugs, 'vimtex')
+    " XXX: Lame that this is a global variable.
+    let g:latex_project_let_vars += [ 
+        \   ['g:vimtex_latexmk_build_dir', '"{project}/output"'],
+        \ ]
+  endif
+
+  if has_key(g:plugs, 'neomake')
+    " NOTE: We're referencing a buffer variable initialized by projectionist
+    let g:latex_project_let_vars += [ 
+          \   ['b:neomake_tex_rubberinfo_maker.args', '["--into", b:latex_build_dir]']
+          \ ]
+  endif
+
+  " FYI: `g:projectionist_heuristics` are set in after/ftplugins. 
 
 endfunction
 
 function! s:PostSetupProjectionist()
-  "no-op
+  "noop
 endfunction
 
 if has_key(g:plugs, 'vim-projectionist')
@@ -1349,7 +1426,7 @@ function! s:PreSetupEditorconfig()
   function! CmdlineHook(config)
     " echom string(a:config)
     for [key, value] in items(a:config)
-      if key =~ "cmdline_jupyter"
+      if key =~ 'cmdline_jupyter'
         let b:{key} = value
       endif
     endfor
@@ -1425,10 +1502,28 @@ call s:on_load('LanguageClient-neovim', 'call s:PostSetupLanguageClient()')
 " fzf.vim {{{
 function! s:PreSetupFzfVim()
   let g:fzf_command_prefix = 'Fzf'
+
+  function! s:build_quickfix_list(lines)
+    echom a:lines
+    call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+    copen
+    cc
+  endfunction
+
+  let g:fzf_action = {
+    \ 'ctrl-q': function('s:build_quickfix_list'),
+    \ 'ctrl-t': 'tab split',
+    \ 'ctrl-x': 'split',
+    \ 'ctrl-v': 'vsplit' }
+
+  let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
+
 endfunction
 
 function! s:PostSetupFzfVim()
   " Add filename completion to :Ag
+  "
+
   command! -bang -nargs=+ -complete=dir Ag call fzf#vim#ag_raw(<q-args>, <bang>0)
 endfunction
 
