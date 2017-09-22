@@ -1436,7 +1436,7 @@ call s:on_load('pgsql.vim', 'call s:PostSetupPgsqlVim()')
 " editorconfig-vim {{{
 
 function! s:PreSetupEditorconfig()
-  let g:EditorConfig_verbose = 1
+  let g:EditorConfig_verbose = 0
 
   function! CmdlineHook(config)
     " echom string(a:config)
