@@ -243,9 +243,9 @@ let maplocalleader=','
 set noto
 set timeoutlen=50
 if has("nvim")
-  " allow us to easily use window motions in a terminal
+  " Allow us to easily use window motions in a terminal
   tnoremap <C-w> <C-\><C-n><C-w>
-  " leave insert mode in terminal with ESC
+  " Leave insert mode in terminal with <Esc>
   tnoremap <Esc> <C-\><C-N>
 endif
 
@@ -332,10 +332,16 @@ let g:loaded_matchparen = 1
 " We should have separate pyenv virtualenvs for python 2 and 3.
 " The host progs should point to those.
 "
-let g:python_host_prog=expand('~/.pyenv/versions/neovim2/bin/python')
+" let g:python_host_prog=expand('~/.pyenv/versions/neovim2/bin/python')
 " let g:python3_host_prog=expand('~/.pyenv/versions/neovim3/bin/python')
-let g:python3_host_prog=expand('~/.pyenv/versions/neovim36/bin/python')
+" let g:python3_host_prog=expand('~/.pyenv/versions/neovim36/bin/python')
+let g:python_host_prog=expand('/home/bwillard/apps/anaconda3/envs/neovim2/bin/python')
+let g:python3_host_prog=expand('/home/bwillard/apps/anaconda3/envs/neovim3/bin/python')
 let python_space_error_highlight = 1 
+
+if $CONDA_PREFIX != ""
+  let &tags = $CONDA_PREFIX.'/tags,' . &tags
+endif
 
 if $VIRTUAL_ENV != ""
   let &tags = $VIRTUAL_ENV.'/tags,' . &tags
@@ -558,7 +564,7 @@ function! s:PreSetupVimcmdline()
   " let g:cmdline_app = {}
   
   " Custom options
-  let g:cmdline_nolisted = 1
+  let g:cmdline_nolisted = 0
   let g:cmdline_golinedown = 0
 
   " Enable (and likewise disable) bracketed paste mode in the terminal.
@@ -783,7 +789,13 @@ function! s:PreSetupPymode()
   let g:pymode_rope_goto_definition_cmd = 'e'
   let g:pymode_rope_goto_definition_bind = '<localleader>gd' 
   let g:pymode_rope_lookup_project = 0
-  let g:pymode_rope_project_root = $VIRTUAL_ENV
+
+  if $CONDA_PREFIX != ""
+    let g:pymode_rope_project_root = $CONDA_PREFIX
+  elseif $VIRTUAL_ENV != ""
+    let g:pymode_rope_project_root = $VIRTUAL_ENV
+  endif
+
   let g:pymode_rope_show_doc_bind = '<localleader>K' 
 
 endfunction
@@ -1469,7 +1481,7 @@ function! s:PreSetupLanguageClient()
   let g:LanguageClient_serverCommands = {
         \ 'cpp': ['/home/bwillard/apps/clangd/bin/clangd'],
         \ 'c': ['/home/bwillard/apps/clangd/bin/clangd'],
-        \ 'python': ['/home/bwillard/.pyenv/versions/neovim36/bin/pyls']
+        \ 'python': ['/home/bwillard/apps/anaconda3/envs/neovim3/bin/pyls']
         \ }
         " \ 'python': ['/home/bwillard/.pyenv/shims/pyls']
   let g:LanguageClient_autoStart = 1
